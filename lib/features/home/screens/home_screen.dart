@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_widgets.dart';
 import 'package:matbakhna_mobile/features/home/widgets/card.dart';
+import 'package:matbakhna_mobile/features/Filter/screens/filter_screen.dart';
+import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -11,7 +13,7 @@ class HomePage extends StatelessWidget {
       {
         'imageUrl': 'https://kitchen.sayidaty.net/uploads/small/65/65a750957fd3d95431c6c55a9fb02237_w750_h500.jpg',
         'title': 'فلافل',
-        'description': 'طبق شعبي يتكون من الحمص المطحون مع البهارات، ويُقلى بالزيت.طبق شعبي يتكون من الحمص المطحون مع البهارات، ويُقلى بالزيت.طبق شعبي يتكون من الحمص المطحون مع البهارات، ويُقلى بالزيت.',
+        'description': 'طبق شعبي يتكون من الحمص المطحون مع البهارات، ويُقلى بالزيت.',
         'time': '٤٥ دقيقة',
       },
       {
@@ -49,19 +51,52 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 24),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFE8DCCF),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          icon: Icon(Icons.search, color: Color(0xFF707070)),
-                          hintText: 'ابحث عن وصفة...',
-                          border: InputBorder.none,
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Color(0xFFE8DCCF),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const TextField(
+                                decoration: InputDecoration(
+                                  icon: Icon(Icons.search, color: Color(0xFF707070)),
+                                  hintText: 'ابحث عن وصفة...',
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SearchScreen()),
+                              );
+                            },
+                            icon: const Icon(Icons.tune, color: Color(0xFF3D3D3D)),
+                            label: const Text(
+                              'عذوقك',
+                              style: TextStyle(
+                                color: Color(0xFF3D3D3D),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE8DCCF),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                              elevation: 2,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -70,72 +105,102 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'نصيحة اليوم',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF3D3D3D),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFE8DCCF),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      width: double.infinity,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFE8DCCF),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 6,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          recipes[0]['imageUrl']!,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Stack(
-                          fit: StackFit.expand,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.network(
-                              'https://img.youm7.com/large/201908010444104410.jpg',
-                              fit: BoxFit.cover,
+                            const Text(
+                              'جرب اليوم',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFE56B50),
+                              ),
                             ),
-                            Container(
-                              color: Colors.black.withOpacity(0.4),
+                            const SizedBox(height: 4),
+                            Text(
+                              recipes[0]['title']!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF3D3D3D),
+                              ),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  ' الملح شوي شوي عمهلك وبالتدريج وخصوصاً بالطبخات.',
-
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 2,
-                                        color: Colors.black45,
-                                        offset: Offset(1, 1),
-                                      ),
-                                    ],
-                                  ),
-                                  textAlign: TextAlign.right,
-                                ),
+                            const SizedBox(height: 4),
+                            Text(
+                              recipes[0]['description']!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF707070),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    )
-                  ],
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFA5C8A6),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Icon(Icons.lightbulb_outline, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'الملح شوي شوي عمهلك وبالتدريج وخصوصاً بالطبخات.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -144,7 +209,7 @@ class HomePage extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    'أطباق مقترحة',
+                    'الأكثر تفاعل',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -174,30 +239,43 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.only(left: 20, top: 0),
                 child: Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA5C8A6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ListingScreen()),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      minimumSize: Size.zero,
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      'اعرض المزيد',
-                      style: TextStyle(
-                        color: Color(0xFF3D3D3D),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'اعرض المزيد',
+                          style: TextStyle(
+                            color: Color(0xFF3D3D3D),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFF3D3D3D),
+                          size: 14,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 32),
             ],
           ),
