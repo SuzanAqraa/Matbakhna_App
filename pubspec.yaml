@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   carousel_slider: ^5.0.0
   google_fonts: ^6.1.0
-
+  group_button: ^5.3.4
 
 dev_dependencies:
   flutter_test:
@@ -67,7 +67,7 @@ assets:
   -assets/images/imageview1.jpg
   - assets/images/imagereview2.jpg
   - assets/images/imagereview3.jpg
-
+  - assets/images/cake.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
