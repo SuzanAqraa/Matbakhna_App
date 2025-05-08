@@ -17,19 +17,12 @@ class RecipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 150,
-      height: 200,
+      width: 180,
+      height: 240,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              spreadRadius: 1,
-            ),
-          ],
         ),
         child: Column(
           children: [
@@ -54,7 +47,7 @@ class RecipeCard extends StatelessWidget {
                         child: Image.network(
                           imageUrl,
                           width: double.infinity,
-                          height: 90,
+                          height: 110,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -62,7 +55,7 @@ class RecipeCard extends StatelessWidget {
                         top: 8,
                         left: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE56B50),
                             borderRadius: BorderRadius.circular(8),
@@ -71,14 +64,14 @@ class RecipeCard extends StatelessWidget {
                             time,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 9,
+                              fontSize: 12,
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
@@ -86,22 +79,22 @@ class RecipeCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF3D3D3D),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: SizedBox(
-                      height: 38,
+                      height: 48,
                       child: SingleChildScrollView(
                         child: Text(
                           description,
                           style: const TextStyle(
-                            fontSize: 10,
+                            fontSize: 13,
                             color: Color(0xFF707070),
                           ),
                         ),
@@ -111,9 +104,8 @@ class RecipeCard extends StatelessWidget {
                 ],
               ),
             ),
-
             Container(
-              height: 28,
+              height: 32,
               decoration: const BoxDecoration(
                 color: Color(0xFFE8DCCF),
                 borderRadius: BorderRadius.only(
@@ -127,16 +119,16 @@ class RecipeCard extends StatelessWidget {
                 children: const [
                   Row(
                     children: [
-                      Icon(Icons.favorite_border, size: 11, color: Color(0xFF3D3D3D)),
-                      SizedBox(width: 2),
-                      Text('58', style: TextStyle(fontSize: 9, color: Color(0xFF3D3D3D))),
+                      Icon(Icons.favorite_border, size: 14, color: Color(0xFF3D3D3D)),
+                      SizedBox(width: 4),
+                      Text('58', style: TextStyle(fontSize: 11, color: Color(0xFF3D3D3D))),
                     ],
                   ),
                   Row(
                     children: [
-                      Icon(Icons.comment, size: 11, color: Color(0xFF3D3D3D)),
-                      SizedBox(width: 2),
-                      Text('21', style: TextStyle(fontSize: 9, color: Color(0xFF3D3D3D))),
+                      Icon(Icons.comment, size: 14, color: Color(0xFF3D3D3D)),
+                      SizedBox(width: 4),
+                      Text('21', style: TextStyle(fontSize: 11, color: Color(0xFF3D3D3D))),
                     ],
                   ),
                 ],
