@@ -5,7 +5,7 @@ class  aboutus extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: imgesWidget(),
+      body: ImagesWidget(),
       backgroundColor: Color(0xFFEFE6DD),
 
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_widgets.dart';
 import 'package:matbakhna_mobile/features/home/widgets/card.dart';
 import 'package:matbakhna_mobile/features/Filter/screens/filter_screen.dart';
