@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/SimpleAppBar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
 
 class FavoritesScreen extends StatelessWidget {
@@ -8,14 +9,11 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF5EC), // ← تمت إضافة اللون هنا
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFA5C8A6),
-        title: const Text('المحفوظات'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
-      body: const Center(child: Text('المحفوظات ستكون هنا')),
+      backgroundColor: const Color(0xFFFDF5EC),
+      appBar: const CustomAppBar(
+        title: 'الوصفات المفضلة',
+        showBackButton: false,
+      ),      body: const Center(child: Text('الوصفات المفضلة ستكون هنا')),
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 2),
     );
   }

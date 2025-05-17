@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_widgets.dart';
 
+import '../../../core/widgets/SimpleAppBar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,16 +24,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF6EC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFA5C8A6),
-        title: const Text('المحفوظات'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
+      appBar: const CustomAppBar(
+        title: 'الملف الشخصي',
+        showBackButton: false,  // زر الرجوع مخفي
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeader(),
             const SizedBox(height: 20),
             Stack(
               alignment: Alignment.bottomRight,
@@ -115,30 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          height: 100,
-          decoration: const BoxDecoration(
-            color: Color(0xFFA5C8A6),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(100),
-              bottomRight: Radius.circular(100),
-            ),
-          ),
-        ),
-        const Positioned(
-          top: 35,
-          child: Text(
-            'صفحتي',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildFormField({
     required TextEditingController controller,
