@@ -48,7 +48,6 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } catch (e) {
-      // يمكن تخصيص مزيد من الأخطاء حسب الحاجة
       setState(() {
         _addressError = 'حدث خطأ أثناء الحفظ. حاول مرة أخرى.';
         _phoneError = 'حدث خطأ أثناء الحفظ. حاول مرة أخرى.';
@@ -58,111 +57,117 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final darkBorder = OutlineInputBorder(
+    const backgroundColor = Color(0xFFFDF5EC);
+    const primaryColor = Color(0xFFD37A47);
+    const textColor = Colors.black;
+
+    InputBorder getBorder() => OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
-      borderSide: BorderSide(color: colors.onPrimary, width: 1.5),
+      borderSide: const BorderSide(color: textColor, width: 1.3),
     );
 
-    TextStyle labelStyle = TextStyle(
-      fontSize: 20,
-      color: colors.onPrimary,
+    TextStyle labelStyle = const TextStyle(
+      fontSize: 18,
+      color: textColor,
       fontWeight: FontWeight.bold,
     );
 
     return Scaffold(
-      backgroundColor: colors.background,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Text(
-                  'إكمال التسجيل',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: colors.onPrimary,
+      backgroundColor: backgroundColor,
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Text(
+                    'إكمال التسجيل',
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
-                // العنوان
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text('العنوان (اختياري)', style: labelStyle),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    hintText: 'أدخل عنوانك هنا',
-                    border: darkBorder,
-                    enabledBorder: darkBorder,
-                    focusedBorder: darkBorder,
-                    errorText: _addressError,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text('العنوان (اختياري)', style: labelStyle),
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                // الهاتف
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text('رقم الهاتف (اختياري)', style: labelStyle),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    hintText: 'أدخل رقم هاتفك',
-                    border: darkBorder,
-                    enabledBorder: darkBorder,
-                    focusedBorder: darkBorder,
-                    errorText: _phoneError,
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _addressController,
+                    decoration: InputDecoration(
+                      hintText: 'أدخل عنوانك هنا',
+                      border: getBorder(),
+                      enabledBorder: getBorder(),
+                      focusedBorder: getBorder(),
+                      errorText: _addressError,
+                    ),
                   ),
-                  validator: (value) {
-                    if (value != null && value.isNotEmpty && !RegExp(r'^\d{6,15}$').hasMatch(value)) {
-                      return 'الرجاء إدخال رقم هاتف صحيح';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
-                // زر الحفظ
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _updateUserInfo,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.primary,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text('رقم الهاتف (اختياري)', style: labelStyle),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintText: 'أدخل رقم هاتفك',
+                      border: getBorder(),
+                      enabledBorder: getBorder(),
+                      focusedBorder: getBorder(),
+                      errorText: _phoneError,
+                    ),
+                    validator: (value) {
+                      if (value != null && value.isNotEmpty && !RegExp(r'^\d{6,15}$').hasMatch(value)) {
+                        return 'الرجاء إدخال رقم هاتف صحيح';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _updateUserInfo,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        'حفظ ومتابعة',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomePage()),
+                      );
+                    },
                     child: const Text(
-                      'حفظ ومتابعة',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      'تخطي',
+                      style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
                     ),
                   ),
-                ),
-
-                // زر تخطي
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                  },
-                  child: const Text('تخطي'),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
