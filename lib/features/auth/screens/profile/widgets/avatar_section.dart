@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AvatarSection extends StatelessWidget {
@@ -17,27 +18,40 @@ class AvatarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider imageProvider;
+    Widget imageWidget;
 
     if (imageFile != null) {
-      imageProvider = FileImage(imageFile!);
+      imageWidget = CircleAvatar(
+        radius: 50,
+        backgroundImage: FileImage(imageFile!),
+      );
     } else if (hasImage && imageUrl != null && imageUrl!.isNotEmpty) {
-      imageProvider = NetworkImage(imageUrl!);
+      imageWidget = CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey[300],
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: imageUrl!,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+            errorWidget: (context, url, error) => const Icon(Icons.person, size: 60, color: Colors.white),
+          ),
+        ),
+      );
     } else {
-      imageProvider = const AssetImage('assets/assets/default_profile.png');
+      imageWidget = const CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.person, size: 60, color: Colors.white),
+      );
     }
 
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
-        CircleAvatar(
-          radius: 50,
-          backgroundColor: Colors.grey[300],
-          backgroundImage: imageProvider,
-          child: imageProvider is AssetImage
-              ? const Icon(Icons.person, size: 60, color: Colors.white)
-              : null,
-        ),
+        imageWidget,
         CircleAvatar(
           backgroundColor: Colors.white,
           radius: 18,
