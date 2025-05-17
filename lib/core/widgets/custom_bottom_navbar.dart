@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/auth/screens/profile_screen.dart';
+import 'package:matbakhna_mobile/features/auth/screens/profile/profile_screen.dart';
 import 'package:matbakhna_mobile/features/favorites/screens/favorites_screen.dart';
 import 'package:matbakhna_mobile/features/home/screens/home_screen.dart';
 import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
