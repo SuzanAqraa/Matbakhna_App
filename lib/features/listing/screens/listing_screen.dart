@@ -17,7 +17,6 @@ class ListingScreen extends StatelessWidget {
             children: const [
               HomeAppBar(title: 'صفحة التصفح'),
               SizedBox(height: 20),
-              // هنا ضع باقي محتوى الصفحة مثل قائمة الوصفات أو الفلاتر
             ],
           ),
         ),
