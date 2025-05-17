@@ -37,14 +37,7 @@ class MostPopularSection extends StatelessWidget {
             itemBuilder: (context, index) {
               final recipe = recipes[index];
               return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RecipePage(), // must be  RecipePage(recipe: recipe)
-                    ),
-                  );
-                },
+
                 child: SizedBox(
                   width: 200,
                   child: RecipeCard(
