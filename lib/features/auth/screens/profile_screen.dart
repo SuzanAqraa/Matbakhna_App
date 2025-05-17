@@ -44,10 +44,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       radius: 55,
                       backgroundColor: Colors.grey[300],
                       backgroundImage:
-                      hasImage ? const AssetImage('assets/images/profile.png') : null,
-                      child: hasImage
-                          ? null
-                          : const Icon(Icons.person, size: 60, color: Colors.white),
+                          hasImage
+                              ? const AssetImage('assets/images/profile.png')
+                              : null,
+                      child:
+                          hasImage
+                              ? null
+                              : const Icon(
+                                Icons.person,
+                                size: 60,
+                                color: Colors.white,
+                              ),
                     ),
                     CircleAvatar(
                       backgroundColor: Colors.white,
@@ -149,7 +156,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         textAlign: TextAlign.right,
         decoration: InputDecoration(
           labelText: label,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         validator: (value) {
@@ -170,17 +181,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      child: Text(text),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 20,
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
   Widget _buildLogoutButton() {
     return ElevatedButton.icon(
       onPressed: () {
-        //signout logic
+        // signout logic
       },
-      icon: const Icon(Icons.logout),
-      label: const Text('تسجيل خروج'),
+      icon: const Icon(Icons.logout, color: Colors.black),
+      label: const Text(
+        'تسجيل خروج',
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.grey[400],
         padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 14),

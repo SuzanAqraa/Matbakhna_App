@@ -90,10 +90,10 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               const HomeAppBar(title: 'شو بدك تطبخ اليوم؟'),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
               TryTodaySection(recipe: recipes[0]),
               const CookingTipCard(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
               MostPopularSection(recipes: recipes),
               const SizedBox(height: 12),
 

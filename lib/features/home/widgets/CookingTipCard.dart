@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/icon_styles.dart';
+import '../../../core/utils/textfeild_styles.dart';
 
 class CookingTipCard extends StatefulWidget {
   const CookingTipCard({super.key});
@@ -11,7 +14,7 @@ class CookingTipCard extends StatefulWidget {
 
 class _CookingTipCardState extends State<CookingTipCard> {
   final List<String> cookingTips = [
-    'الملح شوي شوي عمهلك وبالتدريج وخصوصاً بالطبخات.',
+    'الملح شوي شوي وخصوصاً بالطبخات.',
     'سخّن المقلاة قبل ما تحط فيها أي شي.',
     'غسل الخضار قبل التقطيع بيحافظ على قيمتها.',
     'ذوّب الزبدة على نار هادية حتى ما تحترق.',
@@ -49,7 +52,7 @@ class _CookingTipCardState extends State<CookingTipCard> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFA5C8A6),
+          color: BrandColors.primaryColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -62,15 +65,18 @@ class _CookingTipCardState extends State<CookingTipCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.lightbulb_outline, color: Colors.white, size: 24),
+            const Icon(
+              Icons.lightbulb_outline,
+              color: Colors.white,
+              size: IconStyle.defaultIconSize,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 cookingTips[currentTipIndex],
-                style: const TextStyle(
+                style: ThemeTextStyle.bodySmallTextFieldStyle.copyWith(
                   color: Colors.white,
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w500,
+
                 ),
               ),
             ),
