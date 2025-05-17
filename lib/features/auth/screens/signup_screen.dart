@@ -20,19 +20,22 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
   String? _emailError;
   String? _passwordError;
 
-  void _showSuccessSnackbar(String message) {
-    final colors = Theme.of(context).colorScheme;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: colors.primary,
-        duration: const Duration(seconds: 5),
-      ),
-    );
-  }
+  // الألوان
+  static const backgroundColor = Color(0xFFFDF5EC);
+  static const formBackgroundColor = Color(0xFFFFF8F0);
+  static const primaryColor = Color(0xFFB85C2E);
+  static const textColor = Colors.black;
+
+  InputBorder _border() => OutlineInputBorder(
+    borderRadius: BorderRadius.circular(18),
+    borderSide: const BorderSide(color: Colors.black, width: 2),
+  );
+
+  TextStyle get _labelStyle => const TextStyle(
+    fontSize: 18,
+    color: textColor,
+    fontWeight: FontWeight.bold,
+  );
 
   Future<void> _registerUser() async {
     setState(() {
@@ -40,183 +43,187 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
       _passwordError = null;
     });
 
-    if (_formKey.currentState!.validate()) {
-      try {
-        // إنشاء الحساب
-        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+    if (!_formKey.currentState!.validate()) return;
 
-        final email = _emailController.text.trim();
-        final username = email.split('@')[0];
-        await credential.user?.sendEmailVerification();
-        await FirebaseFirestore.instance.collection('users').doc(credential.user?.uid).set({
-          'email': email,
-          'username': username,
-        });
+    try {
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SignUpStepTwoPage(userId: credential.user?.uid),
-          ),
-        );
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          if (e.code == 'email-already-in-use') {
-            _emailError = 'هذا البريد مستخدم بالفعل';
-          } else if (e.code == 'weak-password') {
-            _passwordError = 'كلمة السر ضعيفة';
-          } else if (e.code == 'invalid-email') {
-            _emailError = 'صيغة البريد الإلكتروني غير صحيحة';
-          } else {
-            _emailError = 'حدث خطأ: ${e.message}';
-          }
-        });
-      }
+      final email = _emailController.text.trim();
+      final username = email.split('@')[0];
+
+      await credential.user?.sendEmailVerification();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user?.uid)
+          .set({'email': email, 'username': username});
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => SignUpStepTwoPage(userId: credential.user?.uid)),
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        if (e.code == 'email-already-in-use') {
+          _emailError = 'هذا البريد مستخدم بالفعل';
+        } else if (e.code == 'weak-password') {
+          _passwordError = 'كلمة السر ضعيفة';
+        } else if (e.code == 'invalid-email') {
+          _emailError = 'صيغة البريد الإلكتروني غير صحيحة';
+        } else {
+          _emailError = 'حدث خطأ: ${e.message}';
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final darkBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(18),
-      borderSide: BorderSide(color: colors.onPrimary, width: 1.5),
-    );
-
-    TextStyle labelStyle = TextStyle(
-      fontSize: 20,
-      color: colors.onPrimary,
-      fontWeight: FontWeight.bold,
-    );
-
     return Scaffold(
-      backgroundColor: colors.background,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
+      backgroundColor: backgroundColor,
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                Text(
-                  'إنشاء حساب جديد',
+                const SizedBox(height: 16),
+
+                // اسم التطبيق بالأعلى
+                const Text(
+                  'مطبخنا',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: colors.onPrimary,
+                    color: primaryColor,
+                    fontFamily: 'Cairo',
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 28),
 
-                // البريد الإلكتروني (إلزامي)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text('البريد الإلكتروني *', style: labelStyle),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: 'example@email.com',
-                    border: darkBorder,
-                    enabledBorder: darkBorder,
-                    focusedBorder: darkBorder,
-                    errorText: _emailError,
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'الرجاء إدخال البريد الإلكتروني';
-                    }
-                    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                    if (!emailRegex.hasMatch(value)) {
-                      return 'صيغة البريد الإلكتروني غير صحيحة';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // كلمة السر (إلزامي)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text('كلمة السر *', style: labelStyle),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    hintText: '********',
-                    border: darkBorder,
-                    enabledBorder: darkBorder,
-                    focusedBorder: darkBorder,
-                    errorText: _passwordError,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'الرجاء إدخال كلمة السر';
-                    }
-                    if (value.length < 6) {
-                      return 'كلمة السر يجب أن تكون على الأقل 6 أحرف';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // تأكيد كلمة السر (إلزامي)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text('تأكيد كلمة السر *', style: labelStyle),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    hintText: '********',
-                    border: darkBorder,
-                    enabledBorder: darkBorder,
-                    focusedBorder: darkBorder,
-                  ),
-                  validator: (value) {
-                    if (value != _passwordController.text) {
-                      return 'كلمتا السر غير متطابقتين';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                SizedBox(
+                // ◀︎ الفورم داخل حاوية ذات بوردر
+                Container(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _registerUser,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.primary,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'التالي',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: formBackgroundColor,
+                    border: Border.all(color: Colors.black, width: 2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        // ◀︎ لوجو داخل الفورم
+                        const CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.image_outlined, size: 45, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 24),
+
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text('البريد الإلكتروني *', style: _labelStyle),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            hintText: 'example@email.com',
+                            border: _border(),
+                            enabledBorder: _border(),
+                            focusedBorder: _border(),
+                            errorText: _emailError,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرجاء إدخال البريد الإلكتروني';
+                            }
+                            final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                            if (!emailRegex.hasMatch(value)) {
+                              return 'صيغة البريد الإلكتروني غير صحيحة';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text('كلمة السر *', style: _labelStyle),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            hintText: '********',
+                            border: _border(),
+                            enabledBorder: _border(),
+                            focusedBorder: _border(),
+                            errorText: _passwordError,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.grey[700],
+                              ),
+                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'الرجاء إدخال كلمة السر';
+                            }
+                            if (value.length < 6) {
+                              return 'كلمة السر يجب أن تكون على الأقل 6 أحرف';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text('تأكيد كلمة السر *', style: _labelStyle),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            hintText: '********',
+                            border: _border(),
+                            enabledBorder: _border(),
+                            focusedBorder: _border(),
+                          ),
+                          validator: (value) {
+                            if (value != _passwordController.text) {
+                              return 'كلمتا السر غير متطابقتين';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 28),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _registerUser,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                            child: const Text('التالي', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
