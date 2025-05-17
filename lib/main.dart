@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'features/auth/screens/signup_screen.dart';
 import 'features/home/screens/home_screen.dart';
 
 
@@ -18,7 +17,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Smart Recipe App',
-      home: const SignUpStepOnePage(),
+      builder: (context, child) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: child!,
+        );
+      },
+      home: const HomePage(),
     );
   }
 }
