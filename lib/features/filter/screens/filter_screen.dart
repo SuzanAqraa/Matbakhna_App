@@ -124,7 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   max: 10,
                   divisions: 9,
                   label: difficulty.round().toString(),
-                  activeColor: const Color(0xFFA5C8A6),
+                  activeColor: Colors.orange,
                   onChanged: (value) {
                     setState(() {
                       difficulty = value;
