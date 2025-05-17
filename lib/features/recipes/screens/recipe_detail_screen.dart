@@ -127,7 +127,7 @@ class _RecipePageState extends State<RecipePage> {
                   children: [
                     Column(
                       children: [
-                        const Icon(Icons.group_outlined, color: Colors.black),
+                        const Icon(Icons.group_outlined, color: Colors.black, size: 24),
                         Text(serving.isNotEmpty ? serving : '...', style: const TextStyle(fontSize: 16)),
                       ],
                     ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/textfeild_styles.dart';
+
 
 class TryTodaySection extends StatelessWidget {
   final Map<String, String> recipe;
@@ -15,7 +18,7 @@ class TryTodaySection extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => RecipePage() // must be  RecipePage(recipe: recipe)
+              builder: (context) => RecipePage() //RecipePage(recipe: recipe),
             ),
           );
         },
@@ -23,7 +26,7 @@ class TryTodaySection extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 20),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFE8DCCF),
+            color: BrandColors.secondaryBackgroundColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -39,8 +42,8 @@ class TryTodaySection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
                   recipe['imageUrl']!,
-                  width: 110,
-                  height: 110,
+                  width: 130,
+                  height: 130,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -49,21 +52,19 @@ class TryTodaySection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'جرب اليوم',
-                      style: TextStyle(
-                        fontSize: 16,
+                      style: ThemeTextStyle.interActionTextFieldStyle.copyWith(
+                        color: BrandColors.secondaryColor,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFE56B50),
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       recipe['title']!,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF3D3D3D),
+                      style: ThemeTextStyle.titleTextFieldStyle.copyWith(
+                        fontSize: 24,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -71,10 +72,7 @@ class TryTodaySection extends StatelessWidget {
                       recipe['description']!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF707070),
-                      ),
+                      style: ThemeTextStyle.bodySmallTextFieldStyle,
                     ),
                   ],
                 ),
