@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/core/widgets/custom_widgets.dart';
-
-import '../../../core/widgets/SimpleAppBar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
+import '../../../core/widgets/SimpleAppBar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -13,110 +11,122 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+
+  String name = 'دانا مرجان';
+  String email = 'dana.morgan196@gmail.com';
+  String password = '123456';
+  String address = 'بديا - شارع المدارس';
+  String phone = '0599999999';
 
   bool isEditing = false;
   bool hasImage = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFDF6EC),
-      appBar: const CustomAppBar(
-        title: 'الملف الشخصي',
-        showBackButton: false,  // زر الرجوع مخفي
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Stack(
-              alignment: Alignment.bottomRight,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFDF6EC),
+        appBar: const CustomAppBar(
+          title: 'الملف الشخصي',
+          showBackButton: false,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+          child: Form(
+            key: _formKey,
+            child: Column(
               children: [
-                CircleAvatar(
-                  radius: 55,
-                  backgroundColor: Colors.grey[300],
-                  backgroundImage:
-                  hasImage ? const AssetImage('assets/images/profile.png') : null,
-                  child: hasImage
-                      ? null
-                      : const Icon(Icons.person, size: 60, color: Colors.white),
-                ),
-                CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 18,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.edit, size: 18),
-                    onPressed: () {
-                      setState(() {
-                        hasImage = !hasImage;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Form(
-                key: _formKey,
-                child: Column(
+                Stack(
+                  alignment: Alignment.bottomRight,
                   children: [
-                    _buildFormField(
-                      controller: nameController,
-                      label: 'الاسم الأول',
-                      enabled: isEditing,
+                    CircleAvatar(
+                      radius: 55,
+                      backgroundColor: Colors.grey[300],
+                      backgroundImage:
+                      hasImage ? const AssetImage('assets/images/profile.png') : null,
+                      child: hasImage
+                          ? null
+                          : const Icon(Icons.person, size: 60, color: Colors.white),
                     ),
-                    _buildFormField(
-                      controller: emailController,
-                      label: 'بريدك الالكتروني',
-                      enabled: isEditing,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    _buildFormField(
-                      controller: passwordController,
-                      label: 'كلمة السر',
-                      enabled: isEditing,
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildActionButton('تعديل', Colors.grey[400]!, () {
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 18,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.edit, size: 18),
+                        onPressed: () {
                           setState(() {
-                            isEditing = !isEditing;
+                            hasImage = !hasImage;
                           });
-                        }),
-                        const SizedBox(width: 15),
-                        _buildActionButton('حفظ', const Color(0xFFA5C8A6), () {
-                          if (_formKey.currentState!.validate()) {
-                          }
-                        }),
-                      ],
+                        },
+                      ),
                     ),
-                    const SizedBox(height: 30),
-                    _buildLogoutButton(),
-                    const SizedBox(height: 30),
                   ],
                 ),
-              ),
+                const SizedBox(height: 20),
+                _buildFormField(
+                  initialValue: name,
+                  label: 'الاسم الكامل',
+                  enabled: isEditing,
+                ),
+                _buildFormField(
+                  initialValue: email,
+                  label: 'البريد الإلكتروني',
+                  enabled: isEditing,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                _buildFormField(
+                  initialValue: password,
+                  label: 'كلمة السر',
+                  enabled: isEditing,
+                  obscureText: true,
+                ),
+                _buildFormField(
+                  initialValue: address,
+                  label: 'العنوان',
+                  enabled: isEditing,
+                ),
+                _buildFormField(
+                  initialValue: phone,
+                  label: 'رقم الهاتف',
+                  enabled: isEditing,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildActionButton('تعديل', Colors.grey[400]!, () {
+                      setState(() {
+                        isEditing = !isEditing;
+                      });
+                    }),
+                    const SizedBox(width: 15),
+                    _buildActionButton('حفظ', const Color(0xFFA5C8A6), () {
+                      if (_formKey.currentState!.validate()) {
+                        // save data
+                        setState(() {
+                          isEditing = false;
+                        });
+                      }
+                    }),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                _buildLogoutButton(),
+                const SizedBox(height: 30),
+              ],
             ),
-          ],
+          ),
         ),
+        bottomNavigationBar: const CustomBottomNavbar(currentIndex: 0),
       ),
-      bottomNavigationBar: CustomBottomNavbar(currentIndex: 0),
     );
   }
 
-
-
   Widget _buildFormField({
-    required TextEditingController controller,
+    required String initialValue,
     required String label,
     bool enabled = true,
     bool obscureText = false,
@@ -132,10 +142,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       child: TextFormField(
-        controller: controller,
+        initialValue: initialValue,
         enabled: enabled,
         obscureText: obscureText,
         keyboardType: keyboardType,
+        textAlign: TextAlign.right,
         decoration: InputDecoration(
           labelText: label,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -166,6 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildLogoutButton() {
     return ElevatedButton.icon(
       onPressed: () {
+        //signout logic
       },
       icon: const Icon(Icons.logout),
       label: const Text('تسجيل خروج'),

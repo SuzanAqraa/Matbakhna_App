@@ -8,13 +8,17 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFDF5EC),
-      appBar: const CustomAppBar(
-        title: 'الوصفات المفضلة',
-        showBackButton: false,
-      ),      body: const Center(child: Text('الوصفات المفضلة ستكون هنا')),
-      bottomNavigationBar: const CustomBottomNavbar(currentIndex: 2),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFFDF5EC),
+        appBar: const CustomAppBar(
+          title: 'الوصفات المفضلة',
+          showBackButton: false,
+        ),
+        body: const Center(child: Text('الوصفات المفضلة ستكون هنا')),
+        bottomNavigationBar: const CustomBottomNavbar(currentIndex: 2),
+      ),
     );
   }
 }
