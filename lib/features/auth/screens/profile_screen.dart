@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/textfeild_styles.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
 import '../../../core/widgets/SimpleAppBar.dart';
 
@@ -18,7 +20,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String address = 'بديا - شارع المدارس';
   String phone = '0599999999';
 
-  bool isEditing = false;
   bool hasImage = false;
 
   @override
@@ -26,13 +27,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFFDF6EC),
+        backgroundColor: BrandColors.backgroundColor,
         appBar: const CustomAppBar(
           title: 'الملف الشخصي',
           showBackButton: false,
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child: Form(
             key: _formKey,
             child: Column(
@@ -41,11 +42,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   alignment: Alignment.bottomRight,
                   children: [
                     CircleAvatar(
-                      radius: 55,
+                      radius: 50,
                       backgroundColor: Colors.grey[300],
                       backgroundImage:
                           hasImage
-                              ? const AssetImage('assets/images/profile.png')
+                              ? const AssetImage('assets/assets/profile.png')
                               : null,
                       child:
                           hasImage
@@ -71,58 +72,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                _buildFormField(
-                  initialValue: name,
-                  label: 'الاسم الكامل',
-                  enabled: isEditing,
-                ),
+                const SizedBox(height: 12),
+                _buildFormField(initialValue: name, label: 'الاسم الكامل'),
                 _buildFormField(
                   initialValue: email,
                   label: 'البريد الإلكتروني',
-                  enabled: isEditing,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 _buildFormField(
                   initialValue: password,
                   label: 'كلمة السر',
-                  enabled: isEditing,
                   obscureText: true,
                 ),
-                _buildFormField(
-                  initialValue: address,
-                  label: 'العنوان',
-                  enabled: isEditing,
-                ),
+                _buildFormField(initialValue: address, label: 'العنوان'),
                 _buildFormField(
                   initialValue: phone,
                   label: 'رقم الهاتف',
-                  enabled: isEditing,
                   keyboardType: TextInputType.phone,
                 ),
+                const SizedBox(height: 15),
+                _buildActionButton('حفظ', BrandColors.primaryColor, () {
+                  if (_formKey.currentState!.validate()) {
+                    // Save logic
+                  }
+                }),
                 const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildActionButton('تعديل', Colors.grey[400]!, () {
-                      setState(() {
-                        isEditing = !isEditing;
-                      });
-                    }),
-                    const SizedBox(width: 15),
-                    _buildActionButton('حفظ', const Color(0xFFA5C8A6), () {
-                      if (_formKey.currentState!.validate()) {
-                        // save data
-                        setState(() {
-                          isEditing = false;
-                        });
-                      }
-                    }),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                _buildLogoutButton(),
-                const SizedBox(height: 30),
+                _buildLogoutText(),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -135,33 +111,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildFormField({
     required String initialValue,
     required String label,
-    bool enabled = true,
     bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextFormField(
         initialValue: initialValue,
-        enabled: enabled,
         obscureText: obscureText,
         keyboardType: keyboardType,
         textAlign: TextAlign.right,
+        style: ThemeTextStyle.bodySmallTextFieldStyle,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          labelStyle: ThemeTextStyle.recipeNameTextFieldStyle,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
+            horizontal: 0,
             vertical: 14,
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          border: const UnderlineInputBorder(),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -183,33 +151,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 20,
+        style: ThemeTextStyle.ButtonTextFieldStyle.copyWith(
           color: Colors.black,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
-  Widget _buildLogoutButton() {
-    return ElevatedButton.icon(
-      onPressed: () {
+  Widget _buildLogoutText() {
+    return InkWell(
+      onTap: () {
         // signout logic
       },
-      icon: const Icon(Icons.logout, color: Colors.black),
-      label: const Text(
-        'تسجيل خروج',
-        style: TextStyle(
-          fontSize: 20,
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.grey[400],
-        padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.logout, size: 20, color: Colors.redAccent),
+          const SizedBox(width: 8),
+          Text(
+            'تسجيل الخروج',
+            style: ThemeTextStyle.ButtonTextFieldStyle.copyWith(
+              color: Colors.redAccent,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
