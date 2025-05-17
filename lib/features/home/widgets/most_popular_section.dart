@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/features/home/widgets/card.dart';
 import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
+import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
 
 class MostPopularSection extends StatelessWidget {
   final List<Map<String, String>> recipes;
@@ -35,13 +36,23 @@ class MostPopularSection extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final recipe = recipes[index];
-              return SizedBox(
-                width: 200,
-                child: RecipeCard(
-                  imageUrl: recipe['imageUrl']!,
-                  title: recipe['title']!,
-                  description: recipe['description']!,
-                  time: recipe['time']!,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RecipePage(), // must be  RecipePage(recipe: recipe)
+                    ),
+                  );
+                },
+                child: SizedBox(
+                  width: 200,
+                  child: RecipeCard(
+                    imageUrl: recipe['imageUrl']!,
+                    title: recipe['title']!,
+                    description: recipe['description']!,
+                    time: recipe['time']!,
+                  ),
                 ),
               );
             },
