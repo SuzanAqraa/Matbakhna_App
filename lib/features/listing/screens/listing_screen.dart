@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/PrimaryAppBar.dart';
+
 class ListingScreen extends StatelessWidget {
   const ListingScreen({Key? key}) : super(key: key);
 
@@ -7,14 +9,17 @@ class ListingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDF5EC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFA5C8A6),
-        title: const Text('صفحة التصفح'),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Center(
-
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: SingleChildScrollView(
+          child: Column(
+            children: const [
+              HomeAppBar(title: 'صفحة التصفح'),
+              SizedBox(height: 20),
+              // هنا ضع باقي محتوى الصفحة مثل قائمة الوصفات أو الفلاتر
+            ],
+          ),
+        ),
       ),
     );
   }

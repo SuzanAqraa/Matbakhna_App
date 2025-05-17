@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-//import 'package:matbakhna_mobile/features/home/screens/home_screen.dart
 
-import 'features/recipes/screens/recipe_detail_screen.dart';
+import 'features/home/screens/home_screen.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Smart Recipe App',
-      home: const RecipePage(),
+      home: const HomePage(),
     );
   }
 }
