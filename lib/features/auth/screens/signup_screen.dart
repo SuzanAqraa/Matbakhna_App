@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/textfeild_styles.dart';
 import 'SignUpStepTwoPage.dart';
 
 class SignUpStepOnePage extends StatefulWidget {
@@ -20,22 +22,12 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
   String? _emailError;
   String? _passwordError;
 
-  // الألوان
-  static const backgroundColor = Color(0xFFFDF5EC);
-  static const formBackgroundColor = Color(0xFFFFF8F0);
-  static const primaryColor = Color(0xFFB85C2E);
-  static const textColor = Colors.black;
-
   InputBorder _border() => OutlineInputBorder(
     borderRadius: BorderRadius.circular(18),
     borderSide: const BorderSide(color: Colors.black, width: 2),
   );
 
-  TextStyle get _labelStyle => const TextStyle(
-    fontSize: 18,
-    color: textColor,
-    fontWeight: FontWeight.bold,
-  );
+  TextStyle get _labelStyle => ThemeTextStyle.recipeNameTextFieldStyle;
 
   Future<void> _registerUser() async {
     setState(() {
@@ -46,10 +38,11 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
     if (!_formKey.currentState!.validate()) return;
 
     try {
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
 
       final email = _emailController.text.trim();
       final username = email.split('@')[0];
@@ -62,7 +55,9 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => SignUpStepTwoPage(userId: credential.user?.uid)),
+        MaterialPageRoute(
+          builder: (_) => SignUpStepTwoPage(userId: credential.user?.uid),
+        ),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -82,7 +77,7 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: BrandColors.backgroundColor,
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: Center(
@@ -92,24 +87,22 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
               children: [
                 const SizedBox(height: 16),
 
-                // اسم التطبيق بالأعلى
                 const Text(
                   'مطبخنا',
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: primaryColor,
+                    color: BrandColors.secondaryColor,
                     fontFamily: 'Cairo',
                   ),
                 ),
                 const SizedBox(height: 28),
 
-                // ◀︎ الفورم داخل حاوية ذات بوردر
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: formBackgroundColor,
+                    color: BrandColors.backgroundColor,
                     border: Border.all(color: Colors.black, width: 2),
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -117,17 +110,23 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        // ◀︎ لوجو داخل الفورم
                         const CircleAvatar(
                           radius: 60,
                           backgroundColor: Colors.white,
-                          child: Icon(Icons.image_outlined, size: 45, color: Colors.grey),
+                          child: Icon(
+                            Icons.image_outlined,
+                            size: 45,
+                            color: Colors.grey,
+                          ),
                         ),
                         const SizedBox(height: 24),
 
                         Align(
                           alignment: Alignment.centerRight,
-                          child: Text('البريد الإلكتروني *', style: _labelStyle),
+                          child: Text(
+                            'البريد الإلكتروني *',
+                            style: _labelStyle,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         TextFormField(
@@ -144,7 +143,9 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
                             if (value == null || value.isEmpty) {
                               return 'الرجاء إدخال البريد الإلكتروني';
                             }
-                            final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                            final emailRegex = RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            );
                             if (!emailRegex.hasMatch(value)) {
                               return 'صيغة البريد الإلكتروني غير صحيحة';
                             }
@@ -169,10 +170,15 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
                             errorText: _passwordError,
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                _obscurePassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                                 color: Colors.grey[700],
                               ),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              onPressed:
+                                  () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
                             ),
                           ),
                           validator: (value) {
@@ -215,12 +221,17 @@ class _SignUpStepOnePageState extends State<SignUpStepOnePage> {
                           child: ElevatedButton(
                             onPressed: _registerUser,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
+                              backgroundColor: BrandColors.secondaryColor,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
-                            child: const Text('التالي', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            child: Text(
+                              'التالي',
+                              style: ThemeTextStyle.ButtonTextFieldStyle,
+                            ),
                           ),
                         ),
                       ],
