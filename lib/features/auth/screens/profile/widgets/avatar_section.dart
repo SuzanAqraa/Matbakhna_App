@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AvatarSection extends StatelessWidget {
   final bool hasImage;
@@ -16,42 +16,62 @@ class AvatarSection extends StatelessWidget {
     this.imageFile,
   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    Widget imageWidget;
-
-    if (imageFile != null) {
-      imageWidget = CircleAvatar(
-        radius: 50,
-        backgroundImage: FileImage(imageFile!),
-      );
-    } else if (hasImage && imageUrl != null && imageUrl!.isNotEmpty) {
-      imageWidget = CircleAvatar(
-        radius: 50,
-        backgroundColor: Colors.grey[300],
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: imageUrl!,
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) => const Icon(Icons.person, size: 60, color: Colors.white),
+  void _showImageDialog(BuildContext context, ImageProvider imageProvider) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: InteractiveViewer(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.6,
+            ),
           ),
         ),
-      );
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ImageProvider imageProvider;
+
+    if (imageFile != null) {
+      imageProvider = FileImage(imageFile!);
+    } else if (hasImage && imageUrl != null && imageUrl!.isNotEmpty) {
+      imageProvider = CachedNetworkImageProvider(imageUrl!);
     } else {
-      imageWidget = const CircleAvatar(
-        radius: 50,
-        backgroundColor: Colors.grey,
-        child: Icon(Icons.person, size: 60, color: Colors.white),
-      );
+      imageProvider = const AssetImage('assets/assets/default_profile.png');
     }
 
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
-        imageWidget,
+        GestureDetector(
+          onTap: () {
+            if (imageFile != null || (imageUrl != null && imageUrl!.isNotEmpty)) {
+              _showImageDialog(context, imageProvider);
+            } else {
+              onEditPressed();
+            }
+          },
+          child: CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.grey[300],
+            backgroundImage: imageProvider,
+            child: imageProvider is AssetImage
+                ? const Icon(Icons.person, size: 60, color: Colors.white)
+                : null,
+          ),
+        ),
         CircleAvatar(
           backgroundColor: Colors.white,
           radius: 18,
