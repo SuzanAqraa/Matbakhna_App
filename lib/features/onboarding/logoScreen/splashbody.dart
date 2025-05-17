@@ -14,7 +14,7 @@ class SplashBody extends StatelessWidget{
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: AssetImage("assets/images/slashapp.png"),
+                  image: AssetImage("assets/images/logo.png"),
                 ),
               ),
             ),

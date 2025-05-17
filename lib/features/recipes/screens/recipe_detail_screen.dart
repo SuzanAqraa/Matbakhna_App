@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class RecipePage extends StatefulWidget {
@@ -33,11 +32,11 @@ class _RecipePageState extends State<RecipePage> {
       ),
     );
     checked = [];
-    fetchDataFromFirestore();
+    //fetchDataFromFirestore();
   }
 
-  Future<void> fetchDataFromFirestore() async {
-    final doc = await FirebaseFirestore.instance
+ /* Future<void> fetchDataFromFirestore() async {
+    //final doc = await FirebaseFirestore.instance
         .collection('Recipe')
         .doc('NmwFF7m2kbzF1pjoerNc')
         .get();
@@ -62,7 +61,7 @@ class _RecipePageState extends State<RecipePage> {
     } else {
       print("Document does not exist");
     }
-  }
+  }*/
 
   @override
   void dispose() {

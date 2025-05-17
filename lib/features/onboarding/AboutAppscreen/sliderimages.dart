@@ -8,12 +8,13 @@ class ImagesWidget extends StatefulWidget {
 }
 
 class _ImagesWidgetState extends State<ImagesWidget> {
-  final List<String> imagesList = [
-    'assets/images/imageview1.jpg',
-    'assets/images/imagereview2.jpg',
-    'assets/images/imagereview3.jpg',
-  ];
 
+  final List<String> imagesList = [
+   'assets/images/cake.jpg',
+    'assets/images/image1.jpg',
+    'assets/images/image2.jpg',
+    'assets/images/imgas3.jpg',
+    ];
   int _currentIndex = 0;
   late final PageController _pageController;
 
@@ -25,13 +26,14 @@ class _ImagesWidgetState extends State<ImagesWidget> {
   }
 
   void _startAutoPlay() {
-    Future.delayed(const Duration(seconds: 8), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
       int nextPage = (_currentIndex + 1) % imagesList.length;
       _pageController.animateToPage(
         nextPage,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
+
       );
       setState(() {
         _currentIndex = nextPage;
@@ -67,7 +69,7 @@ class _ImagesWidgetState extends State<ImagesWidget> {
                 padding: const EdgeInsets.all(15.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(25.0),
-                  child: Image.asset(
+                  child: Image.asset( // استخدم Image.network بدلاً من Image.asset لأن الصور من الإنترنت
                     imagesList[index],
                     fit: BoxFit.cover,
                     width: 400,
@@ -80,7 +82,10 @@ class _ImagesWidgetState extends State<ImagesWidget> {
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: imagesList.asMap().entries.map((entry) {
+          children: imagesList
+              .asMap()
+              .entries
+              .map((entry) {
             return Container(
               width: 10.0,
               height: 10.0,
@@ -94,7 +99,53 @@ class _ImagesWidgetState extends State<ImagesWidget> {
             );
           }).toList(),
         ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Text(
+            "مطبخنا",
+            style: TextStyle(
+              fontSize: 45,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF33363F),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Text(
+              "يقدم وصفات أكل متنوعة وشهية بتعليمات دقيقة وصور جذابة. يتميز ببحث ذكي ونصائح مفيدة، مما يجعله رفيقًا مثاليًا لكل مستويات الطهاة.",
+              textAlign: TextAlign.justify,
+              softWrap: true,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF33363F),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Color(0xFFA5C8A6),
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 125),
+              textStyle: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, fontFamily: 'Tajawal'),
+              foregroundColor: Color(0xFF33363F),
+            ),
+            onPressed: () {},
+            child: const Text("اكتشف معنا"),
+          ),
+        ),
+
       ],
     );
   }
+
+
+
 }
