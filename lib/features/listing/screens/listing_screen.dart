@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widgets/PrimaryAppBar.dart';
+import '../../../core/widgets/custom_bottom_navbar.dart';
 
 class ListingScreen extends StatelessWidget {
   const ListingScreen({Key? key}) : super(key: key);
@@ -21,6 +22,8 @@ class ListingScreen extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: CustomBottomNavbar(currentIndex: 3),
+
     );
   }
 }

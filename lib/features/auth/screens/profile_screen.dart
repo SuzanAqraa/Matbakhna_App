@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_widgets.dart';
 
+import '../../../core/widgets/custom_bottom_navbar.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
@@ -109,16 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavbar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 2) {
-            Navigator.pushNamed(context, '/favorites');
-          } else if (index == 1) {
-            Navigator.pushNamed(context, '/home');
-          }
-        },
-      ),
+      bottomNavigationBar: CustomBottomNavbar(currentIndex: 0),
     );
   }
 

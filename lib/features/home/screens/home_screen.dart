@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/core/widgets/custom_widgets.dart';
 import '../../../core/widgets/PrimaryAppBar.dart';
+import '../../../core/widgets/custom_bottom_navbar.dart';
 import '../widgets/CookingTipCard.dart';
 import '../widgets/TryTodaySection.dart';
 import '../widgets/most_popular_section.dart';
@@ -101,16 +101,9 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavbar(
-        currentIndex: 1,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushNamed(context, '/profile');
-          } else if (index == 2) {
-            Navigator.pushNamed(context, '/favorites');
-          }
-        },
-      ),
+      bottomNavigationBar: CustomBottomNavbar(currentIndex: 1),
+
+
     );
   }
 }
