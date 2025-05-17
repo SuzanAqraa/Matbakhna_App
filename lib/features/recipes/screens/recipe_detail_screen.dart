@@ -20,6 +20,8 @@ class _RecipePageState extends State<RecipePage> {
   String duration = '';
   String serving = '';
 
+  final Color headerColor = const Color(0xFFE56B50);
+
   @override
   void initState() {
     super.initState();
@@ -71,71 +73,71 @@ class _RecipePageState extends State<RecipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: const Color(0xFFFFFFFF),
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
           child: Column(
             children: [
               Container(
-                height: 180,
+                height: 140,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(100),
-                    bottomRight: Radius.circular(100),
-                  ),
-                ),
-                padding: const EdgeInsets.only(top: 40, right: 24, left: 24),
-                child: Stack(
+                color: headerColor,
+                padding: const EdgeInsets.only(top: 40, right: 16, left: 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Align(
-                      alignment: Alignment.center,
+                    // زر الرجوع
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFAECD9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.black),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    Expanded(
                       child: Text(
                         title.isNotEmpty ? title : 'جاري التحميل...',
-                        style: TextStyle(
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: Colors.white,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.black),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ),
-                    ),
+
+                    const SizedBox(width: 48),
                   ],
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'فيديو التحضير',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: const [
                           BoxShadow(
@@ -155,32 +157,42 @@ class _RecipePageState extends State<RecipePage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: const [
-                        Icon(Icons.group, color: Colors.black),
-                        Icon(Icons.star, color: Colors.black),
-                        Icon(Icons.access_time, color: Colors.black),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                    // الآيقونات الفارغة (Outlined Icons) مع النصوص تحت كل أيقونة
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(serving.isNotEmpty ? serving : '...', style: const TextStyle(fontSize: 16)),
-                        Text(difficulty.isNotEmpty ? difficulty : '...', style: const TextStyle(fontSize: 16)),
-                        Text(duration.isNotEmpty ? duration : '...', style: const TextStyle(fontSize: 16)),
+                        Column(
+                          children: [
+                            const Icon(Icons.group_outlined, color: Colors.black),
+                            Text(serving.isNotEmpty ? serving : '...', style: const TextStyle(fontSize: 16)),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            const Icon(Icons.star_outline, color: Colors.black),
+                            Transform.translate(
+                              offset: const Offset(5, 0), // تحريك النص 5 بكسل يمين فقط
+                              child: Text(difficulty.isNotEmpty ? difficulty : '...', style: const TextStyle(fontSize: 16)),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            const Icon(Icons.access_time_outlined, color: Colors.black),
+                            Text(duration.isNotEmpty ? duration : '...', style: const TextStyle(fontSize: 16)),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Align(
+                    const Align(
                       alignment: Alignment.centerRight,
                       child: Text(
                         'المكونات',
                         style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -188,9 +200,9 @@ class _RecipePageState extends State<RecipePage> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Theme.of(context).colorScheme.onPrimary),
+                        border: Border.all(color: Colors.black),
                         borderRadius: BorderRadius.circular(8),
-                        color: Theme.of(context).colorScheme.background,
+                        color: Colors.white,
                       ),
                       child: ingredients.isEmpty
                           ? const Center(child: CircularProgressIndicator())
@@ -198,39 +210,38 @@ class _RecipePageState extends State<RecipePage> {
                         children: ingredients.asMap().entries.map((entry) {
                           final index = entry.key;
                           final item = entry.value;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: CheckboxListTile(
-                              title: Text(
-                                item,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Theme.of(context).colorScheme.onPrimary,
-                                ),
+                          return CheckboxListTile(
+                            title: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
                               ),
-                              value: checked[index],
-                              activeColor: Theme.of(context).colorScheme.onPrimary,
-                              onChanged: (value) {
-                                setState(() {
-                                  checked[index] = value ?? false;
-                                });
-                              },
-                              controlAffinity: ListTileControlAffinity.leading,
-                              contentPadding: EdgeInsets.zero,
                             ),
+                            value: checked[index],
+                            activeColor: headerColor,
+                            checkColor: Colors.white,
+                            onChanged: (value) {
+                              setState(() {
+                                checked[index] = value ?? false;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                            contentPadding: EdgeInsets.zero,
+                            visualDensity: const VisualDensity(vertical: -2),
                           );
                         }).toList(),
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Align(
+                    const Align(
                       alignment: Alignment.centerRight,
                       child: Text(
                         'الخطوات',
                         style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -243,15 +254,16 @@ class _RecipePageState extends State<RecipePage> {
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: const Color(0xFFEFE6DD),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const SizedBox(width: 28),
                               CircleAvatar(
                                 radius: 14,
-                                backgroundColor: Theme.of(context).colorScheme.secondary,
+                                backgroundColor: headerColor,
                                 child: Text(
                                   '${entry.key + 1}',
                                   style: const TextStyle(color: Colors.white, fontSize: 14),
@@ -261,9 +273,9 @@ class _RecipePageState extends State<RecipePage> {
                               Expanded(
                                 child: Text(
                                   entry.value,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
-                                    color: Theme.of(context).colorScheme.onPrimary,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
