@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/textfeild_styles.dart';
 
-
 class TryTodaySection extends StatelessWidget {
-  final Map<String, String> recipe;
+  final Map<String, dynamic> recipe;
 
   const TryTodaySection({super.key, required this.recipe});
 
@@ -14,14 +12,7 @@ class TryTodaySection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RecipePage() //RecipePage(recipe: recipe),
-            ),
-          );
-        },
+        onTap: null,
         child: Container(
           margin: const EdgeInsets.only(bottom: 20),
           padding: const EdgeInsets.all(16),
