@@ -40,13 +40,13 @@ class RecipeCard extends StatelessWidget {
       height: 250,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+        clipBehavior: Clip.hardEdge,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onTap: () => _goToRecipeDetailPage(context),
+              onTap: null,
               child: Container(
                 decoration: BoxDecoration(
                   color: BrandColors.backgroundColor,
@@ -57,6 +57,7 @@ class RecipeCard extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Stack(
                       children: [
@@ -76,14 +77,18 @@ class RecipeCard extends StatelessWidget {
                           top: 8,
                           left: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
                             decoration: BoxDecoration(
                               color: BrandColors.secondaryColor,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               time,
-                              style: ThemeTextStyle.interActionTextFieldStyle.copyWith(color: Colors.white)
+                              style: ThemeTextStyle.interActionTextFieldStyle
+                                  .copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -105,6 +110,7 @@ class RecipeCard extends StatelessWidget {
                       child: SizedBox(
                         height: 65,
                         child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
                           child: Text(
                             description,
                             style: ThemeTextStyle.bodySmallTextFieldStyle,
@@ -136,14 +142,17 @@ class RecipeCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.favorite_border,
-                            size: IconStyle.smallIconSize,
-                            color: IconStyle.smallIconColor),                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.favorite_border,
+                          size: IconStyle.smallIconSize,
+                          color: IconStyle.smallIconColor,
+                        ),
+                        const SizedBox(width: 4),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
                             '58',
-                            style: ThemeTextStyle.smallTextFieldStyle
+                            style: ThemeTextStyle.smallTextFieldStyle,
                           ),
                         ),
                       ],
@@ -151,20 +160,21 @@ class RecipeCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.comment_outlined,
-                            size: IconStyle.smallIconSize,
-                            color: IconStyle.smallIconColor),
+                        Icon(
+                          Icons.comment_outlined,
+                          size: IconStyle.smallIconSize,
+                          color: IconStyle.smallIconColor,
+                        ),
                         const SizedBox(width: 4),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
                             '21',
-                            style: ThemeTextStyle.smallTextFieldStyle
+                            style: ThemeTextStyle.smallTextFieldStyle,
                           ),
                         ),
                       ],
                     ),
-
                   ],
                 ),
               ),

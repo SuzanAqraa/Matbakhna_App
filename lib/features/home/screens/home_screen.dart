@@ -1,6 +1,5 @@
-import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/widgets/PrimaryAppBar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
 import '../widgets/CookingTipCard.dart';
@@ -15,95 +14,97 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Map<String, String>> recipes = [
-    {
-      'imageUrl': 'https://kitchen.sayidaty.net/uploads/small/65/65a750957fd3d95431c6c55a9fb02237_w750_h500.jpg',
-      'title': 'فلافل',
-      'description': 'طبق شعبي يتكون من الحمص المطحون مع البهارات، ويُقلى بالزيت.',
-      'time': '٤٥ دقيقة',
-    },
-    {
-      'imageUrl': 'https://snd.ps/thumb/730x400/uploads/images/2024/07/fa0sT.jpg',
-      'title': 'مقلوبة',
-      'description': 'طبق أرز وخضار ولحم يُطهى ويُقلب عند التقديم.',
-      'time': '٦٠ دقيقة',
-    },
-    {
-      'imageUrl': 'https://static.webteb.net/images/content/ramadanrecipe_recipe_9_4091e4b9c94-e089-4fff-9ccb-09cdba634024.jpg',
-      'title': 'منسف',
-      'description': 'طبق أردني يتكون من الأرز واللحم والمكسرات.',
-      'time': '٩٠ دقيقة',
-    },
-    {
-      'imageUrl': 'https://kitchen.sayidaty.net/uploads/small/7a/7af73ac1eedaf85a6ef42a6df7da8d02_w750_h500.jpg',
-      'title': 'كبة',
-      'description': 'كبة لحم محشوة بالبرغل والمكسرات.',
-      'time': '٧٥ دقيقة',
-    },
-    {
-      'imageUrl': 'https://i.ytimg.com/vi/9iNDG0Rr7oI/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAxiLQIcVR2PyqC4DFqlIee4R3P3w',
-      'title': 'شاورما',
-      'description': 'شرائح لحم مشوية ومغلفة بالخبز.',
-      'time': '٣٠ دقيقة',
-    },
-  ];
-
-  final List<String> cookingTips = [
-    'الملح شوي شوي عمهلك وبالتدريج وخصوصاً بالطبخات.',
-    'سخّن المقلاة قبل ما تحط فيها أي شي.',
-    'غسل الخضار قبل التقطيع بيحافظ على قيمتها.',
-    'ذوّب الزبدة على نار هادية حتى ما تحترق.',
-    'رشة قرفة بتعزز نكهة الحلويات.',
-    'خلّي الرز ينقع شوي قبل الطبخ.',
-  ];
-
-  int currentTipIndex = 0;
-  Timer? _tipTimer;
+  List<Map<String, dynamic>> recipes = [];
+  List<Map<String, dynamic>> mostPopularRecipes = [];
 
   @override
   void initState() {
     super.initState();
-    _startTipRotation();
+    _fetchRecipesFromFirestore();
   }
 
-  void _startTipRotation() {
-    _tipTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+  Future<void> _fetchRecipesFromFirestore() async {
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance.collection('recipes').get();
+
+      final fetchedRecipes =
+          snapshot.docs.map((doc) {
+            final data = doc.data();
+            int likes = (data['likes'] ?? 0) as int;
+            int comments = (data['comments'] ?? 0) as int;
+            int totalInteractions = likes + comments;
+            print('Description: ${data['Description']}');
+            return {
+              'id': doc.id,
+              'imageUrl': data['imageUrl'] ?? '',
+              'title': data['Title'] ?? '',
+              'description': data['Description'] ?? '',
+              'time': data['duration'] ?? '',
+              'likes': likes,
+              'comments': comments,
+              'totalInteractions': totalInteractions,
+            };
+          }).toList();
+
+      fetchedRecipes.sort(
+        (a, b) => b['totalInteractions'].compareTo(a['totalInteractions']),
+      );
+
+      List<Map<String, dynamic>> popularRecipes;
+      bool hasInteractions = fetchedRecipes.any(
+        (recipe) => recipe['totalInteractions'] > 0,
+      );
+
+      if (hasInteractions) {
+        popularRecipes = fetchedRecipes.take(5).toList();
+      } else {
+        popularRecipes = List.from(fetchedRecipes);
+        popularRecipes.shuffle();
+        popularRecipes = popularRecipes.take(5).toList();
+      }
+
       setState(() {
-        currentTipIndex = Random().nextInt(cookingTips.length);
-      });
-    });
-  }
+        recipes = fetchedRecipes;
 
-  @override
-  void dispose() {
-    _tipTimer?.cancel();
-    super.dispose();
+        mostPopularRecipes = popularRecipes;
+      });
+    } catch (e) {
+      print('Error fetching recipes: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> contentWidgets = [];
+
+    contentWidgets.add(const HomeAppBar(title: 'شو بدك تطبخ اليوم؟'));
+    contentWidgets.add(const SizedBox(height: 20));
+
+    if (recipes.isEmpty) {
+      contentWidgets.add(const Center(child: CircularProgressIndicator()));
+    } else {
+      contentWidgets.add(
+        GestureDetector(
+          onTap: null,
+          child: TryTodaySection(recipe: recipes[0]),
+        ),
+      );
+
+      contentWidgets.add(const SizedBox(height: 10));
+      contentWidgets.add(const CookingTipCard());
+
+      contentWidgets.add(const SizedBox(height: 10));
+      contentWidgets.add(MostPopularSection(recipes: mostPopularRecipes));
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFFDF5EC),
       body: Directionality(
         textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const HomeAppBar(title: 'شو بدك تطبخ اليوم؟'),
-              const SizedBox(height: 20),
-              TryTodaySection(recipe: recipes[0]),
-              const CookingTipCard(),
-              const SizedBox(height: 20),
-              MostPopularSection(recipes: recipes),
-              const SizedBox(height: 12),
-
-            ],
-          ),
-        ),
+        child: SingleChildScrollView(child: Column(children: contentWidgets)),
       ),
-      bottomNavigationBar: CustomBottomNavbar(currentIndex: 1),
-
-
+      bottomNavigationBar: const CustomBottomNavbar(currentIndex: 1),
     );
   }
 }
