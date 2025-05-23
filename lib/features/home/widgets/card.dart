@@ -3,7 +3,7 @@ import 'package:matbakhna_mobile/Models/RecipeModel.dart';
 import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
-import 'package:matbakhna_mobile/features/recipes/screens/post_screen.dart';
+import 'package:matbakhna_mobile/features/recipes/post/screens/post_screen.dart';
 import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
 
 class RecipeCard extends StatelessWidget {

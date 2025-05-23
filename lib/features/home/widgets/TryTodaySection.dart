@@ -2,18 +2,25 @@ import 'package:flutter/material.dart';
 import '../../../Models/RecipeModel.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/textfeild_styles.dart';
+import '../../recipes/screens/recipe_detail_screen.dart';
 
 class TryTodaySection extends StatelessWidget {
   final RecipeModel recipe;
 
   const TryTodaySection({super.key, required this.recipe});
+  void _goToRecipeDetailPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RecipePage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GestureDetector(
-        onTap: null,
+        onTap:() => _goToRecipeDetailPage(context),
         child: Container(
           margin: const EdgeInsets.only(bottom: 20),
           padding: const EdgeInsets.all(16),

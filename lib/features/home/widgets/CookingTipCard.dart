@@ -31,13 +31,10 @@ class _CookingTipCardState extends State<CookingTipCard> {
       var querySnapshot =
           await FirebaseFirestore.instance.collection('Tips').get();
 
-      print("Total tips found: ${querySnapshot.docs.length}");
-
       var tips =
           querySnapshot.docs
               .map((doc) {
                 var data = doc.data();
-                print("Fetched tip: ${data['tip']}");
                 return data['tip']?.toString() ?? '';
               })
               .where((tip) => tip.isNotEmpty)
