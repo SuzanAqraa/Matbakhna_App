@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/utils/brand_colors.dart';
-import 'signup_page_two.dart';
-import '../../../core/widgets/sign_up_form.dart';
+import 'signup_second_screen.dart';
+import '../widgets/sign_up_form.dart';
 
 class SignUpStepOnePage extends StatelessWidget {
   const SignUpStepOnePage({super.key});

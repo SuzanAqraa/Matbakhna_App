@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import '../../../core/utils/brand_colors.dart';
 import '../../../core/widgets/SimpleAppBar.dart';
+
+import '../widgets/recipe_video.dart';
+import '../widgets/recipe_info.dart';
+import '../widgets/ingredients_list.dart';
+import '../widgets/steps_list.dart';
 
 class RecipePage extends StatefulWidget {
   const RecipePage({super.key});
@@ -21,8 +27,6 @@ class _RecipePageState extends State<RecipePage> {
   String difficulty = '';
   String duration = '';
   String serving = '';
-
-  final Color headerColor = const Color(0xFFE56B50);
 
   @override
   void initState() {
@@ -72,10 +76,16 @@ class _RecipePageState extends State<RecipePage> {
     super.dispose();
   }
 
+  void onIngredientCheckedChanged(int index, bool? value) {
+    setState(() {
+      checked[index] = value ?? false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: BrandColors.backgroundColor,
       appBar: CustomAppBar(
         title: title.isNotEmpty ? title : 'جاري التحميل...',
         showBackButton: true,
@@ -83,173 +93,21 @@ class _RecipePageState extends State<RecipePage> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                const SizedBox(height: 16),
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'فيديو التحضير',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF2F2F2),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 4),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: YoutubePlayer(
-                      controller: _controller,
-                      showVideoProgressIndicator: true,
-                      progressIndicatorColor: Colors.red,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        const Icon(Icons.group_outlined, color: Colors.black),
-                        Text(serving.isNotEmpty ? serving : '...', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Icon(Icons.star_outline, color: Colors.black),
-                        Transform.translate(
-                          offset: const Offset(5, 0),
-                          child: Text(difficulty.isNotEmpty ? difficulty : '...', style: const TextStyle(fontSize: 16)),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        const Icon(Icons.access_time_outlined, color: Colors.black),
-                        Text(duration.isNotEmpty ? duration : '...', style: const TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'المكونات',
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white,
-                  ),
-                  child: ingredients.isEmpty
-                      ? const Center(child: CircularProgressIndicator())
-                      : Column(
-                    children: ingredients.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final item = entry.value;
-                      return CheckboxListTile(
-                        title: Text(
-                          item,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                        value: checked[index],
-                        activeColor: headerColor,
-                        checkColor: Colors.white,
-                        onChanged: (value) {
-                          setState(() {
-                            checked[index] = value ?? false;
-                          });
-                        },
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                        visualDensity: const VisualDensity(vertical: -2),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'الخطوات',
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                steps.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
-                    : Column(
-                  children: steps.asMap().entries.map((entry) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEFE6DD),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(width: 28),
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: headerColor,
-                            child: Text(
-                              '${entry.key + 1}',
-                              style: const TextStyle(color: Colors.white, fontSize: 14),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              entry.value,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            children: [
+              RecipeVideoWidget(controller: _controller),
+              const SizedBox(height: 24),
+              RecipeInfoWidget(serving: serving, difficulty: difficulty, duration: duration),
+              const SizedBox(height: 24),
+              IngredientsListWidget(
+                ingredients: ingredients,
+                checked: checked,
+                onChanged: onIngredientCheckedChanged,
+              ),
+              const SizedBox(height: 24),
+              StepsListWidget(steps: steps),
+            ],
           ),
         ),
       ),

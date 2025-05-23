@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/brand_colors.dart';
-import '../../../core/widgets/singup_add_info.dart';
+import '../widgets/singup_add_info.dart';
 import '../../home/screens/home_screen.dart';
 
 class SignUpStepTwoPage extends StatefulWidget {
