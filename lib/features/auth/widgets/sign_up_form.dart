@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../core/utils/brand_colors.dart';
-import '../../../core/utils/textfeild_styles.dart';
+import '../../../../core/utils/brand_colors.dart';
+import '../../../../core/utils/textfeild_styles.dart';
+import 'package:matbakhna_mobile/features/auth/screens/login_screen.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(String userId) onRegistered;
@@ -88,10 +89,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
           Align(
             alignment: Alignment.centerRight,
-            child: Text(
-              'البريد الإلكتروني *',
-              style: _labelStyle,
-            ),
+            child: Text('البريد الإلكتروني *', style: _labelStyle),
           ),
           const SizedBox(height: 8),
           TextFormField(
@@ -109,6 +107,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 return 'الرجاء إدخال البريد الإلكتروني';
               }
               final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
               if (!emailRegex.hasMatch(value)) {
                 return 'صيغة البريد الإلكتروني غير صحيحة';
               }
@@ -191,6 +190,29 @@ class _SignUpFormState extends State<SignUpForm> {
                 style: ThemeTextStyle.ButtonTextFieldStyle,
               ),
             ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('هل لديك حساب بالفعل؟'),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                },
+                child: const Text(
+                  'سجل الدخول',
+                  style: TextStyle(
+                    color: Color(0xFFE56B50),
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

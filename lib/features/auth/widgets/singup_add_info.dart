@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../utils/brand_colors.dart';
-import '../utils/textfeild_styles.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/textfeild_styles.dart';
 
 class SignUpAdditionalInfoForm extends StatefulWidget {
   final Function(String address, String phone) onSubmit;
