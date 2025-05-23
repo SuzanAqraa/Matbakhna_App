@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/widgets/PrimaryAppBar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
+import '../../auth/providers/auth_service.dart';
 import '../widgets/CookingTipCard.dart';
 import '../widgets/TryTodaySection.dart';
 import '../widgets/most_popular_section.dart';
@@ -89,6 +90,8 @@ class _HomePageState extends State<HomePage> {
       contentWidgets.add(const CookingTipCard());
       contentWidgets.add(const SizedBox(height: 10));
       contentWidgets.add(MostPopularSection(recipes: mostPopularRecipes));
+      print('test ❤️❤️❤️، ${currentUser?.email ?? 'ضيف'}');
+
     }
 
     return Scaffold(
