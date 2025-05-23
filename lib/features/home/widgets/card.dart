@@ -10,6 +10,8 @@ class RecipeCard extends StatelessWidget {
   final String title;
   final String description;
   final String time;
+  final int likes;
+  final int comments;
 
   const RecipeCard({
     Key? key,
@@ -17,6 +19,8 @@ class RecipeCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.time,
+    required this.likes,
+    required this.comments,
   }) : super(key: key);
 
   void _goToPostPage(BuildContext context) {
@@ -46,7 +50,7 @@ class RecipeCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onTap: null,
+              onTap: () => _goToRecipeDetailPage(context),
               child: Container(
                 decoration: BoxDecoration(
                   color: BrandColors.backgroundColor,
@@ -151,7 +155,7 @@ class RecipeCard extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            '58',
+                            likes.toString(),
                             style: ThemeTextStyle.smallTextFieldStyle,
                           ),
                         ),
@@ -169,7 +173,7 @@ class RecipeCard extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            '21',
+                            comments.toString(),
                             style: ThemeTextStyle.smallTextFieldStyle,
                           ),
                         ),

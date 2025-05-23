@@ -29,22 +29,20 @@ class MostPopularSection extends StatelessWidget {
           height: 260,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: recipes.length,
             separatorBuilder: (context, index) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final recipe = recipes[index];
-              return GestureDetector(
-                onTap: null,
-                child: SizedBox(
-                  width: 200,
-                  child: RecipeCard(
-                    imageUrl: recipe['imageUrl'] ?? '',
-                    title: recipe['title'] ?? '',
-                    description: recipe['description'] ?? '',
-                    time: recipe['time'] ?? '',
-                  ),
+              return SizedBox(
+                width: 200,
+                child: RecipeCard(
+                  imageUrl: recipe['imageUrl'] ?? '',
+                  title: recipe['title'] ?? '',
+                  description: recipe['description'] ?? '',
+                  time: recipe['time'] ?? '',
+                  likes: recipe['likes'] ?? 0,
+                  comments: recipe['comments'] ?? 0,
                 ),
               );
             },
