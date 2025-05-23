@@ -48,10 +48,14 @@ class _SignUpFormState extends State<SignUpForm> {
       final email = _emailController.text.trim();
       final username = email.split('@')[0];
 
-      await credential.user?.sendEmailVerification();
+      final avatarUrl = 'https://ui-avatars.com/api/?name=$username&background=random';
+
+
       await FirebaseFirestore.instance.collection('users').doc(credential.user?.uid).set({
         'email': email,
         'username': username,
+        'avatar': avatarUrl,
+        'createdAt': FieldValue.serverTimestamp(),
       });
 
       widget.onRegistered(credential.user!.uid);
@@ -69,6 +73,7 @@ class _SignUpFormState extends State<SignUpForm> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
