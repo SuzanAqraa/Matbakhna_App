@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core/utils/brand_colors.dart';
 import '../../../../core/widgets/SimpleAppBar.dart';
@@ -21,31 +23,94 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String name = 'دانا مرجان';
-  String email = 'dana.morgan196@gmail.com';
-  String password = '123456';
-  String address = 'بديا - شارع المدارس';
-  String phone = '0599999999';
+  String? createdAt;
 
   String? userImageUrl;
   File? userImageFile;
-
   final ImagePicker _picker = ImagePicker();
+
+  final User? currentUser = FirebaseAuth.instance.currentUser;
+
+  late TextEditingController emailController;
+  late TextEditingController addressController;
+  late TextEditingController phoneController;
+  late TextEditingController usernameController;
 
   @override
   void initState() {
     super.initState();
-    userImageUrl = 'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg?semt=ais_hybrid&w=740';
+    emailController = TextEditingController();
+    addressController = TextEditingController();
+    phoneController = TextEditingController();
+    usernameController = TextEditingController();
+
+    _loadUserProfile();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    addressController.dispose();
+    phoneController.dispose();
+    usernameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadUserProfile() async {
+    if (currentUser != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get();
+
+      final data = doc.data();
+      print(data);
+      print("✅✅✅");
+      if (data != null) {
+        setState(() {
+          emailController.text = data['email'] ?? '';
+          addressController.text = data['address'] ?? '';
+          phoneController.text = data['phone'] ?? '';
+          usernameController.text = data['username'] ?? '';
+          createdAt = data['createdAt']?.toDate().toString();
+          userImageUrl = data['avatar'] ??
+              'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg?semt=ais_hybrid&w=740';
+        });
+      }
+    }
   }
 
   Future<void> _pickImage() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+    await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         userImageFile = File(pickedFile.path);
-        userImageUrl = null; // نعرض الصورة الجديدة من الملف وليس من الانترنت
+        userImageUrl = null;
       });
     }
+  }
+
+  void _saveProfile() async {
+    if (_formKey.currentState!.validate() && currentUser != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update({
+        'address': addressController.text,
+        'phone': phoneController.text,
+        'username': usernameController.text,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم حفظ البيانات بنجاح')),
+      );
+    }
+  }
+
+  void _logout() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
@@ -65,45 +130,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 AvatarSection(
-                  hasImage: userImageFile != null || (userImageUrl != null && userImageUrl!.isNotEmpty),
+                  hasImage: userImageFile != null ||
+                      (userImageUrl != null && userImageUrl!.isNotEmpty),
                   imageUrl: userImageFile == null ? userImageUrl : null,
                   imageFile: userImageFile,
                   onEditPressed: _pickImage,
                 ),
                 const SizedBox(height: 12),
-                ProfileFormField(initialValue: name, label: 'الاسم الكامل'),
                 ProfileFormField(
-                  initialValue: email,
+                  controller: usernameController,
+                  label: 'اسم المستخدم',
+                ),
+                ProfileFormField(
+                  controller: emailController,
                   label: 'البريد الإلكتروني',
+                  readOnly: true,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 ProfileFormField(
-                  initialValue: password,
-                  label: 'كلمة السر',
-                  obscureText: true,
+                  controller: addressController,
+                  label: 'العنوان',
                 ),
-                ProfileFormField(initialValue: address, label: 'العنوان'),
                 ProfileFormField(
-                  initialValue: phone,
+                  controller: phoneController,
                   label: 'رقم الهاتف',
                   keyboardType: TextInputType.phone,
                 ),
+                if (createdAt != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text("تاريخ الإنشاء: $createdAt"),
+                  ),
                 const SizedBox(height: 15),
                 ActionButton(
                   text: 'حفظ',
                   color: BrandColors.primaryColor,
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // منطق الحفظ
-                    }
-                  },
+                  onPressed: _saveProfile,
                 ),
                 const SizedBox(height: 20),
-                LogoutButton(
-                  onTap: () {
-                    // منطق تسجيل الخروج
-                  },
-                ),
+                LogoutButton(onTap: _logout),
                 const SizedBox(height: 20),
               ],
             ),
