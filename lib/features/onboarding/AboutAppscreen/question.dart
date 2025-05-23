@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// Assuming Buttons is a custom button widget, you'll need to import it here.
+// import '../../core/widgets/button.dart';
+
 class ListQuestion extends StatefulWidget {
   const ListQuestion({super.key});
 
@@ -81,7 +84,7 @@ class _ListQuestionState extends State<ListQuestion> {
             top: 240,
             left: 20,
             right: 20,
-            bottom: 140,
+            bottom: 80,
             child: SingleChildScrollView(
               child: Wrap(
                 spacing: 8.0,
@@ -113,32 +116,15 @@ class _ListQuestionState extends State<ListQuestion> {
               ),
             ),
           ),
-          Positioned(
-            left: 60,
-            right: 60,
-            bottom: 70,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shadowColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                backgroundColor: const Color(0xFF6A908C),
-                padding:
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-              ),
-              onPressed: () {
-              },
-              child: const Text(
-                "انهاء",
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-              ),
-            ),
-          ),
-          )],
+        ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: () {
+          },
+          child: const Text('انهاء'),
+        ),
       ),
     );
   }

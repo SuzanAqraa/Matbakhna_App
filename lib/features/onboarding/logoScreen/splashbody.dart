@@ -12,9 +12,9 @@ class SplashBody extends StatelessWidget{
               width: 220,
               height: 250,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                shape: BoxShape.rectangle,
                 image: DecorationImage(
-                  image: AssetImage("assets/images/logo.png"),
+                  image: AssetImage("assets/images/matbakhna_logo.png"),
                 ),
               ),
             ),
