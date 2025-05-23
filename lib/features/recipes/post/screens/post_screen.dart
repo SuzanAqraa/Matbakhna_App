@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import '../widgets/add_comment_field.dart';
 import '../../../../core/widgets/SimpleAppBar.dart';
 import 'package:matbakhna_mobile/Models/RecipeModel.dart';
 
@@ -104,7 +104,42 @@ class _PostPageState extends State<PostPage> {
                     ),
                   ),
                   const Divider(thickness: 1.2),
-                  Expanded(child: CommentsList(comments: recipe.comments)),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(child: CommentsList(comments: recipe.comments)),
+                        const Divider(thickness: 1.2),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    hintText: 'اكتب تعليقك...',
+                                    hintStyle: const TextStyle(color: Colors.grey),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                onPressed: () {
+                                },
+                                icon: const Icon(Icons.send, color: Color(0xFFE56B50)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             );
