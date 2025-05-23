@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
+import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
+import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
 import 'package:matbakhna_mobile/features/recipes/screens/post_screen.dart';
 import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
 
@@ -7,6 +10,8 @@ class RecipeCard extends StatelessWidget {
   final String title;
   final String description;
   final String time;
+  final int likes;
+  final int comments;
 
   const RecipeCard({
     Key? key,
@@ -14,6 +19,8 @@ class RecipeCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.time,
+    required this.likes,
+    required this.comments,
   }) : super(key: key);
 
   void _goToPostPage(BuildContext context) {
@@ -34,20 +41,19 @@ class RecipeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 180,
-      height: 240,
+      height: 250,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
+        clipBehavior: Clip.hardEdge,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Gesture for the whole card (excluding bottom bar)
             GestureDetector(
               onTap: () => _goToRecipeDetailPage(context),
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFDF5EC),
+                  color: BrandColors.backgroundColor,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
@@ -55,6 +61,7 @@ class RecipeCard extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Stack(
                       children: [
@@ -74,17 +81,18 @@ class RecipeCard extends StatelessWidget {
                           top: 8,
                           left: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFE56B50),
+                              color: BrandColors.secondaryColor,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               time,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
+                              style: ThemeTextStyle.interActionTextFieldStyle
+                                  .copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -97,25 +105,19 @@ class RecipeCard extends StatelessWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF3D3D3D),
-                        ),
+                        style: ThemeTextStyle.recipeNameTextFieldStyle,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: SizedBox(
-                        height: 48,
+                        height: 65,
                         child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
                           child: Text(
                             description,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF707070),
-                            ),
+                            style: ThemeTextStyle.bodySmallTextFieldStyle,
                           ),
                         ),
                       ),
@@ -125,14 +127,14 @@ class RecipeCard extends StatelessWidget {
               ),
             ),
 
-            // Bottom bar with its own tap behavior
+            // Bottom Bar
             GestureDetector(
               onTap: () => _goToPostPage(context),
               child: Container(
                 height: 32,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE8DCCF),
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: BrandColors.secondaryBackgroundColor,
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16),
                   ),
@@ -140,19 +142,41 @@ class RecipeCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.favorite_border, size: 14, color: Color(0xFF3D3D3D)),
-                        SizedBox(width: 4),
-                        Text('58', style: TextStyle(fontSize: 11, color: Color(0xFF3D3D3D))),
+                        Icon(
+                          Icons.favorite_border,
+                          size: IconStyle.smallIconSize,
+                          color: IconStyle.smallIconColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            likes.toString(),
+                            style: ThemeTextStyle.smallTextFieldStyle,
+                          ),
+                        ),
                       ],
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.comment, size: 14, color: Color(0xFF3D3D3D)),
-                        SizedBox(width: 4),
-                        Text('21', style: TextStyle(fontSize: 11, color: Color(0xFF3D3D3D))),
+                        Icon(
+                          Icons.comment_outlined,
+                          size: IconStyle.smallIconSize,
+                          color: IconStyle.smallIconColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            comments.toString(),
+                            style: ThemeTextStyle.smallTextFieldStyle,
+                          ),
+                        ),
                       ],
                     ),
                   ],

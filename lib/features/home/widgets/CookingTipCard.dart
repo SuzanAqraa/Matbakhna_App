@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/icon_styles.dart';
+import '../../../core/utils/textfeild_styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CookingTipCard extends StatefulWidget {
   const CookingTipCard({super.key});
@@ -10,29 +15,58 @@ class CookingTipCard extends StatefulWidget {
 }
 
 class _CookingTipCardState extends State<CookingTipCard> {
-  final List<String> cookingTips = [
-    'الملح شوي شوي عمهلك وبالتدريج وخصوصاً بالطبخات.',
-    'سخّن المقلاة قبل ما تحط فيها أي شي.',
-    'غسل الخضار قبل التقطيع بيحافظ على قيمتها.',
-    'ذوّب الزبدة على نار هادية حتى ما تحترق.',
-    'رشة قرفة بتعزز نكهة الحلويات.',
-    'خلّي الرز ينقع شوي قبل الطبخ.',
-  ];
-
+  List<String> cookingTips = [];
   int currentTipIndex = 0;
   Timer? _tipTimer;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _startTipRotation();
+    _fetchTipsFromFirestore();
+  }
+
+  _fetchTipsFromFirestore() async {
+    try {
+      var querySnapshot =
+          await FirebaseFirestore.instance.collection('Tips').get();
+
+      print("Total tips found: ${querySnapshot.docs.length}");
+
+      var tips =
+          querySnapshot.docs
+              .map((doc) {
+                var data = doc.data();
+                print("Fetched tip: ${data['tip']}");
+                return data['tip']?.toString() ?? '';
+              })
+              .where((tip) => tip.isNotEmpty)
+              .toList();
+
+      setState(() {
+        cookingTips = tips;
+        currentTipIndex = 0;
+        _isLoading = false;
+      });
+
+      if (tips.isNotEmpty) {
+        _startTipRotation();
+      }
+    } catch (e) {
+      print('Error fetching tips: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _startTipRotation() {
     _tipTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      setState(() {
-        currentTipIndex = Random().nextInt(cookingTips.length);
-      });
+      if (mounted && cookingTips.isNotEmpty) {
+        setState(() {
+          currentTipIndex = Random().nextInt(cookingTips.length);
+        });
+      }
     });
   }
 
@@ -49,7 +83,7 @@ class _CookingTipCardState extends State<CookingTipCard> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFA5C8A6),
+          color: BrandColors.primaryColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -62,17 +96,30 @@ class _CookingTipCardState extends State<CookingTipCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.lightbulb_outline, color: Colors.white, size: 24),
+            const Icon(
+              Icons.lightbulb_outline,
+              color: Colors.white,
+              size: IconStyle.defaultIconSize,
+            ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                cookingTips[currentTipIndex],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child:
+                  _isLoading
+                      ? const Text(
+                        "جارٍ تحميل النصائح...",
+                        style: TextStyle(color: Colors.white),
+                      )
+                      : cookingTips.isEmpty
+                      ? const Text(
+                        "لا توجد نصائح متاحة حالياً.",
+                        style: TextStyle(color: Colors.white),
+                      )
+                      : Text(
+                        cookingTips[currentTipIndex],
+                        style: ThemeTextStyle.bodySmallTextFieldStyle.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
             ),
           ],
         ),

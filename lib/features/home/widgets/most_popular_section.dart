@@ -1,34 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/home/widgets/card.dart';
 import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
-import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
+import '../../../core/utils/icon_styles.dart';
+import '../../../core/utils/textfeild_styles.dart';
+import 'card.dart';
 
 class MostPopularSection extends StatelessWidget {
-  final List<Map<String, String>> recipes;
+  final List<Map<String, dynamic>> recipes;
 
   const MostPopularSection({super.key, required this.recipes});
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Align(
             alignment: Alignment.centerRight,
             child: Text(
               'الأكثر تفاعل',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3D3D3D),
-              ),
+              style: ThemeTextStyle.titleTextFieldStyle,
             ),
           ),
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 230,
+          height: 260,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -36,16 +34,15 @@ class MostPopularSection extends StatelessWidget {
             separatorBuilder: (context, index) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final recipe = recipes[index];
-              return GestureDetector(
-
-                child: SizedBox(
-                  width: 200,
-                  child: RecipeCard(
-                    imageUrl: recipe['imageUrl']!,
-                    title: recipe['title']!,
-                    description: recipe['description']!,
-                    time: recipe['time']!,
-                  ),
+              return SizedBox(
+                width: 200,
+                child: RecipeCard(
+                  imageUrl: recipe['imageUrl'] ?? '',
+                  title: recipe['title'] ?? '',
+                  description: recipe['description'] ?? '',
+                  time: recipe['time'] ?? '',
+                  likes: recipe['likes'] ?? 0,
+                  comments: recipe['comments'] ?? 0,
                 ),
               );
             },
@@ -59,7 +56,9 @@ class MostPopularSection extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ListingScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ListingScreen(),
+                  ),
                 );
               },
               style: TextButton.styleFrom(
@@ -69,20 +68,19 @@ class MostPopularSection extends StatelessWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     'اعرض المزيد',
                     style: TextStyle(
-                      color: Color(0xFF3D3D3D),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.black,
                     ),
                   ),
-                  SizedBox(width: 3),
-                  Icon(
+                  const SizedBox(width: 3),
+                  const Icon(
                     Icons.arrow_forward_ios,
-                    color: Color(0xFF3D3D3D),
-                    size: 11,
+                    color: IconStyle.defaultIconColor,
                   ),
                 ],
               ),

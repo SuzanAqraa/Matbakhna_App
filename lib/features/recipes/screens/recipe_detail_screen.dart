@@ -108,6 +108,7 @@ class _RecipePageState extends State<RecipePage> {
               const SizedBox(height: 24),
               StepsListWidget(steps: steps),
             ],
+
           ),
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/textfeild_styles.dart';
 import '../../../core/widgets/SimpleAppBar.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -31,11 +33,8 @@ class _SearchScreenState extends State<SearchScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFFDF5EC),
-        appBar: const CustomAppBar(
-          title: 'اختار عذوقك',
-          showBackButton: true,
-        ),
+        backgroundColor: BrandColors.backgroundColor,
+        appBar: const CustomAppBar(title: 'اختار عذوقك', showBackButton: true),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: SingleChildScrollView(
@@ -43,79 +42,94 @@ class _SearchScreenState extends State<SearchScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 32),
-                const Text(
+                Text(
                   'نوع الوجبة',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
+                  style: ThemeTextStyle.recipeNameTextFieldStyle,
                 ),
                 const SizedBox(height: 16),
                 Wrap(
                   spacing: 12.0,
                   runSpacing: 12.0,
-                  children: mealTypes.map((type) {
-                    final isSelected = selectedMealTypes.contains(type);
-                    return ChoiceChip(
-                      label: Text(
-                        type,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: isSelected ? Colors.black : Colors.grey[700],
-                        ),
-                      ),
-                      selected: isSelected,
-                      selectedColor: const Color(0xFFA5C8A6),
-                      onSelected: (_) => toggleSelection(type, selectedMealTypes),
-                      backgroundColor: Colors.grey.shade200,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    );
-                  }).toList(),
+                  children:
+                      mealTypes.map((type) {
+                        final isSelected = selectedMealTypes.contains(type);
+                        return ChoiceChip(
+                          label: Text(
+                            type,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color:
+                                  isSelected ? Colors.black : Colors.grey[700],
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedColor: BrandColors.primaryColor,
+                          onSelected:
+                              (_) => toggleSelection(type, selectedMealTypes),
+                          backgroundColor: Colors.grey.shade200,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        );
+                      }).toList(),
                 ),
                 const SizedBox(height: 32),
-                const Text(
+                Text(
                   'مطبخ البلد',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
+                  style: ThemeTextStyle.recipeNameTextFieldStyle,
                 ),
                 const SizedBox(height: 16),
                 Wrap(
                   spacing: 12.0,
                   runSpacing: 12.0,
-                  children: cuisines.map((cuisine) {
-                    final isSelected = selectedCuisines.contains(cuisine);
-                    return ChoiceChip(
-                      label: Text(
-                        cuisine,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: isSelected ? Colors.black : Colors.grey[700],
-                        ),
-                      ),
-                      selected: isSelected,
-                      selectedColor: const Color(0xFFA5C8A6),
-                      onSelected: (_) => toggleSelection(cuisine, selectedCuisines),
-                      backgroundColor: Colors.grey.shade200,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    );
-                  }).toList(),
+                  children:
+                      cuisines.map((cuisine) {
+                        final isSelected = selectedCuisines.contains(cuisine);
+                        return ChoiceChip(
+                          label: Text(
+                            cuisine,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color:
+                                  isSelected ? Colors.black : Colors.grey[700],
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedColor: BrandColors.primaryColor,
+                          onSelected:
+                              (_) => toggleSelection(cuisine, selectedCuisines),
+                          backgroundColor: Colors.grey.shade200,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        );
+                      }).toList(),
                 ),
                 const SizedBox(height: 32),
-                const Text(
+                Text(
                   'كم بدك اياها صعبة؟',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
+                  style: ThemeTextStyle.recipeNameTextFieldStyle,
                 ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
-                    Text('١', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text('١٠', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      '١',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      '١٠',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
                 Slider(
@@ -124,7 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   max: 10,
                   divisions: 9,
                   label: difficulty.round().toString(),
-                  activeColor: Colors.orange,
+                  activeColor: BrandColors.secondaryColor,
                   onChanged: (value) {
                     setState(() {
                       difficulty = value;
@@ -136,19 +150,23 @@ class _SearchScreenState extends State<SearchScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ListingScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const ListingScreen(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFA5C8A6),
+                    backgroundColor: BrandColors.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'أظهر النتائج',
-                    style: TextStyle(fontSize: 20, color: Colors.black),
+                    style: ThemeTextStyle.ButtonTextFieldStyle.copyWith(
+                      color: Colors.black,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
