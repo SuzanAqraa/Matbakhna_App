@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../Models/RecipeModel.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/textfeild_styles.dart';
 
 class TryTodaySection extends StatelessWidget {
-  final Map<String, dynamic> recipe;
+  final RecipeModel recipe;
 
   const TryTodaySection({super.key, required this.recipe});
 
@@ -32,7 +33,7 @@ class TryTodaySection extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
-                  recipe['imageUrl']!,
+                  recipe.imageUrl,
                   width: 130,
                   height: 130,
                   fit: BoxFit.cover,
@@ -53,14 +54,14 @@ class TryTodaySection extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      recipe['title']!,
+                      recipe.title,
                       style: ThemeTextStyle.titleTextFieldStyle.copyWith(
                         fontSize: 24,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      recipe['description']!,
+                      recipe.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: ThemeTextStyle.bodySmallTextFieldStyle,
