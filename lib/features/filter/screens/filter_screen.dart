@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/textfeild_styles.dart';
+import '../../../core/widgets/SimpleAppBar.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -30,128 +33,143 @@ class _SearchScreenState extends State<SearchScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFFDF5EC),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(140),
-          child: Container(
-            padding: const EdgeInsets.only(top: 60, bottom: 24),
-            decoration: const BoxDecoration(
-              color: Color(0xFFA5C8A6),
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(100),
-              ),
-            ),
-            child: Stack(
-              children: [
-                Center(
-                  child: Text(
-                    'اختار عذوقك',
-                    style: const TextStyle(
-                      color: Color(0xFF3D3D3D),
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  right: 16,
-                  top: 10,
-                  child: BackButton(color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-        ),
-
+        backgroundColor: BrandColors.backgroundColor,
+        appBar: const CustomAppBar(title: 'اختار عذوقك', showBackButton: true),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-
-                const SizedBox(height: 24),
-                const Text('نوع الوجبة', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8.0,
-                  runSpacing: 8.0,
-                  children: mealTypes.map((type) {
-                    final isSelected = selectedMealTypes.contains(type);
-                    return ChoiceChip(
-                      label: Text(type),
-                      selected: isSelected,
-                      selectedColor: const Color(0xFFA5C8A6),
-                      onSelected: (_) => toggleSelection(type, selectedMealTypes),
-                      backgroundColor: Colors.grey.shade200,
-                      labelStyle: TextStyle(color: isSelected ? Colors.black : Colors.grey[700]),
-                    );
-                  }).toList(),
+                const SizedBox(height: 32),
+                Text(
+                  'نوع الوجبة',
+                  style: ThemeTextStyle.recipeNameTextFieldStyle,
                 ),
-                const SizedBox(height: 24),
-                const Text('مطبخ البلد', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Wrap(
-                  spacing: 8.0,
-                  runSpacing: 8.0,
-                  children: cuisines.map((cuisine) {
-                    final isSelected = selectedCuisines.contains(cuisine);
-                    return ChoiceChip(
-                      label: Text(cuisine),
-                      selected: isSelected,
-                      selectedColor: const Color(0xFFA5C8A6),
-                      onSelected: (_) => toggleSelection(cuisine, selectedCuisines),
-                      backgroundColor: Colors.grey.shade200,
-                      labelStyle: TextStyle(color: isSelected ? Colors.black : Colors.grey[700]),
-                    );
-                  }).toList(),
+                  spacing: 12.0,
+                  runSpacing: 12.0,
+                  children:
+                      mealTypes.map((type) {
+                        final isSelected = selectedMealTypes.contains(type);
+                        return ChoiceChip(
+                          label: Text(
+                            type,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color:
+                                  isSelected ? Colors.black : Colors.grey[700],
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedColor: BrandColors.primaryColor,
+                          onSelected:
+                              (_) => toggleSelection(type, selectedMealTypes),
+                          backgroundColor: Colors.grey.shade200,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        );
+                      }).toList(),
                 ),
-                const SizedBox(height: 24),
-                const Text('كم بدك اياها صعبة؟', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
+                const SizedBox(height: 32),
+                Text(
+                  'مطبخ البلد',
+                  style: ThemeTextStyle.recipeNameTextFieldStyle,
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 12.0,
+                  runSpacing: 12.0,
+                  children:
+                      cuisines.map((cuisine) {
+                        final isSelected = selectedCuisines.contains(cuisine);
+                        return ChoiceChip(
+                          label: Text(
+                            cuisine,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color:
+                                  isSelected ? Colors.black : Colors.grey[700],
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedColor: BrandColors.primaryColor,
+                          onSelected:
+                              (_) => toggleSelection(cuisine, selectedCuisines),
+                          backgroundColor: Colors.grey.shade200,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                        );
+                      }).toList(),
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  'كم بدك اياها صعبة؟',
+                  style: ThemeTextStyle.recipeNameTextFieldStyle,
+                ),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
-                    Text('١', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text('١٠', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      '١',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      '١٠',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
-                Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Slider(
-                    value: difficulty,
-                    min: 1,
-                    max: 10,
-                    divisions: 9,
-                    label: difficulty.round().toString(),
-                    activeColor: const Color(0xFFA5C8A6),
-                    onChanged: (value) {
-                      setState(() {
-                        difficulty = value;
-                      });
-                    },
-                  ),
+                Slider(
+                  value: difficulty,
+                  min: 1,
+                  max: 10,
+                  divisions: 9,
+                  label: difficulty.round().toString(),
+                  activeColor: BrandColors.secondaryColor,
+                  onChanged: (value) {
+                    setState(() {
+                      difficulty = value;
+                    });
+                  },
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ListingScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const ListingScreen(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFA5C8A6),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: BrandColors.primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'أظهر النتائج',
-                    style: TextStyle(fontSize: 18, color: Colors.black),
+                    style: ThemeTextStyle.ButtonTextFieldStyle.copyWith(
+                      color: Colors.black,
+                    ),
                   ),
                 ),
+                const SizedBox(height: 24),
               ],
             ),
           ),

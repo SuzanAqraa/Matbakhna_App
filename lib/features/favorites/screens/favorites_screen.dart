@@ -17,6 +17,7 @@ class FavoritesScreen extends StatelessWidget {
           title: 'الوصفات المفضلة',
           showBackButton: false,
         ),
+
         body:Directionality(
           textDirection: TextDirection.rtl,
           child: SingleChildScrollView(
@@ -63,6 +64,7 @@ class FavoritesScreen extends StatelessWidget {
 
 
         bottomNavigationBar: const CustomBottomNavbar(currentIndex: 2),
+
 
       ),
     );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/features/filter/screens/filter_screen.dart';
+import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
+import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
+import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
 
 class HomeAppBar extends StatelessWidget {
   final String title;
@@ -10,20 +13,16 @@ class HomeAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(top: 80, bottom: 32),
+      padding: const EdgeInsets.only(top: 60, bottom: 32),
       decoration: const BoxDecoration(
-        color: Color(0xFFA5C8A6),
+        color: BrandColors.primaryColor,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(100)),
       ),
       child: Column(
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3D3D3D),
-            ),
+            style: ThemeTextStyle.titleTextFieldStyle,
           ),
           const SizedBox(height: 20),
           Padding(
@@ -34,17 +33,22 @@ class HomeAppBar extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                      color: Color(0xFFE8DCCF),
+                      color: BrandColors.secondaryBackgroundColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const TextField(
-                      style: TextStyle(fontSize: 18),
+                    child: TextField(
+                      style: ThemeTextStyle.recipeNameTextFieldStyle,
                       decoration: InputDecoration(
-                        icon: Icon(Icons.search, color: Color(0xFF707070)),
+                        icon: const Icon(
+                          Icons.search,
+                          color: IconStyle.defaultIconColor,
+                          size: IconStyle.defaultIconSize,
+                        ),
                         hintText: 'ابحث عن وصفة...',
-                        hintStyle: TextStyle(fontSize: 16),
+                        hintStyle: ThemeTextStyle.interActionTextFieldStyle,
                         border: InputBorder.none,
                       ),
+
                     ),
                   ),
                 ),
@@ -56,17 +60,14 @@ class HomeAppBar extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => const SearchScreen()),
                     );
                   },
-                  icon: const Icon(Icons.tune, color: Color(0xFF3D3D3D), size: 22),
-                  label: const Text(
+                  icon: const Icon(Icons.tune,
+                      color: IconStyle.defaultIconColor, size: IconStyle.defaultIconSize),
+                  label: Text(
                     'عذوقك',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF3D3D3D),
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: ThemeTextStyle.interActionTextFieldStyle,
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE8DCCF),
+                    backgroundColor: BrandColors.secondaryBackgroundColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

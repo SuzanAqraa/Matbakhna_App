@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
+import '../../../Models/RecipeModel.dart';
+import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/textfeild_styles.dart';
+import '../../recipes/screens/recipe_detail_screen.dart';
 
 class TryTodaySection extends StatelessWidget {
-  final Map<String, String> recipe;
+  final RecipeModel recipe;
 
   const TryTodaySection({super.key, required this.recipe});
+  void _goToRecipeDetailPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RecipePage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RecipePage() // must be  RecipePage(recipe: recipe)
-            ),
-          );
-        },
+        onTap:() => _goToRecipeDetailPage(context),
         child: Container(
           margin: const EdgeInsets.only(bottom: 20),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFE8DCCF),
+            color: BrandColors.secondaryBackgroundColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -38,9 +40,9 @@ class TryTodaySection extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
-                  recipe['imageUrl']!,
-                  width: 110,
-                  height: 110,
+                  recipe.imageUrl,
+                  width: 130,
+                  height: 130,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -49,32 +51,27 @@ class TryTodaySection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'جرب اليوم',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE56B50),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
                     Text(
-                      recipe['title']!,
-                      style: const TextStyle(
+                      'جرب اليوم',
+                      style: ThemeTextStyle.interActionTextFieldStyle.copyWith(
+                        color: BrandColors.secondaryColor,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF3D3D3D),
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      recipe['description']!,
+                      recipe.title,
+                      style: ThemeTextStyle.titleTextFieldStyle.copyWith(
+                        fontSize: 24,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      recipe.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF707070),
-                      ),
+                      style: ThemeTextStyle.bodySmallTextFieldStyle,
                     ),
                   ],
                 ),
