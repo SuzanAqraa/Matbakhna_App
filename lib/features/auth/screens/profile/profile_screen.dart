@@ -8,6 +8,7 @@ import '../../../../core/utils/brand_colors.dart';
 import '../../../../core/widgets/SimpleAppBar.dart';
 import '../../../../core/widgets/custom_bottom_navbar.dart';
 
+import '../../../home/screens/home_screen.dart';
 import 'widgets/avatar_section.dart';
 import 'widgets/profile_form_field.dart';
 import 'widgets/action_button.dart';
@@ -24,7 +25,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   String? createdAt;
-
   String? userImageUrl;
   File? userImageFile;
   final ImagePicker _picker = ImagePicker();
@@ -58,14 +58,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserProfile() async {
     if (currentUser != null) {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser!.uid)
-          .get();
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser!.uid)
+              .get();
 
       final data = doc.data();
-      print(data);
-      print("✅✅✅");
       if (data != null) {
         setState(() {
           emailController.text = data['email'] ?? '';
@@ -73,7 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           phoneController.text = data['phone'] ?? '';
           usernameController.text = data['username'] ?? '';
           createdAt = data['createdAt']?.toDate().toString();
-          userImageUrl = data['avatar'] ??
+          userImageUrl =
+              data['avatar'] ??
               'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg?semt=ais_hybrid&w=740';
         });
       }
@@ -81,8 +81,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final XFile? pickedFile =
-    await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       setState(() {
         userImageFile = File(pickedFile.path);
@@ -97,20 +98,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .collection('users')
           .doc(currentUser!.uid)
           .update({
-        'address': addressController.text,
-        'phone': phoneController.text,
-        'username': usernameController.text,
-      });
+            'address': addressController.text,
+            'phone': phoneController.text,
+            'username': usernameController.text,
+          });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم حفظ البيانات بنجاح')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('تم حفظ البيانات بنجاح')));
     }
   }
 
   void _logout() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacementNamed('/login');
+    try {
+      await FirebaseAuth.instance.signOut();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم تسجيل الخروج بنجاح'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('فشل في تسجيل الخروج: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -130,7 +155,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 AvatarSection(
-                  hasImage: userImageFile != null ||
+                  hasImage:
+                      userImageFile != null ||
                       (userImageUrl != null && userImageUrl!.isNotEmpty),
                   imageUrl: userImageFile == null ? userImageUrl : null,
                   imageFile: userImageFile,
