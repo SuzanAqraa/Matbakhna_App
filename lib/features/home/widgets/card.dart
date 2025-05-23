@@ -6,6 +6,7 @@ import 'package:matbakhna_mobile/features/recipes/screens/post_screen.dart';
 import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
 
 class RecipeCard extends StatelessWidget {
+  final String id;
   final String imageUrl;
   final String title;
   final String description;
@@ -15,6 +16,7 @@ class RecipeCard extends StatelessWidget {
 
   const RecipeCard({
     Key? key,
+    required this.id,
     required this.imageUrl,
     required this.title,
     required this.description,
@@ -26,7 +28,7 @@ class RecipeCard extends StatelessWidget {
   void _goToPostPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PostPage()),
+      MaterialPageRoute(builder: (context) => PostPage(recipeId: id)),
     );
   }
 

@@ -37,6 +37,7 @@ class MostPopularSection extends StatelessWidget {
               return SizedBox(
                 width: 200,
                 child: RecipeCard(
+                  id: recipe['id'],
                   imageUrl: recipe['imageUrl'] ?? '',
                   title: recipe['title'] ?? '',
                   description: recipe['description'] ?? '',
