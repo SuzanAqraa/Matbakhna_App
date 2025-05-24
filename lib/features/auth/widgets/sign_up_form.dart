@@ -47,14 +47,22 @@ class _SignUpFormState extends State<SignUpForm> {
 
       final email = _emailController.text.trim();
       final username = email.split('@')[0];
+      final avatarUrl = 'https://ui-avatars.com/api/?name=$username&background=random';
 
-      await credential.user?.sendEmailVerification();
+      await credential.user!.sendEmailVerification();
+
       await FirebaseFirestore.instance.collection('users').doc(credential.user?.uid).set({
         'email': email,
         'username': username,
+        'avatar': avatarUrl,
+        'createdAt': FieldValue.serverTimestamp(),
       });
 
       widget.onRegistered(credential.user!.uid);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم إرسال رابط تفعيل إلى بريدك الإلكتروني')),
+      );
     } on FirebaseAuthException catch (e) {
       setState(() {
         if (e.code == 'email-already-in-use') {
@@ -72,147 +80,158 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
+    return SingleChildScrollView(
       child: Column(
         children: [
-          const CircleAvatar(
-            radius: 60,
-            backgroundColor: Colors.white,
-            child: Icon(
-              Icons.image_outlined,
-              size: 45,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 24),
 
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('البريد الإلكتروني *', style: _labelStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              hintText: 'example@email.com',
-              border: _border(),
-              enabledBorder: _border(),
-              focusedBorder: _border(),
-              errorText: _emailError,
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'الرجاء إدخال البريد الإلكتروني';
-              }
-              final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-              if (!emailRegex.hasMatch(value)) {
-                return 'صيغة البريد الإلكتروني غير صحيحة';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('كلمة السر *', style: _labelStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _obscurePassword,
-            decoration: InputDecoration(
-              hintText: '********',
-              border: _border(),
-              enabledBorder: _border(),
-              focusedBorder: _border(),
-              errorText: _passwordError,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.grey[700],
-                ),
-                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'الرجاء إدخال كلمة السر';
-              }
-              if (value.length < 6) {
-                return 'كلمة السر يجب أن تكون على الأقل 6 أحرف';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('تأكيد كلمة السر *', style: _labelStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _confirmPasswordController,
-            obscureText: _obscurePassword,
-            decoration: InputDecoration(
-              hintText: '********',
-              border: _border(),
-              enabledBorder: _border(),
-              focusedBorder: _border(),
-            ),
-            validator: (value) {
-              if (value != _passwordController.text) {
-                return 'كلمتا السر غير متطابقتين';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 28),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _registerUser,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: BrandColors.primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                'التالي',
-                style: ThemeTextStyle.ButtonTextFieldStyle,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('هل لديك حساب بالفعل؟'),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
-                },
-                child: const Text(
-                  'سجل الدخول',
-                  style: TextStyle(
-                    color: Color(0xFFE56B50),
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
+          const SizedBox(height: 32),
+          Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text('البريد الإلكتروني *', style: _labelStyle),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      hintText: 'example@email.com',
+                      border: _border(),
+                      enabledBorder: _border(),
+                      focusedBorder: _border(),
+                      errorText: _emailError,
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'الرجاء إدخال البريد الإلكتروني';
+                      }
+                      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                      if (!emailRegex.hasMatch(value)) {
+                        return 'صيغة البريد الإلكتروني غير صحيحة';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text('كلمة السر *', style: _labelStyle),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    obscuringCharacter: '●',
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.visiblePassword,
+                    decoration: InputDecoration(
+                      hintText: '********',
+                      border: _border(),
+                      enabledBorder: _border(),
+                      focusedBorder: _border(),
+                      errorText: _passwordError,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.grey[700],
+                        ),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'الرجاء إدخال كلمة السر';
+                      if (value.length < 8) return 'كلمة السر يجب أن تكون على الأقل 8 أحرف';
+
+                      final hasUppercase = value.contains(RegExp(r'[A-Z]'));
+                      final hasLowercase = value.contains(RegExp(r'[a-z]'));
+                      final hasDigit = value.contains(RegExp(r'\d'));
+                      final hasSpecialChar = value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+                      if (!hasUppercase) return 'كلمة السر يجب أن تحتوي على حرف كبير';
+                      if (!hasLowercase) return 'كلمة السر يجب أن تحتوي على حرف صغير';
+                      if (!hasDigit) return 'كلمة السر يجب أن تحتوي على رقم';
+                      if (!hasSpecialChar) return 'كلمة السر يجب أن تحتوي على رمز خاص';
+
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text('تأكيد كلمة السر *', style: _labelStyle),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscurePassword,
+                    obscuringCharacter: '●',
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.visiblePassword,
+                    decoration: InputDecoration(
+                      hintText: '********',
+                      border: _border(),
+                      enabledBorder: _border(),
+                      focusedBorder: _border(),
+                    ),
+                    validator: (value) {
+                      if (value != _passwordController.text) {
+                        return 'كلمتا السر غير متطابقتين';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _registerUser,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: BrandColors.primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        'التالي',
+                        style: ThemeTextStyle.ButtonTextFieldStyle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('هل لديك حساب بالفعل؟'),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          );
+                        },
+                        child: const Text(
+                          'سجل الدخول',
+                          style: TextStyle(
+                            color: Color(0xFFE56B50),
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ],
       ),

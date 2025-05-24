@@ -5,6 +5,8 @@ import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/textfeild_styles.dart';
 import 'package:matbakhna_mobile/features/auth/screens/signup_screen.dart';
 
+import '../widgets/logo_with_appname.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -71,24 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
         child: Column(
           children: [
-            Text(
-              'مطبخنا',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: BrandColors.secondaryColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.image_outlined,
-                size: 45,
-                color: Colors.grey,
-              ),
-            ),
+            const LogoWithName(),
             const SizedBox(height: 32),
             Container(
               padding: const EdgeInsets.all(20),
