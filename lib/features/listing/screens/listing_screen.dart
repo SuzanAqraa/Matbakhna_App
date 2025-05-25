@@ -5,37 +5,24 @@ import 'package:matbakhna_mobile/core/widgets/RecipeCardWidget.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_bottom_navbar.dart';
 
 class ListingScreen extends StatelessWidget {
-  final List<String>? mealTypesFilter;
-  final List<String>? nationalitiesFilter;
-
-  const ListingScreen({super.key, this.mealTypesFilter, this.nationalitiesFilter});
+  const ListingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Query recipesQuery = FirebaseFirestore.instance.collection('recipes');
-
-    if (mealTypesFilter != null && mealTypesFilter!.isNotEmpty) {
-      // Firestore يدعم whereIn حتى 10 قيم كحد أقصى
-      recipesQuery = recipesQuery.where('mealType', whereIn: mealTypesFilter);
-    }
-
-    if (nationalitiesFilter != null && nationalitiesFilter!.isNotEmpty) {
-      recipesQuery = recipesQuery.where('nationality', whereIn: nationalitiesFilter);
-    }
-
-    // باقي الكود كما هو
     return Scaffold(
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 3),
       backgroundColor: const Color(0xFFFDF5EC),
+
       body: SafeArea(
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Column(
             children: [
               const HomeAppBar(title: 'صفحة التصفح'),
+
               Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: recipesQuery.snapshots(),
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance.collection('recipes').snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -78,5 +65,4 @@ class ListingScreen extends StatelessWidget {
       ),
     );
   }
-}
-
+  }

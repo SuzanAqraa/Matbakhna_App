@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/Models/RecipeModel.dart';
+import 'package:matbakhna_mobile/Models/recipe_model.dart';
 
 class PostHeader extends StatelessWidget {
   final RecipeModel recipe;
