@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "246371733302",
+    "project_id": "matbakhna-mobile",
+    "storage_bucket": "matbakhna-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246371733302:android:2e707e232aa4f0b581ed97",
+        "android_client_info": {
+          "package_name": "com.example.matbakhna_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8Vvg3cafrT6ACcLKnXvz16wHhoV4Pwxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

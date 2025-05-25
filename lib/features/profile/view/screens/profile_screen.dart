@@ -9,10 +9,10 @@ import '../../../../core/widgets/SimpleAppBar.dart';
 import '../../../../core/widgets/custom_bottom_navbar.dart';
 
 import '../../../home/screens/home_screen.dart';
-import 'widgets/avatar_section.dart';
-import 'widgets/profile_form_field.dart';
-import 'widgets/action_button.dart';
-import 'widgets/logout_button.dart';
+import '../widgets/avatar_section.dart';
+import '../widgets/profile_form_field.dart';
+import '../widgets/action_button.dart';
+import '../widgets/logout_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);

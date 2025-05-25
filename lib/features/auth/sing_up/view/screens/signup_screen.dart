@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/utils/brand_colors.dart';
+import 'package:matbakhna_mobile/features/auth/sing_up/view/widgets/logo_with_appname.dart';
+import '../../../../../core/utils/brand_colors.dart';
 import 'signup_second_screen.dart';
 import '../widgets/sign_up_form.dart';
 
@@ -17,19 +18,7 @@ class SignUpStepOnePage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                const SizedBox(height: 16),
-
-                const Text(
-                  'مطبخنا',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: BrandColors.secondaryColor,
-                    fontFamily: 'Cairo',
-                  ),
-                ),
-                const SizedBox(height: 28),
-
+                const LogoWithName(),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
@@ -43,7 +32,8 @@ class SignUpStepOnePage extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => SignUpStepTwoPage(userId: userId),
+                          builder: (context) => SignUpStepTwoPage(userId: userId),
+
                         ),
                       );
                     },

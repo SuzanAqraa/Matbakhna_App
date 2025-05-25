@@ -3,7 +3,7 @@ import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
 import '../../../core/utils/icon_styles.dart';
 import '../../../core/utils/textfeild_styles.dart';
 import 'card.dart';
-import 'package:matbakhna_mobile/Models/RecipeModel.dart';
+import 'package:matbakhna_mobile/Models/recipe_model.dart';
 
 class MostPopularSection extends StatelessWidget {
   final List<RecipeModel> recipes;
