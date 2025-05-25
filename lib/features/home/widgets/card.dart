@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:matbakhna_mobile/Models/RecipeModel.dart';
 import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
-import 'package:matbakhna_mobile/features/recipes/screens/post_screen.dart';
+import 'package:matbakhna_mobile/features/recipes/post/screens/post_screen.dart';
 import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
 
 class RecipeCard extends StatelessWidget {
-  final String imageUrl;
-  final String title;
-  final String description;
-  final String time;
+  final RecipeModel recipe;
+  final bool isFavorite;
 
   const RecipeCard({
-    Key? key,
-    required this.imageUrl,
-    required this.title,
-    required this.description,
-    required this.time,
-  }) : super(key: key);
+    super.key,
+    required this.recipe,
+    this.isFavorite = false,
+  });
 
   void _goToPostPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PostPage()),
+      MaterialPageRoute(builder: (context) => PostPage(recipeId: recipe.id)),
     );
   }
 
   void _goToRecipeDetailPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const RecipePage()),
+      MaterialPageRoute(builder: (context) => RecipePage()),
     );
   }
 
@@ -46,7 +43,7 @@ class RecipeCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onTap: null,
+              onTap: () => _goToRecipeDetailPage(context),
               child: Container(
                 decoration: BoxDecoration(
                   color: BrandColors.backgroundColor,
@@ -57,7 +54,6 @@ class RecipeCard extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Stack(
                       children: [
@@ -67,7 +63,7 @@ class RecipeCard extends StatelessWidget {
                             topRight: Radius.circular(16),
                           ),
                           child: Image.network(
-                            imageUrl,
+                            recipe.imageUrl,
                             width: double.infinity,
                             height: 110,
                             fit: BoxFit.cover,
@@ -86,7 +82,7 @@ class RecipeCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              time,
+                              recipe.duration,
                               style: ThemeTextStyle.interActionTextFieldStyle
                                   .copyWith(color: Colors.white),
                             ),
@@ -98,7 +94,7 @@ class RecipeCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
-                        title,
+                        recipe.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: ThemeTextStyle.recipeNameTextFieldStyle,
@@ -112,7 +108,7 @@ class RecipeCard extends StatelessWidget {
                         child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           child: Text(
-                            description,
+                            recipe.description,
                             style: ThemeTextStyle.bodySmallTextFieldStyle,
                           ),
                         ),
@@ -140,7 +136,6 @@ class RecipeCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.favorite_border,
@@ -148,17 +143,13 @@ class RecipeCard extends StatelessWidget {
                           color: IconStyle.smallIconColor,
                         ),
                         const SizedBox(width: 4),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '58',
-                            style: ThemeTextStyle.smallTextFieldStyle,
-                          ),
+                        Text(
+                          recipe.numLikes.toString(),
+                          style: ThemeTextStyle.smallTextFieldStyle,
                         ),
                       ],
                     ),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.comment_outlined,
@@ -166,12 +157,9 @@ class RecipeCard extends StatelessWidget {
                           color: IconStyle.smallIconColor,
                         ),
                         const SizedBox(width: 4),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '21',
-                            style: ThemeTextStyle.smallTextFieldStyle,
-                          ),
+                        Text(
+                          recipe.comments!.length.toString(),
+                          style: ThemeTextStyle.smallTextFieldStyle,
                         ),
                       ],
                     ),

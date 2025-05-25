@@ -3,9 +3,10 @@ import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
 import '../../../core/utils/icon_styles.dart';
 import '../../../core/utils/textfeild_styles.dart';
 import 'card.dart';
+import 'package:matbakhna_mobile/Models/RecipeModel.dart';
 
 class MostPopularSection extends StatelessWidget {
-  final List<Map<String, dynamic>> recipes;
+  final List<RecipeModel> recipes;
 
   const MostPopularSection({super.key, required this.recipes});
 
@@ -29,23 +30,14 @@ class MostPopularSection extends StatelessWidget {
           height: 260,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: recipes.length,
             separatorBuilder: (context, index) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              final recipe = recipes[index];
-              return GestureDetector(
-                onTap: null,
-                child: SizedBox(
-                  width: 200,
-                  child: RecipeCard(
-                    imageUrl: recipe['imageUrl'] ?? '',
-                    title: recipe['title'] ?? '',
-                    description: recipe['description'] ?? '',
-                    time: recipe['time'] ?? '',
-                  ),
-                ),
+              final recipeModel = recipes[index];
+              return SizedBox(
+                width: 200,
+                child: RecipeCard(recipe: recipeModel),
               );
             },
           ),
@@ -70,8 +62,8 @@ class MostPopularSection extends StatelessWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
+                children: const [
+                  Text(
                     'اعرض المزيد',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -79,8 +71,8 @@ class MostPopularSection extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(width: 3),
-                  const Icon(
+                  SizedBox(width: 3),
+                  Icon(
                     Icons.arrow_forward_ios,
                     color: IconStyle.defaultIconColor,
                   ),
