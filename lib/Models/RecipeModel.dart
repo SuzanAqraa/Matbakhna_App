@@ -1,5 +1,6 @@
 import 'package:matbakhna_mobile/Models/CommentModel.dart';
 import 'package:matbakhna_mobile/Models/StepModel.dart';
+
 class RecipeModel {
   final String id;
   final String title;
@@ -10,6 +11,8 @@ class RecipeModel {
   final List<CommentModel> comments;
   final List<StepModel> steps;
   final String duration;
+  final String mealType;
+  final String nationality;
 
   RecipeModel({
     required this.id,
@@ -21,6 +24,8 @@ class RecipeModel {
     required this.comments,
     required this.steps,
     required this.duration,
+    required this.mealType,
+    required this.nationality,
   });
 
   factory RecipeModel.fromJson(String id, Map<String, dynamic> json) {
@@ -34,13 +39,15 @@ class RecipeModel {
       imageUrl: json['imageUrl'] ?? '',
       duration: json['duration'] ?? '',
       numLikes: json['Num_Likes'] ?? 0,
-      numComments: json['Num_Coments'] ?? 0,
+      numComments: json['Num_Comments'] ?? 0,
       comments: commentsJson is List
           ? commentsJson.map((e) => CommentModel.fromJson(e)).toList()
           : [],
       steps: stepsJson is List
           ? stepsJson.map((e) => StepModel.fromJson(e)).toList()
           : [],
+      mealType: json['mealType'] ?? '',
+      nationality: json['nationality'] ?? '',
     );
   }
 
@@ -54,6 +61,8 @@ class RecipeModel {
       'comments': comments.map((e) => e.toJson()).toList(),
       'steps': steps.map((e) => e.toJson()).toList(),
       'Duration': duration,
+      'mealType': mealType,
+      'nationality': nationality,
     };
   }
 }

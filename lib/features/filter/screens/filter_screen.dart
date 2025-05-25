@@ -13,7 +13,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final List<String> mealTypes = ['فطور', 'غداء', 'عشاء', 'تحلية', 'سناك'];
-  final List<String> cuisines = ['فلسطيني', 'مصري', 'إيطالي', 'تركي', 'لبناني'];
+  final List<String> cuisines = ['فلسطيني','سوري', 'مصري', 'إيطالي', 'تركي', 'لبناني'];
   List<String> selectedMealTypes = [];
   List<String> selectedCuisines = [];
   double difficulty = 5;
@@ -151,7 +151,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ListingScreen(),
+                        builder: (context) => ListingScreen(
+                          mealTypesFilter: selectedMealTypes.isEmpty ? null : selectedMealTypes,
+                          nationalitiesFilter: selectedCuisines.isEmpty ? null : selectedCuisines,
+                        ),
                       ),
                     );
                   },
