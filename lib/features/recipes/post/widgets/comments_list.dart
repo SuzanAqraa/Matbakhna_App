@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/Models/comment_model.dart';
+import 'package:matbakhna_mobile/Models/CommentModel.dart';
 import 'comment_bubble.dart';
 
 class CommentsList extends StatelessWidget {

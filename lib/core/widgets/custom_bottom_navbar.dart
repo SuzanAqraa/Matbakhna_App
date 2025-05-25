@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/profile/view/screens/profile_screen.dart';
+import 'package:matbakhna_mobile/features/auth/screens/profile/profile_screen.dart';
 import 'package:matbakhna_mobile/features/favorites/screens/favorites_screen.dart';
 import 'package:matbakhna_mobile/features/home/screens/home_screen.dart';
 import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
@@ -10,7 +10,7 @@ import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../features/auth/sing_up/view/screens/login_screen.dart';
+import '../../features/auth/screens/login_screen.dart';
 
 class CustomBottomNavbar extends StatelessWidget {
   final int currentIndex;

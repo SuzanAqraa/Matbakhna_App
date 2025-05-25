@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/Models/recipe_model.dart';
+import 'package:matbakhna_mobile/Models/RecipeModel.dart';
 import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
@@ -26,9 +26,7 @@ class RecipeCard extends StatelessWidget {
   void _goToRecipeDetailPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecipePage(
-          recipeId: recipe.id
-      )),
+      MaterialPageRoute(builder: (context) => RecipePage()),
     );
   }
 

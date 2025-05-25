@@ -29,10 +29,10 @@ class RecipeCard extends StatelessWidget {
   }
 
   void _goToRecipeDetailPage(BuildContext context) {
-    // Navigator.push(
-    //   context,
-    //  // MaterialPageRoute(builder: (context) => const RecipePage()),
-    // );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RecipePage()),
+    );
   }
 
   @override

@@ -4,7 +4,6 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/widgets/SimpleAppBar.dart';
-import '../../../Models/recipe_model.dart';
 
 import '../widgets/recipe_video.dart';
 import '../widgets/recipe_info.dart';
@@ -12,86 +11,75 @@ import '../widgets/ingredients_list.dart';
 import '../widgets/steps_list.dart';
 
 class RecipePage extends StatefulWidget {
-  final String recipeId;
-
-  const RecipePage({super.key, required this.recipeId});
+  const RecipePage({super.key});
 
   @override
   State<RecipePage> createState() => _RecipePageState();
 }
 
 class _RecipePageState extends State<RecipePage> {
-  RecipeModel? recipe;
-  YoutubePlayerController? _controller;
-  List<bool> checked = [];
-  bool isLoading = true;
+  final List<String> ingredients = [];
+  final List<String> steps = [];
+  late YoutubePlayerController _controller;
+  late List<bool> checked;
+
+  String title = '';
+  String difficulty = '';
+  String duration = '';
+  String serving = '';
 
   @override
   void initState() {
     super.initState();
-    fetchRecipe();
+    _controller = YoutubePlayerController(
+      initialVideoId: 'npfExMqhKhg',
+      flags: const YoutubePlayerFlags(
+        autoPlay: false,
+        mute: false,
+      ),
+    );
+    checked = [];
+    fetchDataFromFirestore();
   }
 
-  Future<void> fetchRecipe() async {
-    try {
-      print("Fetching recipe with ID: ${widget.recipeId}");
-      final doc = await FirebaseFirestore.instance
-          .collection('recipes')
-          .doc(widget.recipeId)
-          .get();
+  Future<void> fetchDataFromFirestore() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('Recipe')
+        .doc('NmwFF7m2kbzF1pjoerNc')
+        .get();
 
-      print("Document exists: ${doc.exists}");
-      if (doc.exists) {
-        final data = doc.data();
-        print("Document data: $data");
-
-        if (data != null) {
-          final fetchedRecipe = RecipeModel.fromJson(doc.id, data);
-
-          final rawVideoIdOrUrl = data['videoUrl'] ?? '';
-          final videoId = YoutubePlayer.convertUrlToId(rawVideoIdOrUrl) ?? '';
-
-          setState(() {
-            recipe = fetchedRecipe;
-            checked = List<bool>.filled(fetchedRecipe.ingredients.length, false);
-
-            if (videoId.isNotEmpty) {
-              _controller = YoutubePlayerController(
-                initialVideoId: videoId,
-                flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
-              );
-            } else {
-              _controller = null;
-            }
-
-            isLoading = false;
-          });
-        } else {
-          setState(() {
-            isLoading = false;
-            recipe = null;
-          });
-        }
-      } else {
-        print("Document with ID ${widget.recipeId} not found");
+    if (doc.exists) {
+      final data = doc.data();
+      if (data != null) {
         setState(() {
-          isLoading = false;
-          recipe = null;
+          ingredients.clear();
+          steps.clear();
+
+          title = data['Title'] ?? '';
+          difficulty = data['difficulty'] ?? '';
+          duration = data['duration'] ?? '';
+          serving = data['serving'] ?? '';
+
+          ingredients.addAll(List<String>.from(data['ingredients']));
+          steps.addAll(List<String>.from(data['step']));
+          checked = List<bool>.filled(ingredients.length, false);
         });
       }
-    } catch (e) {
-      print("Error fetching recipe: $e");
-      setState(() {
-        isLoading = false;
-        recipe = null;
-      });
+    } else {
+      print("Document does not exist");
     }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
+  }
+
+  void onIngredientCheckedChanged(int index, bool? value) {
+    setState(() {
+      checked[index] = value ?? false;
+    });
   }
 
   @override
@@ -99,41 +87,28 @@ class _RecipePageState extends State<RecipePage> {
     return Scaffold(
       backgroundColor: BrandColors.backgroundColor,
       appBar: CustomAppBar(
-        title: recipe?.title ?? 'جاري التحميل...',
+        title: title.isNotEmpty ? title : 'جاري التحميل...',
         showBackButton: true,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : recipe == null
-          ? const Center(child: Text("الوصفة غير موجودة"))
-          : Directionality(
+      body: Directionality(
         textDirection: TextDirection.rtl,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (_controller != null)
-                RecipeVideoWidget(controller: _controller!),
+              RecipeVideoWidget(controller: _controller),
               const SizedBox(height: 24),
-              RecipeInfoWidget(
-                serving: recipe!.serving,
-                difficulty: recipe!.difficulty,
-                duration: recipe!.duration,
-              ),
+              RecipeInfoWidget(serving: serving, difficulty: difficulty, duration: duration),
               const SizedBox(height: 24),
               IngredientsListWidget(
-                ingredients: recipe!.ingredients,
+                ingredients: ingredients,
                 checked: checked,
-                onChanged: (index, value) {
-                  setState(() => checked[index] = value ?? false);
-                },
+                onChanged: onIngredientCheckedChanged,
               ),
               const SizedBox(height: 24),
-              StepsListWidget(
-                steps: recipe!.steps.map((e) => e.description).toList(),
-              ),
+              StepsListWidget(steps: steps),
             ],
+
           ),
         ),
       ),

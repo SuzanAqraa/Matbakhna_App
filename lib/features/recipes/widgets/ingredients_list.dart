@@ -18,10 +18,17 @@ class IngredientsListWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        const Text(
-          'المكونات',
-          style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-          textDirection: TextDirection.rtl,
+        const Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            'المكونات',
+            style: TextStyle(
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+            textDirection: TextDirection.rtl,
+          ),
         ),
         const SizedBox(height: 12),
         Container(
@@ -31,17 +38,24 @@ class IngredientsListWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             color: Colors.white,
           ),
-          child: Column(
+          child: ingredients.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
             children: ingredients.asMap().entries.map((entry) {
               final index = entry.key;
               final item = entry.value;
               return CheckboxListTile(
-                title: Text(item, style: const TextStyle(fontSize: 18)),
+                title: Text(
+                  item,
+                  style: const TextStyle(fontSize: 18, color: Colors.black),
+                ),
                 value: checked[index],
+                activeColor: BrandColors.secondaryColor,
+                checkColor: Colors.white,
                 onChanged: (value) => onChanged(index, value),
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
-                activeColor: BrandColors.secondaryColor,
+                visualDensity: const VisualDensity(vertical: -2),
               );
             }).toList(),
           ),
@@ -49,4 +63,5 @@ class IngredientsListWidget extends StatelessWidget {
       ],
     );
   }
+
 }
