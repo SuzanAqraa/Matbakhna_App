@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/utils/brand_colors.dart';
 
 class RecipeInfoWidget extends StatelessWidget {
   final String serving;
@@ -18,27 +17,18 @@ class RecipeInfoWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Column(
-          children: [
-            const Icon(Icons.group_outlined, color: Colors.black),
-            Text(serving.isNotEmpty ? serving : '...', style: const TextStyle(fontSize: 16)),
-          ],
-        ),
-        Column(
-          children: [
-            const Icon(Icons.star_outline, color: Colors.black),
-            Transform.translate(
-              offset: const Offset(5, 0),
-              child: Text(difficulty.isNotEmpty ? difficulty : '...', style: const TextStyle(fontSize: 16)),
-            ),
-          ],
-        ),
-        Column(
-          children: [
-            const Icon(Icons.access_time_outlined, color: Colors.black),
-            Text(duration.isNotEmpty ? duration : '...', style: const TextStyle(fontSize: 16)),
-          ],
-        ),
+        _buildInfoItem(Icons.group_outlined, serving),
+        _buildInfoItem(Icons.star_outline, difficulty),
+        _buildInfoItem(Icons.access_time_outlined, duration),
+      ],
+    );
+  }
+
+  Widget _buildInfoItem(IconData icon, String text) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.black),
+        Text(text.isNotEmpty ? text : '...', style: const TextStyle(fontSize: 16)),
       ],
     );
   }

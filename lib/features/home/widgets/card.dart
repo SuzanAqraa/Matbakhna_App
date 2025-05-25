@@ -26,7 +26,9 @@ class RecipeCard extends StatelessWidget {
   void _goToRecipeDetailPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecipePage()),
+      MaterialPageRoute(builder: (context) => RecipePage(
+          recipeId: recipe.id
+      )),
     );
   }
 
