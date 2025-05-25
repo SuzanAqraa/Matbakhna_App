@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../Models/RecipeModel.dart';
+import '../../../Models/recipe_model.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/textfeild_styles.dart';
 import '../../recipes/screens/recipe_detail_screen.dart';
@@ -11,7 +11,7 @@ class TryTodaySection extends StatelessWidget {
   void _goToRecipeDetailPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecipePage()),
+      MaterialPageRoute(builder: (context) => RecipePage(recipeId: recipe.id)),
     );
   }
 

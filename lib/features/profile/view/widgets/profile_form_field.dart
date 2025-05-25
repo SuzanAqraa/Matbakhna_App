@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/utils/textfeild_styles.dart';
+import '../../../../core/utils/textfeild_styles.dart';
 
 class ProfileFormField extends StatelessWidget {
   final TextEditingController controller;
