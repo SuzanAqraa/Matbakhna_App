@@ -10,6 +10,8 @@ class RecipeModel {
   final String videoUrl;
   final String serving;
   final String difficulty;
+  final String mealType;
+  final String nationality;
   final int numLikes;
   final int numComments;
   final List<CommentModel> comments;
@@ -25,6 +27,8 @@ class RecipeModel {
     required this.videoUrl,
     required this.serving,
     required this.difficulty,
+    required this.mealType,
+    required this.nationality,
     required this.numLikes,
     required this.numComments,
     required this.comments,
@@ -42,6 +46,8 @@ class RecipeModel {
       videoUrl: json['videoUrl'] ?? '',
       serving: json['serving'] ?? '',
       difficulty: json['difficulty'] ?? '',
+      mealType: json['mealType'] ?? '',
+      nationality: json['nationality'] ?? '',
       numLikes: json['Num_Likes'] is int ? json['Num_Likes'] : 0,
       numComments: json['Num_Comments'] is int ? json['Num_Comments'] : 0,
       comments: (json['comments'] as List<dynamic>?)
@@ -59,4 +65,22 @@ class RecipeModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'Title': title,
+      'Description': description,
+      'imageUrl': imageUrl,
+      'duration': duration,
+      'videoUrl': videoUrl,
+      'serving': serving,
+      'difficulty': difficulty,
+      'mealType': mealType,
+      'nationality': nationality,
+      'Num_Likes': numLikes,
+      'Num_Comments': numComments,
+      'comments': comments.map((e) => e.toJson()).toList(),
+      'steps': steps.map((e) => e.toJson()).toList(),
+      'ingredients': ingredients,
+    };
+  }
 }
