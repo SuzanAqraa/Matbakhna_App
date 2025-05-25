@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/SimpleAppBar.dart';
-import 'package:matbakhna_mobile/Models/RecipeModel.dart';
+import 'package:matbakhna_mobile/Models/recipe_model.dart';
 
 import '../widgets/comments_list.dart';
 import '../widgets/post_header.dart';

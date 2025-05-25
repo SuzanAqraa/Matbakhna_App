@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/auth/widgets/logo_with_appname.dart';
-import '../../../core/utils/brand_colors.dart';
+import 'package:matbakhna_mobile/features/auth/sing_up/view/widgets/logo_with_appname.dart';
+import '../../../../../core/utils/brand_colors.dart';
 import 'signup_second_screen.dart';
 import '../widgets/sign_up_form.dart';
 

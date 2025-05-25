@@ -1,5 +1,5 @@
-import 'package:matbakhna_mobile/Models/CommentModel.dart';
-import 'package:matbakhna_mobile/Models/StepModel.dart';
+import 'package:matbakhna_mobile/Models/comment_model.dart';
+import 'package:matbakhna_mobile/Models/step_model.dart';
 class RecipeModel {
   final String id;
   final String title;

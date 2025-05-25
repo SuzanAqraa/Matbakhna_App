@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../../core/utils/brand_colors.dart';
-import '../../../../core/utils/textfeild_styles.dart';
-import 'package:matbakhna_mobile/features/auth/screens/login_screen.dart';
+import '../../../../../../core/utils/brand_colors.dart';
+import '../../../../../../core/utils/textfeild_styles.dart';
+import 'package:matbakhna_mobile/features/auth/sing_up/view/screens/login_screen.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(String userId) onRegistered;
