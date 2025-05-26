@@ -59,10 +59,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserProfile() async {
     if (currentUser != null) {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser!.uid)
-          .get();
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser!.uid)
+              .get();
 
       final data = doc.data();
       if (data != null) {
@@ -96,8 +97,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (currentUser != null) {
-      final docRef =
-      FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
+      final docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid);
       final currentData = await docRef.get();
       final data = currentData.data();
 
@@ -112,9 +114,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (newUsername == oldUsername &&
           newPhone == oldPhone &&
           newAddress == oldAddress) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('لا يوجد أي تعديل جديد')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('لا يوجد أي تعديل جديد')));
         return;
       }
 
@@ -124,9 +126,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'address': newAddress,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم حفظ البيانات بنجاح')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('تم حفظ البيانات بنجاح')));
     }
   }
 
@@ -169,19 +171,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: 'الملف الشخصي',
           showBackButton: false,
         ),
+
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child: Form(
             key: _formKey,
             child: Column(
               children: [
+                const SizedBox(height: 12),
+
                 AvatarSection(
-                  hasImage: userImageFile != null ||
+                  hasImage:
+                      userImageFile != null ||
                       (userImageUrl != null && userImageUrl!.isNotEmpty),
                   imageUrl: userImageFile == null ? userImageUrl : null,
                   imageFile: userImageFile,
-                  onEditPressed: _pickImage,
                 ),
+
                 const SizedBox(height: 12),
                 ProfileFormField(
                   controller: usernameController,
@@ -206,6 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   keyboardType: TextInputType.phone,
                   isRequired: false,
                 ),
+                const SizedBox(height: 20),
                 ActionButton(
                   text: 'حفظ',
                   color: BrandColors.primaryColor,
@@ -220,7 +227,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                   child: const Text(
                     'تغيير كلمة المرور',
-                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
 
