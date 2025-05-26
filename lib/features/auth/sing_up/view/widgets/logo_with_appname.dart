@@ -17,8 +17,8 @@ class LogoWithName extends StatelessWidget {
               padding: const EdgeInsets.all(12.0),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Image.asset(
-                  'assets/images/matbakhna_logo.png',
+                child: Image.network(
+                  'https://res.cloudinary.com/dflfjyux4/image/upload/v1748278624/matbakhna_logo_xsasll.png',
                 ),
               ),
             ),
