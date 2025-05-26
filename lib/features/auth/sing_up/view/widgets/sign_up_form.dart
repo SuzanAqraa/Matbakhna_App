@@ -49,8 +49,10 @@ class _SignUpFormState extends State<SignUpForm> {
       final username = email.split('@')[0];
       final avatarUrl = 'https://ui-avatars.com/api/?name=$username&background=random';
 
+      // Send email verification
       await credential.user!.sendEmailVerification();
 
+      // Save user info
       await FirebaseFirestore.instance.collection('users').doc(credential.user?.uid).set({
         'email': email,
         'username': username,
@@ -58,10 +60,44 @@ class _SignUpFormState extends State<SignUpForm> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      widget.onRegistered(credential.user!.uid);
+      // Inform the user to check email
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('تفعيل البريد الإلكتروني'),
+            content: const Text('تم إرسال رابط تفعيل إلى بريدك الإلكتروني. يرجى تفعيل البريد ثم الضغط على "تم التفعيل".'),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  // Reload user to get updated emailVerified status
+                  await credential.user!.reload();
+                  final refreshedUser = FirebaseAuth.instance.currentUser;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم إرسال رابط تفعيل إلى بريدك الإلكتروني')),
+                  if (refreshedUser != null && refreshedUser.emailVerified) {
+                    widget.onRegistered(refreshedUser.uid);
+                    Navigator.of(context).pop(); // Close dialog
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('لم يتم التحقق بعد. تأكد من أنك قمت بتفعيل البريد.')),
+                    );
+                  }
+                },
+                child: const Text('تم التفعيل'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await credential.user!.sendEmailVerification();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('تم إعادة إرسال رابط التفعيل.')),
+                  );
+                },
+                child: const Text('إعادة الإرسال'),
+              ),
+            ],
+          );
+        },
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -77,6 +113,7 @@ class _SignUpFormState extends State<SignUpForm> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

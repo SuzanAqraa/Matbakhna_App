@@ -5,11 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core/utils/brand_colors.dart';
-import '../../../../core/widgets/SimpleAppBar.dart';
+import '../../../../core/widgets/simple_appbar.dart';
 import '../../../../core/widgets/custom_bottom_navbar.dart';
 
 import '../../../home/screens/home_screen.dart';
 import '../widgets/avatar_section.dart';
+import '../widgets/change_password_dialog.dart';
 import '../widgets/profile_form_field.dart';
 import '../widgets/action_button.dart';
 import '../widgets/logout_button.dart';
@@ -93,15 +94,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _saveProfile() async {
-    if (_formKey.currentState!.validate() && currentUser != null) {
-      await FirebaseFirestore.instance
+    if (!_formKey.currentState!.validate()) return;
+
+    if (currentUser != null) {
+      final docRef = FirebaseFirestore.instance
           .collection('users')
-          .doc(currentUser!.uid)
-          .update({
-            'address': addressController.text,
-            'phone': phoneController.text,
-            'username': usernameController.text,
-          });
+          .doc(currentUser!.uid);
+      final currentData = await docRef.get();
+      final data = currentData.data();
+
+      final newUsername = usernameController.text.trim();
+      final newPhone = phoneController.text.trim();
+      final newAddress = addressController.text.trim();
+
+      final oldUsername = data?['username']?.trim() ?? '';
+      final oldPhone = data?['phone']?.trim() ?? '';
+      final oldAddress = data?['address']?.trim() ?? '';
+
+      if (newUsername == oldUsername &&
+          newPhone == oldPhone &&
+          newAddress == oldAddress) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('لا يوجد أي تعديل جديد')));
+        return;
+      }
+
+      await docRef.update({
+        'username': newUsername,
+        'phone': newPhone,
+        'address': newAddress,
+      });
 
       ScaffoldMessenger.of(
         context,
@@ -148,51 +171,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: 'الملف الشخصي',
           showBackButton: false,
         ),
+
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child: Form(
             key: _formKey,
             child: Column(
               children: [
+                const SizedBox(height: 12),
+
                 AvatarSection(
                   hasImage:
                       userImageFile != null ||
                       (userImageUrl != null && userImageUrl!.isNotEmpty),
                   imageUrl: userImageFile == null ? userImageUrl : null,
                   imageFile: userImageFile,
-                  onEditPressed: _pickImage,
                 ),
+
                 const SizedBox(height: 12),
                 ProfileFormField(
                   controller: usernameController,
                   label: 'اسم المستخدم',
+                  isRequired: true,
                 ),
                 ProfileFormField(
                   controller: emailController,
                   label: 'البريد الإلكتروني',
                   readOnly: true,
                   keyboardType: TextInputType.emailAddress,
+                  isRequired: true,
                 ),
                 ProfileFormField(
                   controller: addressController,
                   label: 'العنوان',
+                  isRequired: false,
                 ),
                 ProfileFormField(
                   controller: phoneController,
                   label: 'رقم الهاتف',
                   keyboardType: TextInputType.phone,
+                  isRequired: false,
                 ),
-                if (createdAt != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text("تاريخ الإنشاء: $createdAt"),
-                  ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
                 ActionButton(
                   text: 'حفظ',
                   color: BrandColors.primaryColor,
                   onPressed: _saveProfile,
                 ),
+                TextButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => const ChangePasswordDialog(),
+                    );
+                  },
+                  child: const Text(
+                    'تغيير كلمة المرور',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
                 const SizedBox(height: 20),
                 LogoutButton(onTap: _logout),
                 const SizedBox(height: 20),

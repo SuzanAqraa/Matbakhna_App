@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../core/utils/brand_colors.dart';
-import '../../../core/widgets/SimpleAppBar.dart';
+import '../../../core/widgets/simple_appbar.dart';
 import '../../../Models/recipe_model.dart';
 
 import '../widgets/recipe_video.dart';
@@ -35,15 +35,15 @@ class _RecipePageState extends State<RecipePage> {
   Future<void> fetchRecipe() async {
     try {
       print("Fetching recipe with ID: ${widget.recipeId}");
-      final doc = await FirebaseFirestore.instance
-          .collection('recipes')
-          .doc(widget.recipeId)
-          .get();
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('recipes')
+              .doc(widget.recipeId)
+              .get();
 
       print("Document exists: ${doc.exists}");
       if (doc.exists) {
         final data = doc.data();
-        print("Document data: $data");
 
         if (data != null) {
           final fetchedRecipe = RecipeModel.fromJson(doc.id, data);
@@ -53,7 +53,10 @@ class _RecipePageState extends State<RecipePage> {
 
           setState(() {
             recipe = fetchedRecipe;
-            checked = List<bool>.filled(fetchedRecipe.ingredients.length, false);
+            checked = List<bool>.filled(
+              fetchedRecipe.ingredients.length,
+              false,
+            );
 
             if (videoId.isNotEmpty) {
               _controller = YoutubePlayerController(
@@ -102,41 +105,42 @@ class _RecipePageState extends State<RecipePage> {
         title: recipe?.title ?? 'جاري التحميل...',
         showBackButton: true,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : recipe == null
-          ? const Center(child: Text("الوصفة غير موجودة"))
-          : Directionality(
-        textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (_controller != null)
-                RecipeVideoWidget(controller: _controller!),
-              const SizedBox(height: 24),
-              RecipeInfoWidget(
-                serving: recipe!.serving,
-                difficulty: recipe!.difficulty,
-                duration: recipe!.duration,
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : recipe == null
+              ? const Center(child: Text("الوصفة غير موجودة"))
+              : Directionality(
+                textDirection: TextDirection.rtl,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (_controller != null)
+                        RecipeVideoWidget(controller: _controller!),
+                      const SizedBox(height: 24),
+                      RecipeInfoWidget(
+                        serving: recipe!.serving,
+                        difficulty: '${recipe!.difficulty}/10',
+                        duration: recipe!.duration,
+                      ),
+                      const SizedBox(height: 24),
+                      IngredientsListWidget(
+                        ingredients: recipe!.ingredients,
+                        checked: checked,
+                        onChanged: (index, value) {
+                          setState(() => checked[index] = value ?? false);
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      StepsListWidget(
+                        steps: recipe!.steps.map((e) => e.description).toList(),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 24),
-              IngredientsListWidget(
-                ingredients: recipe!.ingredients,
-                checked: checked,
-                onChanged: (index, value) {
-                  setState(() => checked[index] = value ?? false);
-                },
-              ),
-              const SizedBox(height: 24),
-              StepsListWidget(
-                steps: recipe!.steps.map((e) => e.description).toList(),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

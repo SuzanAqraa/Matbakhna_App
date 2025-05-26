@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:matbakhna_mobile/core/widgets/PrimaryAppBar.dart';
-import 'package:matbakhna_mobile/core/widgets/RecipeCardWidget.dart';
+import 'package:matbakhna_mobile/core/widgets/primary_appbar.dart';
+import 'package:matbakhna_mobile/core/widgets/recipe_card_widget.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_bottom_navbar.dart';
+
+import '../../../core/widgets/simple_appbar.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -18,7 +20,7 @@ class FavoritesScreen extends StatelessWidget {
           textDirection: TextDirection.rtl,
           child: Column(
             children: [
-              const HomeAppBar(title: 'الوصفات المفضلة'),
+              const CustomAppBar(title: 'الوصفات المفضلة'),
 
               Expanded(
                 child: StreamBuilder(

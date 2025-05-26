@@ -18,7 +18,7 @@ class RecipeInfoWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildInfoItem(Icons.group_outlined, serving),
-        _buildInfoItem(Icons.star_outline, difficulty),
+        _buildInfoItem(Icons.psychology, difficulty),
         _buildInfoItem(Icons.access_time_outlined, duration),
       ],
     );
