@@ -49,7 +49,9 @@ class AvatarSection extends StatelessWidget {
     } else if (hasImage && imageUrl != null && imageUrl!.isNotEmpty) {
       imageProvider = CachedNetworkImageProvider(imageUrl!);
     } else {
-      imageProvider = const AssetImage('assets/assets/default_profile.png');
+      imageProvider = const NetworkImage(
+        'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg',
+      );
     }
 
     return Stack(
