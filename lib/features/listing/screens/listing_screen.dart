@@ -5,24 +5,45 @@ import 'package:matbakhna_mobile/core/widgets/RecipeCardWidget.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_bottom_navbar.dart';
 
 class ListingScreen extends StatelessWidget {
-  const ListingScreen({super.key});
+  final List<String>? mealTypesFilter;
+  final List<String>? nationalitiesFilter;
+  final int? difficultyFilter;
+
+  const ListingScreen({
+    super.key,
+    this.mealTypesFilter,
+    this.nationalitiesFilter,
+    this.difficultyFilter,
+  });
 
   @override
   Widget build(BuildContext context) {
+    Query recipesQuery = FirebaseFirestore.instance.collection('recipes');
+
+    if (mealTypesFilter != null && mealTypesFilter!.isNotEmpty) {
+      recipesQuery = recipesQuery.where('mealType', whereIn: mealTypesFilter);
+    }
+
+    if (nationalitiesFilter != null && nationalitiesFilter!.isNotEmpty) {
+      recipesQuery = recipesQuery.where('nationality', whereIn: nationalitiesFilter);
+    }
+
+    if (difficultyFilter != null) {
+      recipesQuery = recipesQuery.where('difficulty', isEqualTo: difficultyFilter);
+    }
+
     return Scaffold(
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 3),
       backgroundColor: const Color(0xFFFDF5EC),
-
       body: SafeArea(
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Column(
             children: [
               const HomeAppBar(title: 'صفحة التصفح'),
-
               Expanded(
-                child: StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection('recipes').snapshots(),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: recipesQuery.snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -65,4 +86,4 @@ class ListingScreen extends StatelessWidget {
       ),
     );
   }
-  }
+}
