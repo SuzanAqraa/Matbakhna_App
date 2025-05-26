@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core/utils/brand_colors.dart';
-import '../../../../core/widgets/SimpleAppBar.dart';
+import '../../../../core/widgets/simple_appbar.dart';
 import '../../../../core/widgets/custom_bottom_navbar.dart';
 
 import '../../../home/screens/home_screen.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/textfeild_styles.dart';
-import '../../../core/widgets/SimpleAppBar.dart';
+import '../../../core/widgets/simple_appbar.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);

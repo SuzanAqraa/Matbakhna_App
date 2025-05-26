@@ -2,12 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
-import '../../../core/widgets/PrimaryAppBar.dart';
+import '../../../core/widgets/primary_appbar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
 import '../../../core/services/auth_service.dart';
 import '../../listing/screens/listing_screen.dart';
-import '../widgets/CookingTipCard.dart';
-import '../widgets/TryTodaySection.dart';
+import '../widgets/cooking_tip_card.dart';
+import '../widgets/try_today_section.dart';
 import '../widgets/most_popular_section.dart';
 
 

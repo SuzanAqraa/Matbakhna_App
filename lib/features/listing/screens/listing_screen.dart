@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:matbakhna_mobile/core/widgets/PrimaryAppBar.dart';
-import 'package:matbakhna_mobile/core/widgets/RecipeCardWidget.dart';
+import 'package:matbakhna_mobile/core/widgets/primary_appbar.dart';
+import 'package:matbakhna_mobile/core/widgets/recipe_card_widget.dart';
 import 'package:matbakhna_mobile/core/widgets/custom_bottom_navbar.dart';
 
 class ListingScreen extends StatefulWidget {
