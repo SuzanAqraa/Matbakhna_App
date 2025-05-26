@@ -6,11 +6,22 @@ import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
 
 class HomeAppBar extends StatelessWidget {
   final String title;
+  final TextEditingController? controller;
+  final Function(String)? onChanged;
+  final Function(String)? onSubmitted; // ✅ جديد
 
-  const HomeAppBar({super.key, required this.title});
+  const HomeAppBar({
+    super.key,
+    required this.title,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController effectiveController = controller ?? TextEditingController();
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 60, bottom: 32),
@@ -20,10 +31,7 @@ class HomeAppBar extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            title,
-            style: ThemeTextStyle.titleTextFieldStyle,
-          ),
+          Text(title, style: ThemeTextStyle.titleTextFieldStyle),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -37,18 +45,18 @@ class HomeAppBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: TextField(
+                      controller: effectiveController,
+                      onChanged: onChanged,
+                      onSubmitted: onSubmitted, // ✅ استخدام onSubmitted
                       style: ThemeTextStyle.recipeNameTextFieldStyle,
                       decoration: InputDecoration(
-                        icon: const Icon(
-                          Icons.search,
-                          color: IconStyle.defaultIconColor,
-                          size: IconStyle.defaultIconSize,
-                        ),
+                        icon: const Icon(Icons.search,
+                            color: IconStyle.defaultIconColor,
+                            size: IconStyle.defaultIconSize),
                         hintText: 'ابحث عن وصفة...',
                         hintStyle: ThemeTextStyle.interActionTextFieldStyle,
                         border: InputBorder.none,
                       ),
-
                     ),
                   ),
                 ),
@@ -61,11 +69,9 @@ class HomeAppBar extends StatelessWidget {
                     );
                   },
                   icon: const Icon(Icons.tune,
-                      color: IconStyle.defaultIconColor, size: IconStyle.defaultIconSize),
-                  label: Text(
-                    'عذوقك',
-                    style: ThemeTextStyle.interActionTextFieldStyle,
-                  ),
+                      color: IconStyle.defaultIconColor,
+                      size: IconStyle.defaultIconSize),
+                  label: Text('عذوقك', style: ThemeTextStyle.interActionTextFieldStyle),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: BrandColors.secondaryBackgroundColor,
                     shape: RoundedRectangleBorder(

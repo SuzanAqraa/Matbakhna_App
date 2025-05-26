@@ -5,9 +5,11 @@ import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import '../../../core/widgets/PrimaryAppBar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
 import '../../../core/services/auth_service.dart';
+import '../../listing/screens/listing_screen.dart';
 import '../widgets/CookingTipCard.dart';
 import '../widgets/TryTodaySection.dart';
 import '../widgets/most_popular_section.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,6 +22,8 @@ class _HomePageState extends State<HomePage> {
   List<RecipeModel> recipes = [];
   List<RecipeModel> mostPopularRecipes = [];
   RecipeModel? tryTodayRecipe;
+
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -77,11 +81,28 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _onSearchSubmitted(String query) {
+    if (query.trim().isEmpty) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListingScreen(searchQuery: query.trim()),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> contentWidgets = [];
 
-    contentWidgets.add(const HomeAppBar(title: 'شو بدك تطبخ اليوم؟'));
+    contentWidgets.add(
+      HomeAppBar(
+        title: 'شو بدك تطبخ اليوم؟',
+        controller: _searchController,
+        onSubmitted: _onSearchSubmitted,
+      ),
+    );
     contentWidgets.add(const SizedBox(height: 20));
 
     if (recipes.isEmpty || tryTodayRecipe == null) {
