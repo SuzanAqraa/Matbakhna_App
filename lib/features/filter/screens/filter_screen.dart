@@ -12,8 +12,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final List<String> mealTypes = ['فطور', 'غداء', 'عشاء', 'تحلية', 'سناك'];
-  final List<String> cuisines = ['فلسطيني','سوري', 'مصري', 'إيطالي', 'تركي', 'لبناني'];
+  final List<String> mealTypes = ['فطور', 'غداء', 'عشاء', 'تحلية', 'سناك','سلطة'];
+  final List<String> cuisines = ['فلسطيني','سوري', 'مصري', 'إيطالي', 'تركي', 'لبناني','سعودي'];
   List<String> selectedMealTypes = [];
   List<String> selectedCuisines = [];
   double difficulty = 5;
