@@ -43,7 +43,6 @@ class _RecipePageState extends State<RecipePage> {
       print("Document exists: ${doc.exists}");
       if (doc.exists) {
         final data = doc.data();
-        print("Document data: $data");
 
         if (data != null) {
           final fetchedRecipe = RecipeModel.fromJson(doc.id, data);
@@ -113,12 +112,12 @@ class _RecipePageState extends State<RecipePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (_controller != null)
+               if (_controller != null)
                 RecipeVideoWidget(controller: _controller!),
               const SizedBox(height: 24),
               RecipeInfoWidget(
                 serving: recipe!.serving,
-                difficulty: recipe!.difficulty,
+                difficulty: '${recipe!.difficulty}/10',
                 duration: recipe!.duration,
               ),
               const SizedBox(height: 24),

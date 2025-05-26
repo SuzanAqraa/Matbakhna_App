@@ -9,7 +9,7 @@ class RecipeModel {
   final String duration;
   final String videoUrl;
   final String serving;
-  final String difficulty;
+  final int difficulty;
   final String mealType;
   final String nationality;
   final int numLikes;
@@ -45,7 +45,7 @@ class RecipeModel {
       duration: json['duration'] ?? '',
       videoUrl: json['videoUrl'] ?? '',
       serving: json['serving'] ?? '',
-      difficulty: json['difficulty'] ?? '',
+      difficulty: json['difficulty'] ?? 5,
       mealType: json['mealType'] ?? '',
       nationality: json['nationality'] ?? '',
       numLikes: json['Num_Likes'] is int ? json['Num_Likes'] : 0,
