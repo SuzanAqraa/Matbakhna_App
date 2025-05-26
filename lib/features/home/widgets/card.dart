@@ -26,9 +26,7 @@ class RecipeCard extends StatelessWidget {
   void _goToRecipeDetailPage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => RecipePage(
-          recipeId: recipe.id
-      )),
+      MaterialPageRoute(builder: (context) => RecipePage(recipeId: recipe.id)),
     );
   }
 
@@ -122,36 +120,36 @@ class RecipeCard extends StatelessWidget {
             ),
 
             // Bottom Bar
-            GestureDetector(
-              onTap: () => _goToPostPage(context),
-              child: Container(
-                height: 32,
-                decoration: BoxDecoration(
-                  color: BrandColors.secondaryBackgroundColor,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(16),
-                    bottomRight: Radius.circular(16),
-                  ),
+            Container(
+              height: 32,
+              decoration: BoxDecoration(
+                color: BrandColors.secondaryBackgroundColor,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.favorite_border,
-                          size: IconStyle.smallIconSize,
-                          color: IconStyle.smallIconColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          recipe.numLikes.toString(),
-                          style: ThemeTextStyle.smallTextFieldStyle,
-                        ),
-                      ],
-                    ),
-                    Row(
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.favorite_border,
+                        size: IconStyle.smallIconSize,
+                        color: IconStyle.smallIconColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        recipe.numLikes.toString(),
+                        style: ThemeTextStyle.smallTextFieldStyle,
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () => _goToPostPage(context),
+                    child: Row(
                       children: [
                         Icon(
                           Icons.comment_outlined,
@@ -165,8 +163,8 @@ class RecipeCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
