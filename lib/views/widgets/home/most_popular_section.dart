@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/screens/listing_screen.dart';
 import '../../../core/utils/icon_styles.dart';
+import '../../../core/utils/spaces.dart';
 import '../../../core/utils/textfeild_styles.dart';
 import 'card.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
@@ -25,14 +26,14 @@ class MostPopularSection extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        Spaces.verticalSpacing(12),
         SizedBox(
           height: 260,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: recipes.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 12),
+            separatorBuilder: (context, index) => Spaces.horizontalSpacing(12),
             itemBuilder: (context, index) {
               final recipeModel = recipes[index];
               return SizedBox(

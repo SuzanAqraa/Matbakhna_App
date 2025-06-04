@@ -4,6 +4,8 @@ import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
 
+import '../../../core/utils/spaces.dart';
+
 class RecipeCard extends StatelessWidget {
   final RecipeModel recipe;
   final bool isFavorite;
@@ -90,7 +92,7 @@ class RecipeCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    Spaces.verticalSpacing(8),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
@@ -100,7 +102,7 @@ class RecipeCard extends StatelessWidget {
                         style: ThemeTextStyle.recipeNameTextFieldStyle,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    Spaces.verticalSpacing(2),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: SizedBox(
@@ -140,7 +142,7 @@ class RecipeCard extends StatelessWidget {
                         size: IconStyle.smallIconSize,
                         color: IconStyle.smallIconColor,
                       ),
-                      const SizedBox(width: 4),
+                      Spaces.horizontalSpacing(4),
                       Text(
                         recipe.numLikes.toString(),
                         style: ThemeTextStyle.smallTextFieldStyle,
@@ -156,9 +158,9 @@ class RecipeCard extends StatelessWidget {
                           size: IconStyle.smallIconSize,
                           color: IconStyle.smallIconColor,
                         ),
-                        const SizedBox(width: 4),
+                        Spaces.horizontalSpacing(4),
                         Text(
-                          recipe.comments?.length.toString() ?? '0',
+                          recipe.comments.length.toString() ,
                           style: ThemeTextStyle.smallTextFieldStyle,
                         ),
                       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../Models/recipe_model.dart';
 import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/spaces.dart';
 import '../../../core/utils/textfeild_styles.dart';
 import '../../screens/recipe_detail_screen.dart';
 
@@ -46,7 +47,7 @@ class TryTodaySection extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(width: 16),
+              Spaces.horizontalSpacing(16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,14 +60,14 @@ class TryTodaySection extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    Spaces.verticalSpacing(6),
                     Text(
                       recipe.title,
                       style: ThemeTextStyle.titleTextFieldStyle.copyWith(
                         fontSize: 24,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    Spaces.verticalSpacing(6),
                     Text(
                       recipe.description,
                       maxLines: 2,

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/icon_styles.dart';
+import '../../../core/utils/spaces.dart';
 import '../../../core/utils/textfeild_styles.dart';
 
 class CookingTipCard extends StatefulWidget {
@@ -69,7 +70,7 @@ class _CookingTipCardState extends State<CookingTipCard> {
               color: Colors.white,
               size: IconStyle.defaultIconSize,
             ),
-            const SizedBox(width: 12),
+            Spaces.horizontalSpacing(12),
             Expanded(
               child: tips.isEmpty
                   ? const Text(

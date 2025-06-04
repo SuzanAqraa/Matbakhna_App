@@ -6,8 +6,8 @@ import '../../controller/home_controller.dart';
 
 import '../../core/widgets/appbar/primary_appbar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
+import '../../../core/utils/spaces.dart';
 import '../../../Models/recipe_model.dart';
-import 'listing_screen.dart';
 import '../widgets/home/cooking_tip_card.dart';
 import '../widgets/home/most_popular_section.dart';
 import '../widgets/home/try_today_section.dart';
@@ -79,14 +79,14 @@ class _HomePageState extends State<HomePage> {
                 controller: _searchController,
                 onSubmitted: _onSearchSubmitted,
               ),
-              const SizedBox(height: 20),
+              Spaces.verticalSpacing(20),
               if (isLoading || tryTodayRecipe == null)
                 const Center(child: CircularProgressIndicator())
               else ...[
                 TryTodaySection(recipe: tryTodayRecipe!),
-                const SizedBox(height: 10),
+                Spaces.verticalSpacing(10),
                 CookingTipCard(cookingTips: cookingTips),
-                const SizedBox(height: 10),
+                Spaces.verticalSpacing(10),
                 MostPopularSection(recipes: mostPopularRecipes),
               ],
             ],
