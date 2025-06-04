@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../models/user_model.dart';
 import '../repositories/profile_repository.dart';
 
 class ProfileController extends ChangeNotifier {
@@ -13,7 +14,6 @@ class ProfileController extends ChangeNotifier {
 
   final ImagePicker _picker = ImagePicker();
 
-  // Controllers for form fields
   late TextEditingController emailController;
   late TextEditingController addressController;
   late TextEditingController phoneController;
@@ -41,14 +41,16 @@ class ProfileController extends ChangeNotifier {
     final data = await _userRepository.fetchUserProfile();
 
     if (data != null) {
-      emailController.text = data['email'] ?? '';
-      addressController.text = data['address'] ?? '';
-      phoneController.text = data['phone'] ?? '';
-      usernameController.text = data['username'] ?? '';
-      createdAt = data['createdAt']?.toDate().toString();
-      userImageUrl =
-          data['avatar'] ??
-          'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg?semt=ais_hybrid&w=740';
+      final user = UserModel.fromJson(data);
+
+      emailController.text = user.email;
+      addressController.text = user.address;
+      phoneController.text = user.phone;
+      usernameController.text = user.username;
+      createdAt = user.createdAt.toString();
+      userImageUrl = user.avatar.isNotEmpty
+          ? user.avatar
+          : 'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg?semt=ais_hybrid&w=740';
     }
 
     isLoading = false;
@@ -71,13 +73,15 @@ class ProfileController extends ChangeNotifier {
 
     final data = await _userRepository.fetchUserProfile();
 
-    final oldUsername = data?['username']?.trim() ?? '';
-    final oldPhone = data?['phone']?.trim() ?? '';
-    final oldAddress = data?['address']?.trim() ?? '';
+    if (data == null) {
+      return 'حدث خطأ، لم يتم تحميل البيانات.';
+    }
 
-    if (newUsername == oldUsername &&
-        newPhone == oldPhone &&
-        newAddress == oldAddress) {
+    final oldUser = UserModel.fromJson(data);
+
+    if (newUsername == oldUser.username &&
+        newPhone == oldUser.phone &&
+        newAddress == oldUser.address) {
       return 'لا يوجد أي تعديل جديد';
     }
 
