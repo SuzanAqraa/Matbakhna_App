@@ -15,8 +15,7 @@ class FavoritesScreen extends StatelessWidget {
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 2),
       backgroundColor: const Color(0xFFFDF5EC),
 
-      body: SafeArea(
-        child: Directionality(
+        body: Directionality(
           textDirection: TextDirection.rtl,
           child: Column(
             children: [
@@ -66,7 +65,7 @@ class FavoritesScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
+
     );
   }
 }
