@@ -30,17 +30,17 @@ class CustomBottomNavbar extends StatelessWidget {
             if (user == null) {
               LoginRequiredDialog.show(context, const ProfileScreen());
             } else {
-              Navigator.pushReplacementNamed(context, '/profile');
+              Navigator.pushNamed(context, '/profile');
             }
             break;
           case 1:
-            Navigator.pushReplacementNamed(context, '/');
+            Navigator.pushNamed(context, '/');
             break;
           case 2:
-            Navigator.pushReplacementNamed(context, '/favorites');
+            Navigator.pushNamed(context, '/favorites');
             break;
           case 3:
-            Navigator.pushReplacementNamed(context, '/listing');
+            Navigator.pushNamed(context, '/listing');
             break;
         }
       },

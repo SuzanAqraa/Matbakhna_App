@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:matbakhna_mobile/views/screens/filter_screen.dart';
 import 'core/services/auth_service.dart';
 import 'views/screens/favorites_screen.dart';
 import 'views/screens/listing_screen_wrapper.dart';
@@ -51,6 +52,9 @@ class MyApp extends StatelessWidget {
           case '/recipeDetail':
             final recipeId = settings.arguments as String;
             return MaterialPageRoute(builder: (_) => RecipePage(recipeId: recipeId));
+
+          case '/filter':
+            return MaterialPageRoute(builder: (_) => FilterScreen());
 
           default:
             return MaterialPageRoute(
