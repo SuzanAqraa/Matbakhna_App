@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:matbakhna_mobile/features/profile/view/screens/profile_screen.dart';
-import 'package:matbakhna_mobile/features/favorites/screens/favorites_screen.dart';
-import 'package:matbakhna_mobile/features/home/screens/home_screen.dart';
-import 'package:matbakhna_mobile/features/listing/screens/listing_screen.dart';
+import 'package:matbakhna_mobile/views/screens/profile_screen.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
 
@@ -33,29 +30,17 @@ class CustomBottomNavbar extends StatelessWidget {
             if (user == null) {
               LoginRequiredDialog.show(context, const ProfileScreen());
             } else {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
+              Navigator.pushNamed(context, '/profile');
             }
             break;
           case 1:
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
+            Navigator.pushNamed(context, '/');
             break;
           case 2:
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const FavoritesScreen()),
-            );
+            Navigator.pushNamed(context, '/favorites');
             break;
           case 3:
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const ListingScreen()),
-            );
+            Navigator.pushNamed(context, '/listing');
             break;
         }
       },

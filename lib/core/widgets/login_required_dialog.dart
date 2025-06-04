@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/auth/sing_up/view/screens/login_screen.dart';
+import 'package:matbakhna_mobile/views/screens/login_screen.dart';
 
 class LoginRequiredDialog {
   static void show(BuildContext context, Widget destinationPage) {
