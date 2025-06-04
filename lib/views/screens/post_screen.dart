@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/utils/spaces.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
 
@@ -128,7 +129,7 @@ class _PostPageState extends State<PostPage> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              Spaces.horizontalSpacing(8),
                               IconButton(
                                 onPressed: () {
                                 },

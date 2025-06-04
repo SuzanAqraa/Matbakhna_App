@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/spaces.dart';
+
 class ChangePasswordDialog extends StatefulWidget {
   const ChangePasswordDialog({super.key});
 
@@ -98,7 +100,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                           ? 'يرجى إدخال كلمة المرور القديمة'
                           : null,
             ),
-            const SizedBox(height: 10),
+            Spaces.verticalSpacing(10),
             TextFormField(
               controller: newPasswordController,
               obscureText: true,
@@ -108,7 +110,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
               validator: _validateNewPassword,
             ),
             if (errorMessage != null) ...[
-              const SizedBox(height: 12),
+              Spaces.verticalSpacing(12),
               Text(
                 errorMessage!,
                 style: const TextStyle(

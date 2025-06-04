@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../core/utils/brand_colors.dart';
+import '../../core/utils/spaces.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
 import '../../core/widgets/custom_bottom_navbar.dart';
 
@@ -178,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             key: _formKey,
             child: Column(
               children: [
-                const SizedBox(height: 12),
+                Spaces.verticalSpacing(12),
 
                 AvatarSection(
                   hasImage:
@@ -188,7 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   imageFile: userImageFile,
                 ),
 
-                const SizedBox(height: 12),
+                Spaces.verticalSpacing(12),
                 ProfileFormField(
                   controller: usernameController,
                   label: 'اسم المستخدم',
@@ -212,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   keyboardType: TextInputType.phone,
                   isRequired: false,
                 ),
-                const SizedBox(height: 20),
+                Spaces.verticalSpacing(20),
                 ActionButton(
                   text: 'حفظ',
                   color: BrandColors.primaryColor,
@@ -234,9 +235,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                Spaces.verticalSpacing(20),
                 LogoutButton(onTap: _logout),
-                const SizedBox(height: 20),
+                Spaces.verticalSpacing(20),
               ],
             ),
           ),

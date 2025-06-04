@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/Models/comment_model.dart';
 
+import '../../../core/utils/spaces.dart';
+
 class CommentBubble extends StatelessWidget {
   final CommentModel comment;
 
@@ -21,13 +23,13 @@ class CommentBubble extends StatelessWidget {
           comment.profilePic != null && comment.profilePic!.isNotEmpty
               ? CircleAvatar(backgroundImage: NetworkImage(comment.profilePic!), radius: 20)
               : const CircleAvatar(radius: 20, backgroundColor: Colors.grey, child: Icon(Icons.person, color: Colors.white)),
-          const SizedBox(width: 12),
+          Spaces.horizontalSpacing(12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(comment.username, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                const SizedBox(height: 6),
+                Spaces.verticalSpacing(6),
                 Text(comment.comment, style: const TextStyle(fontSize: 16)),
               ],
             ),

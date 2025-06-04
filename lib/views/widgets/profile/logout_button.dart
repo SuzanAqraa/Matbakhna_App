@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/utils/spaces.dart';
 import '../../../core/utils/textfeild_styles.dart';
 
 class LogoutButton extends StatelessWidget {
@@ -14,7 +15,7 @@ class LogoutButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.logout, size: 20, color: Colors.redAccent),
-          const SizedBox(width: 8),
+          Spaces.horizontalSpacing(8),
           Text(
             'تسجيل الخروج',
             style: ThemeTextStyle.ButtonTextFieldStyle.copyWith(
