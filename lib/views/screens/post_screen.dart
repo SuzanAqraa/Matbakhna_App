@@ -1,12 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/utils/spaces.dart';
-import '../../core/widgets/appbar/simple_appbar.dart';
+import 'package:matbakhna_mobile/core/widgets/appbar/simple_appbar.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
+import 'package:matbakhna_mobile/Views/widgets/post/comments_list.dart';
+import 'package:matbakhna_mobile/Views/widgets/post/post_header.dart';
+import 'package:matbakhna_mobile/core/utils/spaces.dart';
 
-import '../widgets/post/comments_list.dart';
-import '../widgets/post/post_header.dart';
+import '../../controller/post_controller.dart';
 
 class PostPage extends StatefulWidget {
   final String recipeId;
@@ -18,26 +17,7 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
-  bool isLiked = false;
-  int likes = 0;
-
-  void toggleLike(String docId) async {
-    final recipeRef = FirebaseFirestore.instance.collection('recipes').doc(docId);
-
-    if (!isLiked) {
-      await recipeRef.update({'Num_Likes': FieldValue.increment(1)});
-      setState(() {
-        isLiked = true;
-        likes++;
-      });
-    } else {
-      await recipeRef.update({'Num_Likes': FieldValue.increment(-1)});
-      setState(() {
-        isLiked = false;
-        likes--;
-      });
-    }
-  }
+  final PostController _controller = PostController();
 
   @override
   Widget build(BuildContext context) {
@@ -45,21 +25,18 @@ class _PostPageState extends State<PostPage> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: const Color(0xFFFDF5EC),
-        body: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance.collection('recipes').doc(widget.recipeId).get(),
+        body: FutureBuilder<RecipeModel?>(
+          future: _controller.fetchRecipe(widget.recipeId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (!snapshot.hasData || !snapshot.data!.exists) {
+            if (!snapshot.hasData || snapshot.data == null) {
               return const Center(child: Text("الوصفة غير موجودة"));
             }
 
-            final doc = snapshot.data!;
-            final recipe = RecipeModel.fromJson(doc.id, doc.data() as Map<String, dynamic>);
-            likes = recipe.numLikes;
-
+            final recipe = snapshot.data!;
             return Scaffold(
               backgroundColor: const Color(0xFFFDF5EC),
               appBar: CustomAppBar(title: recipe.title, showBackButton: true),
@@ -70,9 +47,9 @@ class _PostPageState extends State<PostPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     child: Row(
                       children: [
-                        Text('${recipe.comments.length} تعليق', style: const TextStyle(fontSize: 16, color: Color(0xFF3D3D3D))),
+                        Text('${recipe.comments.length} تعليق'),
                         const Spacer(),
-                        Text('$likes اعجاب', style: const TextStyle(fontSize: 16, color: Color(0xFF3D3D3D))),
+                        Text('${_controller.likes} اعجاب'),
                       ],
                     ),
                   ),
@@ -83,23 +60,25 @@ class _PostPageState extends State<PostPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         TextButton.icon(
-                          onPressed: () => toggleLike(recipe.id),
-                          icon: Icon(isLiked ? Icons.favorite : Icons.favorite_border,
-                              color: isLiked ? Colors.red : Colors.black),
-                          label: const Text('أعجبني',
-                              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600)),
+                          onPressed: () async {
+                            await _controller.toggleLike(recipe.id);
+                            setState(() {});
+                          },
+                          icon: Icon(
+                            _controller.isLiked ? Icons.favorite : Icons.favorite_border,
+                            color: _controller.isLiked ? Colors.red : Colors.black,
+                          ),
+                          label: const Text('أعجبني'),
                         ),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.comment_outlined, color: Colors.black),
-                          label: const Text('تعليق',
-                              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600)),
+                         TextButton.icon(
+                          onPressed: null,
+                          icon: Icon(Icons.comment_outlined, color: Colors.black),
+                          label: Text('تعليق'),
                         ),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.share_outlined, color: Colors.black),
-                          label: const Text('مشاركة',
-                              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600)),
+                         TextButton.icon(
+                          onPressed: null,
+                          icon: Icon(Icons.share_outlined, color: Colors.black),
+                          label: Text('مشاركة'),
                         ),
                       ],
                     ),
@@ -118,10 +97,8 @@ class _PostPageState extends State<PostPage> {
                                 child: TextField(
                                   decoration: InputDecoration(
                                     hintText: 'اكتب تعليقك...',
-                                    hintStyle: const TextStyle(color: Colors.grey),
                                     filled: true,
                                     fillColor: Colors.white,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide.none,
@@ -131,8 +108,7 @@ class _PostPageState extends State<PostPage> {
                               ),
                               Spaces.horizontalSpacing(8),
                               IconButton(
-                                onPressed: () {
-                                },
+                                onPressed: () {},
                                 icon: const Icon(Icons.send, color: Color(0xFFE56B50)),
                               ),
                             ],
