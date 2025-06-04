@@ -8,7 +8,7 @@ class HomeAppBar extends StatelessWidget {
   final String title;
   final TextEditingController? controller;
   final Function(String)? onChanged;
-  final Function(String)? onSubmitted; // ✅ جديد
+  final Function(String)? onSubmitted;
 
   const HomeAppBar({
     super.key,
@@ -47,7 +47,7 @@ class HomeAppBar extends StatelessWidget {
                     child: TextField(
                       controller: effectiveController,
                       onChanged: onChanged,
-                      onSubmitted: onSubmitted, // ✅ استخدام onSubmitted
+                      onSubmitted: onSubmitted,
                       style: ThemeTextStyle.recipeNameTextFieldStyle,
                       decoration: InputDecoration(
                         icon: const Icon(Icons.search,
@@ -61,12 +61,10 @@ class HomeAppBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
+
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SearchScreen()),
-                    );
+                    Navigator.pushNamed(context, '/filter');
                   },
                   icon: const Icon(Icons.tune,
                       color: IconStyle.defaultIconColor,
@@ -81,6 +79,7 @@ class HomeAppBar extends StatelessWidget {
                     elevation: 2,
                   ),
                 ),
+
               ],
             ),
           ),

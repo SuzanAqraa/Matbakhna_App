@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/screens/listing_screen.dart';
 import '../../core/utils/brand_colors.dart';
-import '../../core/utils/textfeild_styles.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
+import '../widgets/filter/difficulty_filter.dart';
+import '../widgets/filter/filter_section.dart';
+import '../widgets/filter/show_results_button.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+
+
+class FilterScreen extends StatefulWidget {
+  const FilterScreen({Key? key}) : super(key: key);
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<FilterScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<FilterScreen> {
   final List<String> mealTypes = ['فطور', 'غداء', 'عشاء', 'تحلية', 'سناك','سلطة'];
   final List<String> cuisines = ['فلسطيني','سوري', 'مصري', 'إيطالي', 'تركي', 'لبناني','سعودي'];
   List<String> selectedMealTypes = [];
@@ -29,6 +33,31 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  void setDifficulty(double value) {
+    setState(() {
+      difficulty = value;
+    });
+  }
+
+  void setFilterByDifficulty(bool value) {
+    setState(() {
+      filterByDifficulty = value;
+    });
+  }
+
+  void showResults() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListingScreen(
+          mealTypesFilter: selectedMealTypes.isEmpty ? null : selectedMealTypes,
+          nationalitiesFilter: selectedCuisines.isEmpty ? null : selectedCuisines,
+          difficultyFilter: filterByDifficulty ? difficulty.round() : null,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -43,104 +72,28 @@ class _SearchScreenState extends State<SearchScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 32),
-                Text('نوع الوجبة', style: ThemeTextStyle.recipeNameTextFieldStyle),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 12.0,
-                  runSpacing: 12.0,
-                  children: mealTypes.map((type) {
-                    final isSelected = selectedMealTypes.contains(type);
-                    return ChoiceChip(
-                      label: Text(
-                        type,
-                        style: TextStyle(fontSize: 16, color: isSelected ? Colors.black : Colors.grey[700]),
-                      ),
-                      selected: isSelected,
-                      selectedColor: BrandColors.primaryColor,
-                      onSelected: (_) => toggleSelection(type, selectedMealTypes),
-                      backgroundColor: Colors.grey.shade200,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    );
-                  }).toList(),
+                FilterSection(
+                  title: 'نوع الوجبة',
+                  options: mealTypes,
+                  selectedOptions: selectedMealTypes,
+                  onSelectionChanged: (value) => toggleSelection(value, selectedMealTypes),
                 ),
                 const SizedBox(height: 32),
-                Text('مطبخ البلد', style: ThemeTextStyle.recipeNameTextFieldStyle),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 12.0,
-                  runSpacing: 12.0,
-                  children: cuisines.map((cuisine) {
-                    final isSelected = selectedCuisines.contains(cuisine);
-                    return ChoiceChip(
-                      label: Text(
-                        cuisine,
-                        style: TextStyle(fontSize: 16, color: isSelected ? Colors.black : Colors.grey[700]),
-                      ),
-                      selected: isSelected,
-                      selectedColor: BrandColors.primaryColor,
-                      onSelected: (_) => toggleSelection(cuisine, selectedCuisines),
-                      backgroundColor: Colors.grey.shade200,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    );
-                  }).toList(),
+                FilterSection(
+                  title: 'مطبخ البلد',
+                  options: cuisines,
+                  selectedOptions: selectedCuisines,
+                  onSelectionChanged: (value) => toggleSelection(value, selectedCuisines),
                 ),
                 const SizedBox(height: 32),
-                Text('كم بدك اياها صعبة؟', style: ThemeTextStyle.recipeNameTextFieldStyle),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text('١', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text('١٠', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  ],
-                ),
-                Slider(
-                  value: difficulty,
-                  min: 1,
-                  max: 10,
-                  divisions: 9,
-                  label: difficulty.round().toString(),
-                  activeColor: BrandColors.secondaryColor,
-                  onChanged: (value) {
-                    setState(() {
-                      difficulty = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 12),
-                SwitchListTile(
-                  title: const Text('تفعيل فلترة حسب الصعوبة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  value: filterByDifficulty,
-                  onChanged: (value) {
-                    setState(() {
-                      filterByDifficulty = value;
-                    });
-                  },
+                DifficultyFilter(
+                  difficulty: difficulty,
+                  filterByDifficulty: filterByDifficulty,
+                  onDifficultyChanged: setDifficulty,
+                  onFilterByDifficultyChanged: setFilterByDifficulty,
                 ),
                 const SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ListingScreen(
-                          mealTypesFilter: selectedMealTypes.isEmpty ? null : selectedMealTypes,
-                          nationalitiesFilter: selectedCuisines.isEmpty ? null : selectedCuisines,
-                          difficultyFilter: filterByDifficulty ? difficulty.round() : null,
-                        ),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: BrandColors.primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: Text(
-                    'أظهر النتائج',
-                    style: ThemeTextStyle.ButtonTextFieldStyle.copyWith(color: Colors.black),
-                  ),
-                ),
+                ShowResultsButton(onPressed: showResults),
                 const SizedBox(height: 24),
               ],
             ),
