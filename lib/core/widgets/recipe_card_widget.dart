@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:matbakhna_mobile/features/recipes/post/screens/post_screen.dart';
-import 'package:matbakhna_mobile/features/recipes/screens/recipe_detail_screen.dart';
+import 'package:matbakhna_mobile/views/screens/post_screen.dart';
+import 'package:matbakhna_mobile/views/screens/recipe_detail_screen.dart';
 
 class RecipeCard extends StatelessWidget {
   final String imageUrl;

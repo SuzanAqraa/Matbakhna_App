@@ -1,8 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'core/services/auth_service.dart';
-import 'features/home/screens/home_screen.dart';
-
+import 'views/screens/favorites_screen.dart';
+import 'views/screens/listing_screen_wrapper.dart';
+import 'views/screens/profile_screen.dart';
+import 'views/screens/post_screen.dart';
+import 'views/screens/recipe_detail_screen.dart';
+import 'views/screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +29,37 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: const HomePage(),
+      initialRoute: '/',
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/':
+            return MaterialPageRoute(builder: (_) => const HomePage());
+
+          case '/profile':
+            return MaterialPageRoute(builder: (_) => const ProfileScreen());
+
+          case '/favorites':
+            return MaterialPageRoute(builder: (_) => const FavoritesScreen());
+
+          case '/listing':
+            return MaterialPageRoute(builder: (_) => const ListingScreenWrapper());
+
+          case '/post':
+            final recipeId = settings.arguments as String;
+            return MaterialPageRoute(builder: (_) => PostPage(recipeId: recipeId));
+
+          case '/recipeDetail':
+            final recipeId = settings.arguments as String;
+            return MaterialPageRoute(builder: (_) => RecipePage(recipeId: recipeId));
+
+          default:
+            return MaterialPageRoute(
+              builder: (_) => Scaffold(
+                body: Center(child: Text('لا يوجد صفحة لهذا الراوت: ${settings.name}')),
+              ),
+            );
+        }
+      },
     );
   }
 }
