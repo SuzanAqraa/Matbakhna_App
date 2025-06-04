@@ -1,16 +1,17 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  User? get currentUser => _auth.currentUser;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<Map<String, dynamic>?> fetchUserProfile() async {
+    final currentUser = _auth.currentUser;
     if (currentUser == null) return null;
-    final doc = await _firestore.collection('users').doc(currentUser!.uid).get();
+
+    final doc = await _firestore.collection('users').doc(currentUser.uid).get();
+    if (!doc.exists) return null;
+
     return doc.data();
   }
 
@@ -18,13 +19,19 @@ class UserRepository {
     required String username,
     required String phone,
     required String address,
+    String? avatar,
   }) async {
+    final currentUser = _auth.currentUser;
     if (currentUser == null) return;
-    await _firestore.collection('users').doc(currentUser!.uid).update({
+
+    final updates = {
       'username': username,
       'phone': phone,
       'address': address,
-    });
+      if (avatar != null) 'avatar': avatar,
+    };
+
+    await _firestore.collection('users').doc(currentUser.uid).update(updates);
   }
 
   Future<void> logout() async {

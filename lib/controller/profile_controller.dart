@@ -1,18 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/user_model.dart';
 import '../repositories/profile_repository.dart';
 
 class ProfileController extends ChangeNotifier {
   final UserRepository _userRepository;
+  final ImagePicker _picker = ImagePicker();
 
   ProfileController(this._userRepository) {
     _init();
   }
-
-  final ImagePicker _picker = ImagePicker();
 
   late TextEditingController emailController;
   late TextEditingController addressController;
@@ -66,22 +67,54 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
+  Future<String?> _uploadImageToCloudinary(File imageFile) async {
+    try {
+      final uploadUrl = Uri.parse('https://api.cloudinary.com/v1_1/dflfjyux4/image/upload');
+      final request = http.MultipartRequest('POST', uploadUrl)
+        ..fields['upload_preset'] = 'flutter_unsigned'
+        ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        final res = await http.Response.fromStream(response);
+        final data = json.decode(res.body);
+        return data['secure_url'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<String?> saveProfile() async {
     final newUsername = usernameController.text.trim();
     final newPhone = phoneController.text.trim();
     final newAddress = addressController.text.trim();
 
     final data = await _userRepository.fetchUserProfile();
-
     if (data == null) {
       return 'حدث خطأ، لم يتم تحميل البيانات.';
     }
 
     final oldUser = UserModel.fromJson(data);
 
-    if (newUsername == oldUser.username &&
-        newPhone == oldUser.phone &&
-        newAddress == oldUser.address) {
+    String? imageUrl = userImageUrl;
+    if (userImageFile != null) {
+      imageUrl = await _uploadImageToCloudinary(userImageFile!);
+      if (imageUrl == null) {
+        return 'فشل في رفع الصورة';
+      }
+    }
+
+    bool isChanged = newUsername != oldUser.username ||
+        newPhone != oldUser.phone ||
+        newAddress != oldUser.address ||
+        (userImageFile != null) ||
+        (userImageFile == null && imageUrl != oldUser.avatar);
+
+    if (!isChanged) {
       return 'لا يوجد أي تعديل جديد';
     }
 
@@ -89,7 +122,11 @@ class ProfileController extends ChangeNotifier {
       username: newUsername,
       phone: newPhone,
       address: newAddress,
+      avatar: imageUrl,
     );
+
+    userImageFile = null;
+    userImageUrl = imageUrl;
 
     return 'تم حفظ البيانات بنجاح';
   }

@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             key: _formKey,
             child: Column(
               children: [
-                Spaces.verticalSpacing(12),
+                Spaces.verticalSpacing(9),
 
                 AvatarSection(
                   hasImage: _controller.userImageFile != null ||
@@ -71,9 +71,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ? _controller.userImageUrl
                       : null,
                   imageFile: _controller.userImageFile,
+                  onImageChanged: (newUrl) {
+                    setState(() {
+                      _controller.userImageUrl = newUrl;
+                    });
+                  },
                 ),
 
-                Spaces.verticalSpacing(12),
+
+                Spaces.verticalSpacing(9),
                 ProfileFormField(
                   controller: _controller.usernameController,
                   label: 'اسم المستخدم',
@@ -97,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   keyboardType: TextInputType.phone,
                   isRequired: false,
                 ),
-                Spaces.verticalSpacing(20),
+                Spaces.verticalSpacing(9),
                 ActionButton(
                   text: 'حفظ',
                   color: BrandColors.primaryColor,
@@ -127,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
 
-                Spaces.verticalSpacing(20),
+                Spaces.verticalSpacing(9),
                 LogoutButton(
                   onTap: () async {
                     final message = await _controller.logout();
@@ -150,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                   },
                 ),
-                Spaces.verticalSpacing(20),
+                Spaces.verticalSpacing(9),
               ],
             ),
           ),
