@@ -40,7 +40,8 @@ class CustomBottomNavbar extends StatelessWidget {
             Navigator.pushNamed(context, '/favorites');
             break;
           case 3:
-            Navigator.pushNamed(context, '/listing');
+            Navigator.pushNamed(context, '/listing', arguments: '');
+
             break;
         }
       },
