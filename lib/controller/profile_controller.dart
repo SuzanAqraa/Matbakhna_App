@@ -152,25 +152,20 @@ class ProfileController extends ChangeNotifier {
 
     try {
       await user.verifyBeforeUpdateEmail(newEmail);
-      await user.sendEmailVerification();
-
-      // ✅ تحديث الإيميل في Firestore مباشرة بعد إرسال رابط التحقق
-      await _userRepository.updateUserEmail(newEmail);
-
-      canEditEmail = false;
-      notifyListeners();
-      return 'تم إرسال رابط التحقق إلى بريدك الإلكتروني الجديد. يرجى التحقق لتأكيد التغيير.';
+      // لا تقم بتحديث Firestore مباشرة، انتظر تأكيد الإيميل.
+      return 'تم إرسال رابط التحقق إلى بريدك الجديد. يرجى تأكيده لإكمال التغيير.';
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        return 'يجب تسجيل الدخول مجددًا لتحديث البريد الإلكتروني.';
-      } else if (e.code == 'operation-not-allowed') {
-        return 'يجب تفعيل مزود تسجيل الدخول عبر البريد الإلكتروني من Firebase Console.';
-      } else if (e.code == 'email-already-in-use') {
-        return 'البريد الإلكتروني مستخدم من قبل.';
+      if (e.code == 'email-already-in-use') {
+        return 'البريد الإلكتروني مستخدم مسبقًا';
+      } else if (e.code == 'requires-recent-login') {
+        return 'يجب تسجيل الدخول مجددًا لتغيير البريد الإلكتروني';
+      } else {
+        return 'حدث خطأ: ${e.message}';
       }
-      return e.message ?? 'فشل في تحديث البريد الإلكتروني.';
     }
   }
+
+
 
 
   Future<String?> logout() async {
