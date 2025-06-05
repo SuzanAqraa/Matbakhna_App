@@ -28,7 +28,7 @@ class CustomBottomNavbar extends StatelessWidget {
         switch (index) {
           case 0:
             if (user == null) {
-              LoginRequiredDialog.show(context, const ProfileScreen());
+              LoginRequiredDialog.show(context,  ProfileScreen());
             } else {
               Navigator.pushNamed(context, '/profile');
             }

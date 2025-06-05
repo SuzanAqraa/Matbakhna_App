@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const HomePage());
 
           case '/profile':
-            return MaterialPageRoute(builder: (_) => const ProfileScreen());
+            return MaterialPageRoute(builder: (_) =>  ProfileScreen());
 
           case '/favorites':
             return MaterialPageRoute(builder: (_) => const FavoritesScreen());

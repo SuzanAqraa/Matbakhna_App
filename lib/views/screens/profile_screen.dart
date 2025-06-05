@@ -14,7 +14,6 @@ import '../widgets/profile/logout_button.dart';
 
 import 'home_screen.dart';
 
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
@@ -25,6 +24,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late ProfileController _controller;
   final _formKey = GlobalKey<FormState>();
+  late String originalEmail;
 
   @override
   void initState() {
@@ -33,6 +33,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _controller.addListener(() {
       if (mounted) setState(() {});
     });
+
+    originalEmail = _controller.emailController.text;
   }
 
   @override
@@ -40,6 +42,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _controller.disposeControllers();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _showEmailVerificationDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("تأكيد البريد الإلكتروني"),
+        content: const Text("تم تغيير البريد الإلكتروني. يجب تفعيل البريد الإلكتروني قبل استخدامه."),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final result = await _controller.updateEmail();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(result ?? '')),
+              );
+            },
+            child: const Text("إعادة الإرسال"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("إغلاق"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -55,14 +83,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: _controller.isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-          padding:
-          const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
           child: Form(
             key: _formKey,
             child: Column(
               children: [
                 Spaces.verticalSpacing(9),
-
                 AvatarSection(
                   hasImage: _controller.userImageFile != null ||
                       (_controller.userImageUrl != null &&
@@ -77,8 +103,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                   },
                 ),
-
-
                 Spaces.verticalSpacing(9),
                 ProfileFormField(
                   controller: _controller.usernameController,
@@ -88,7 +112,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ProfileFormField(
                   controller: _controller.emailController,
                   label: 'البريد الإلكتروني',
-                  readOnly: true,
                   keyboardType: TextInputType.emailAddress,
                   isRequired: true,
                 ),
@@ -109,10 +132,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: BrandColors.primaryColor,
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) return;
-                    final message = await _controller.saveProfile();
-                    if (message != null) {
+
+                    final result = await _controller.saveProfile();
+                    final currentEmail = _controller.emailController.text;
+
+                    if (result == 'email_changed' && currentEmail != originalEmail) {
+                      _showEmailVerificationDialog();
+                    } else if (result != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(message)),
+                        SnackBar(content: Text(result)),
                       );
                     }
                   },
@@ -132,7 +160,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-
                 Spaces.verticalSpacing(9),
                 LogoutButton(
                   onTap: () async {
@@ -141,16 +168,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(message),
-                          backgroundColor: message.contains('فشل')
-                              ? Colors.red
-                              : Colors.green,
+                          backgroundColor: message.contains('فشل') ? Colors.red : Colors.green,
                         ),
                       );
                       if (message == 'تم تسجيل الخروج بنجاح') {
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                              builder: (_) => const HomePage()),
+                          MaterialPageRoute(builder: (_) => const HomePage()),
                         );
                       }
                     }

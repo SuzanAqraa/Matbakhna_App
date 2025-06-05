@@ -34,7 +34,16 @@ class UserRepository {
     await _firestore.collection('users').doc(currentUser.uid).update(updates);
   }
 
+  Future<void> updateUserEmail(String newEmail) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    await userDoc.update({'email': newEmail});
+  }
+
   Future<void> logout() async {
     await _auth.signOut();
   }
+
 }
