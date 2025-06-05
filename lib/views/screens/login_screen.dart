@@ -1,10 +1,11 @@
+// login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:matbakhna_mobile/views/screens/home_screen.dart';
+import '../../controller/login_controller.dart';
 import '../../core/utils/brand_colors.dart';
 import '../../core/utils/textfeild_styles.dart';
-import 'package:matbakhna_mobile/views/screens/signup_screen.dart';
 
+import 'home_screen.dart';
+import 'signup_screen.dart';
 import '../widgets/signup/logo_with_appname.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,8 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  final LoginController _controller = LoginController();
 
+  bool _obscurePassword = true;
   String? _emailError;
   String? _passwordError;
 
@@ -38,30 +40,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+    final userId = await _controller.login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+          (emailErr) => setState(() => _emailError = emailErr),
+          (passErr) => setState(() => _passwordError = passErr),
+    );
 
+    if (userId != null) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        if (e.code == 'user-not-found') {
-          _emailError = 'هذا البريد غير مسجل';
-        } else if (e.code == 'wrong-password') {
-          _passwordError = 'كلمة السر خاطئة';
-        } else {
-          _emailError = 'فشل تسجيل الدخول. حاول مرة أخرى';
-        }
-      });
-    } catch (_) {
-      setState(() {
-        _emailError = 'حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.';
-      });
     }
   }
 
@@ -73,9 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
         child: Column(
           children: [
-            const SizedBox(height:16),
+            const SizedBox(height: 16),
             const LogoWithName(),
-            const SizedBox(height:10),
+            const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -101,12 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         focusedBorder: _border(),
                         errorText: _emailError,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'الرجاء إدخال البريد الإلكتروني';
-                        }
-                        return null;
-                      },
+                      validator: _controller.validateEmail,
                     ),
                     const SizedBox(height: 16),
                     Align(
@@ -130,17 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : Icons.visibility_off,
                             color: Colors.grey[700],
                           ),
-                          onPressed: () => setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          }),
+                          onPressed: () =>
+                              setState(() => _obscurePassword = !_obscurePassword),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'الرجاء إدخال كلمة السر';
-                        }
-                        return null;
-                      },
+                      validator: _controller.validatePassword,
                     ),
                     const SizedBox(height: 28),
                     SizedBox(
@@ -161,7 +140,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -171,8 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                const SignUpStepOnePage(),
+                                builder: (context) => const SignUpScreen(),
                               ),
                             );
                           },
