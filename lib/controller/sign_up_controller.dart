@@ -1,117 +1,77 @@
 import 'package:flutter/material.dart';
 import '../repositories/sign_up_repository.dart';
-
+import '../views/widgets/signup/email_verification_dialog.dart'; // تأكدي من المسار الصحيح
 
 class SignUpController {
   final SignUpRepository _repository = SignUpRepository();
 
-  // ديكور حقل البريد الإلكتروني
-  InputDecoration get emailFieldDecoration => InputDecoration(
-    hintText: 'example@email.com',
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
+  final emailFieldDecoration = const InputDecoration(
+    border: OutlineInputBorder(),
+    hintText: 'example@mail.com',
   );
 
-  // ديكور حقل كلمة المرور مع زر اظهار/اخفاء
-  InputDecoration passwordFieldDecoration(bool obscure, VoidCallback toggleObscure) => InputDecoration(
-    hintText: '********',
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-    suffixIcon: IconButton(
-      icon: Icon(obscure ? Icons.visibility : Icons.visibility_off, color: Colors.grey[700]),
-      onPressed: toggleObscure,
-    ),
+  InputDecoration passwordFieldDecoration(bool obscureText, VoidCallback toggle) =>
+      InputDecoration(
+        border: const OutlineInputBorder(),
+        suffixIcon: IconButton(
+          icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+          onPressed: toggle,
+        ),
+      );
+
+  final confirmPasswordFieldDecoration = const InputDecoration(
+    border: OutlineInputBorder(),
   );
 
-  // ديكور حقل تأكيد كلمة المرور
-  InputDecoration get confirmPasswordFieldDecoration => InputDecoration(
-    hintText: '********',
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: const BorderSide(color: Colors.black, width: 2)),
-  );
-
-  // دوال التحقق
   String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'الرجاء إدخال البريد الإلكتروني';
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) return 'صيغة البريد الإلكتروني غير صحيحة';
+    if (value == null || value.isEmpty) {
+      return 'الرجاء إدخال البريد الإلكتروني';
+    }
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(value)) {
+      return 'الرجاء إدخال بريد إلكتروني صالح';
+    }
     return null;
   }
 
   String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'الرجاء إدخال كلمة السر';
-    if (value.length < 8) return 'كلمة السر يجب أن تكون على الأقل 8 أحرف';
-    final hasUppercase = value.contains(RegExp(r'[A-Z]'));
-    final hasLowercase = value.contains(RegExp(r'[a-z]'));
-    final hasDigit = value.contains(RegExp(r'\d'));
-    final hasSpecialChar = value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    if (!hasUppercase) return 'كلمة السر يجب أن تحتوي على حرف كبير';
-    if (!hasLowercase) return 'كلمة السر يجب أن تحتوي على حرف صغير';
-    if (!hasDigit) return 'كلمة السر يجب أن تحتوي على رقم';
-    if (!hasSpecialChar) return 'كلمة السر يجب أن تحتوي على رمز خاص';
+    if (value == null || value.isEmpty) {
+      return 'الرجاء إدخال كلمة السر';
+    }
+    if (value.length < 6) {
+      return 'كلمة السر يجب أن تكون 6 أحرف على الأقل';
+    }
     return null;
   }
 
   String? validateConfirmPassword(String? value, String password) {
-    if (value != password) return 'كلمتا السر غير متطابقتين';
+    if (value == null || value.isEmpty) {
+      return 'الرجاء تأكيد كلمة السر';
+    }
+    if (value != password) {
+      return 'كلمتا السر غير متطابقتين';
+    }
     return null;
   }
 
-  // دالة التسجيل التي تستخدم الريبو
   Future<String?> registerUser(BuildContext context, String email, String password) async {
     try {
       final credential = await _repository.createUser(email, password);
-
-      final username = email.split('@')[0];
-      final avatarUrl = 'https://ui-avatars.com/api/?name=$username&background=random';
-
       await _repository.sendEmailVerification(credential.user!);
 
-      await _repository.saveUserData(credential.user!.uid, email);
+      // استخدم الويدجيت المفصول
+      final isVerified = await EmailVerificationDialog.show(context, credential.user!);
 
-      await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('تفعيل البريد الإلكتروني'),
-            content: const Text('تم إرسال رابط تفعيل إلى بريدك الإلكتروني. يرجى تفعيل البريد ثم الضغط على "تم التفعيل".'),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  await credential.user!.reload();
-                  final refreshedUser = credential.user;
-                  if (refreshedUser != null && refreshedUser.emailVerified) {
-                    Navigator.of(context).pop();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('لم يتم التحقق بعد. تأكد من أنك قمت بتفعيل البريد.')),
-                    );
-                  }
-                },
-                child: const Text('تم التفعيل'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await _repository.resendVerificationEmail();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('تم إعادة إرسال رابط التفعيل.')),
-                  );
-                },
-                child: const Text('إعادة الإرسال'),
-              ),
-            ],
-          );
-        },
-      );
-
-      return credential.user?.uid;
+      if (isVerified) {
+        return credential.user!.uid;
+      } else {
+        await credential.user!.delete();
+        return null;
+      }
     } catch (e) {
-      // هنا يمكنك إضافة معالجة أخطاء خاصة بالواجهة أو إظهار رسائل
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حدث خطأ أثناء التسجيل: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('فشل التسجيل: ${e.toString()}')),
+      );
       return null;
     }
   }

@@ -1,12 +1,12 @@
-// sign_up_form.dart
 import 'package:flutter/material.dart';
 import '../../../controller/sign_up_controller.dart';
 import '../../../core/utils/brand_colors.dart';
-import '../../../core/utils/textfeild_styles.dart';
+import 'custom_input_field.dart';
+import 'custom_submit_button.dart';
 
-import '../../../controller/sign_up_controller.dart';
 class SignUpForm extends StatefulWidget {
   final Function(String userId) onRegistered;
+
   const SignUpForm({super.key, required this.onRegistered});
 
   @override
@@ -23,50 +23,44 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('البريد الإلكتروني *', style: ThemeTextStyle.recipeNameTextFieldStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _emailController,
-            decoration: _controller.emailFieldDecoration,
-            validator: _controller.validateEmail,
-          ),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('كلمة السر *', style: ThemeTextStyle.recipeNameTextFieldStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _obscurePassword,
-            decoration: _controller.passwordFieldDecoration(_obscurePassword, () {
-              setState(() => _obscurePassword = !_obscurePassword);
-            }),
-            validator: _controller.validatePassword,
-          ),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('تأكيد كلمة السر *', style: ThemeTextStyle.recipeNameTextFieldStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _confirmPasswordController,
-            obscureText: _obscurePassword,
-            decoration: _controller.confirmPasswordFieldDecoration,
-            validator: (value) => _controller.validateConfirmPassword(value, _passwordController.text),
-          ),
-          const SizedBox(height: 28),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            CustomInputField(
+              label: 'البريد الإلكتروني *',
+              controller: _emailController,
+              obscureText: false,
+              decoration: _controller.emailFieldDecoration,
+              validator: _controller.validateEmail,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 16),
+            CustomInputField(
+              label: 'كلمة السر *',
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              decoration: _controller.passwordFieldDecoration(
+                _obscurePassword,
+                    () => setState(() => _obscurePassword = !_obscurePassword),
+              ),
+              validator: _controller.validatePassword,
+            ),
+            const SizedBox(height: 16),
+            CustomInputField(
+              label: 'تأكيد كلمة السر *',
+              controller: _confirmPasswordController,
+              obscureText: _obscurePassword,
+              decoration: _controller.confirmPasswordFieldDecoration,
+              validator: (value) => _controller.validateConfirmPassword(
+                value,
+                _passwordController.text,
+              ),
+            ),
+            const SizedBox(height: 28),
+            CustomSubmitButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   final userId = await _controller.registerUser(
@@ -74,21 +68,27 @@ class _SignUpFormState extends State<SignUpForm> {
                     _emailController.text.trim(),
                     _passwordController.text.trim(),
                   );
-                  if (userId != null) widget.onRegistered(userId);
+                  if (userId != null) {
+                    widget.onRegistered(userId);
+                    Navigator.pushNamed(context, '/signup_second_screen');
+                  }
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: BrandColors.primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login_screen');
+              },
+              child: Text(
+                'هل لديك حساب؟ سجل الدخول',
+                style: TextStyle(
+                  color: BrandColors.secondaryColor,
                 ),
               ),
-              child: Text('التالي', style: ThemeTextStyle.ButtonTextFieldStyle),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
