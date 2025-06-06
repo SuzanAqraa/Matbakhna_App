@@ -42,6 +42,14 @@ class UserRepository {
     await userDoc.update({'email': newEmail});
   }
 
+  Future<void> updateUserEmailInFirestore(String newEmail) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    final userDoc = _firestore.collection('users').doc(user.uid);
+    await userDoc.update({'email': newEmail});
+  }
+
   Future<void> logout() async {
     await _auth.signOut();
   }

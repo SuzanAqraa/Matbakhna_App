@@ -34,7 +34,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) setState(() {});
     });
 
-    originalEmail = _controller.emailController.text;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        originalEmail = _controller.emailController.text;
+      });
+    });
   }
 
   @override
@@ -49,21 +53,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("تأكيد البريد الإلكتروني"),
-        content: const Text("تم تغيير البريد الإلكتروني. يجب تفعيل البريد الإلكتروني قبل استخدامه."),
+        content: const Text("هل تريد إرسال رابط التحقق إلى بريدك الجديد؟"),
         actions: [
           TextButton(
             onPressed: () async {
-              final result = await _controller.updateEmail();
+              final newEmail = _controller.emailController.text.trim();
+              if (newEmail.isEmpty) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("يرجى إدخال بريد إلكتروني صحيح")),
+                );
+                return;
+              }
+              final result = await _controller.updateEmail(newEmail);
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(result ?? '')),
-              );
+
+              if (result == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('لم يتم التحقق من البريد الإلكتروني')),
+                );
+              } else if (result.contains('إرسال')) {
+                originalEmail = newEmail;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(result)),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(result)),
+                );
+              }
             },
-            child: const Text("إعادة الإرسال"),
+            child: const Text("تغيير الإيميل"),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("إغلاق"),
+            child: const Text("إلغاء"),
           ),
         ],
       ),
@@ -109,12 +133,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: 'اسم المستخدم',
                   isRequired: true,
                 ),
+
                 ProfileFormField(
                   controller: _controller.emailController,
                   label: 'البريد الإلكتروني',
                   keyboardType: TextInputType.emailAddress,
                   isRequired: true,
                 ),
+
+                ElevatedButton(
+                  onPressed: () {
+                    _showEmailVerificationDialog();
+                  },
+                  child: const Text('تغيير البريد الإلكتروني'),
+                ),
+
                 ProfileFormField(
                   controller: _controller.addressController,
                   label: 'العنوان',
@@ -134,11 +167,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (!_formKey.currentState!.validate()) return;
 
                     final result = await _controller.saveProfile();
-                    final currentEmail = _controller.emailController.text;
 
-                    if (result == 'email_changed' && currentEmail != originalEmail) {
-                      _showEmailVerificationDialog();
-                    } else if (result != null) {
+                    if (result != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(result)),
                       );
@@ -168,7 +198,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(message),
-                          backgroundColor: message.contains('فشل') ? Colors.red : Colors.green,
+                          backgroundColor:
+                          message.contains('فشل') ? Colors.red : Colors.green,
                         ),
                       );
                       if (message == 'تم تسجيل الخروج بنجاح') {

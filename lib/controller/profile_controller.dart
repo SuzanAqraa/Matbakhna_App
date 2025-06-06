@@ -51,6 +51,13 @@ class ProfileController extends ChangeNotifier {
     }
 
     final user = UserModel.fromJson(data);
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    final firebaseEmail = firebaseUser?.email ?? '';
+    if (firebaseEmail.isNotEmpty && firebaseEmail != user.email) {
+      await _userRepository.updateUserEmailInFirestore(firebaseEmail);
+      user.email = firebaseEmail;
+    }
 
     emailController.text = user.email;
     usernameController.text = user.username;
@@ -61,7 +68,6 @@ class ProfileController extends ChangeNotifier {
         ? user.avatar
         : 'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg?semt=ais_hybrid&w=740';
 
-    final firebaseUser = FirebaseAuth.instance.currentUser;
     originalEmail = user.email;
     isEmailVerified = firebaseUser?.emailVerified ?? false;
     canEditEmail = !isEmailVerified;
@@ -89,79 +95,98 @@ class ProfileController extends ChangeNotifier {
 
       final response = await request.send();
       if (response.statusCode == 200) {
-        final res = await http.Response.fromStream(response);
-        final data = json.decode(res.body);
-        return data['secure_url'];
+        final resStr = await response.stream.bytesToString();
+        final json = jsonDecode(resStr);
+        return json['secure_url'];
       } else {
         return null;
       }
-    } catch (_) {
+    } catch (e) {
       return null;
     }
   }
 
-  Future<String?> saveProfile() async {
-    final newEmail = emailController.text.trim();
-    final newUsername = usernameController.text.trim();
-    final newPhone = phoneController.text.trim();
-    final newAddress = addressController.text.trim();
-
-    final data = await _userRepository.fetchUserProfile();
-    if (data == null) return 'حدث خطأ، لم يتم تحميل البيانات.';
-
-    final oldUser = UserModel.fromJson(data);
-    String? imageUrl = userImageUrl;
-
-    if (userImageFile != null) {
-      imageUrl = await _uploadImageToCloudinary(userImageFile!);
-      if (imageUrl == null) return 'فشل في رفع الصورة';
+  Future<String?> updateEmail(String newEmail) async {
+    if (newEmail == originalEmail) {
+      return "البريد الإلكتروني جديد، يرجى تغييره.";
     }
 
-    if (newEmail != originalEmail) {
-      return 'email_changed';
-    }
-
-    bool isChanged = newUsername != oldUser.username ||
-        newPhone != oldUser.phone ||
-        newAddress != oldUser.address ||
-        (userImageFile != null) ||
-        (userImageFile == null && imageUrl != oldUser.avatar);
-
-    if (!isChanged) return 'لا يوجد أي تعديل جديد';
-
-    await _userRepository.updateUserProfile(
-      username: newUsername,
-      phone: newPhone,
-      address: newAddress,
-      avatar: imageUrl,
-    );
-
-    userImageFile = null;
-    userImageUrl = imageUrl;
-
-    return 'تم حفظ البيانات بنجاح';
-  }
-
-  Future<String?> updateEmail() async {
     final user = FirebaseAuth.instance.currentUser;
-    final newEmail = emailController.text.trim();
-
-    if (user == null || newEmail.isEmpty) {
-      return 'فشل تحديث البريد الإلكتروني';
-    }
+    if (user == null) return "المستخدم غير مسجل الدخول";
 
     try {
       await user.verifyBeforeUpdateEmail(newEmail);
-      // لا تقم بتحديث Firestore مباشرة، انتظر تأكيد الإيميل.
-      return 'تم إرسال رابط التحقق إلى بريدك الجديد. يرجى تأكيده لإكمال التغيير.';
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        return 'البريد الإلكتروني مستخدم مسبقًا';
-      } else if (e.code == 'requires-recent-login') {
-        return 'يجب تسجيل الدخول مجددًا لتغيير البريد الإلكتروني';
-      } else {
-        return 'حدث خطأ: ${e.message}';
+
+      await _userRepository.updateUserEmailInFirestore(newEmail);
+
+      await FirebaseAuth.instance.signOut();
+
+      return "تم إرسال رابط التحقق إلى بريدك الجديد، يرجى تسجيل الخروج والدخول مجددا بعد التحقق من البريد الالكتروني.";
+    } catch (e) {
+      return "حدث خطأ أثناء محاولة تغيير البريد الإلكتروني: $e";
+    }
+  }
+
+  Future<String> saveProfile() async {
+    if (emailController.text.trim().isEmpty || !emailController.text.contains('@')) {
+      return 'يرجى إدخال بريد إلكتروني صحيح';
+    }
+    if (usernameController.text.trim().isEmpty) {
+      return 'يرجى إدخال اسم المستخدم';
+    }
+
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final data = await _userRepository.fetchUserProfile();
+      if (data == null) {
+        isLoading = false;
+        notifyListeners();
+        return 'حدث خطأ، لم يتم تحميل البيانات.';
       }
+
+      final oldUser = UserModel.fromJson(data);
+      String? imageUrl = userImageUrl;
+
+      if (userImageFile != null) {
+        imageUrl = await _uploadImageToCloudinary(userImageFile!);
+        if (imageUrl == null) {
+          isLoading = false;
+          notifyListeners();
+          return 'فشل في رفع الصورة';
+        }
+      }
+
+      bool isChanged = usernameController.text.trim() != oldUser.username ||
+          phoneController.text.trim() != oldUser.phone ||
+          addressController.text.trim() != oldUser.address ||
+          (userImageFile != null) ||
+          (userImageFile == null && imageUrl != oldUser.avatar);
+
+      if (!isChanged) {
+        isLoading = false;
+        notifyListeners();
+        return 'لا يوجد أي تعديل جديد';
+      }
+
+      await _userRepository.updateUserProfile(
+        username: usernameController.text.trim(),
+        phone: phoneController.text.trim(),
+        address: addressController.text.trim(),
+        avatar: imageUrl ?? '',
+      );
+
+      userImageFile = null;
+      userImageUrl = imageUrl;
+
+      isLoading = false;
+      notifyListeners();
+      return 'تم حفظ البيانات بنجاح';
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      return 'حدث خطأ غير متوقع: $e';
     }
   }
 
@@ -170,10 +195,10 @@ class ProfileController extends ChangeNotifier {
 
   Future<String?> logout() async {
     try {
-      await _userRepository.logout();
-      return 'تم تسجيل الخروج بنجاح';
+      await FirebaseAuth.instance.signOut();
+      return "تم تسجيل الخروج بنجاح";
     } catch (e) {
-      return 'فشل في تسجيل الخروج: ${e.toString()}';
+      return "فشل في تسجيل الخروج: $e";
     }
   }
 
