@@ -13,9 +13,9 @@ class SignUpController {
   );
 
   InputDecoration passwordFieldDecoration(
-    bool obscureText,
-    VoidCallback toggle,
-  ) => InputDecoration(
+      bool obscureText,
+      VoidCallback toggle,
+      ) => InputDecoration(
     border: const OutlineInputBorder(),
     suffixIcon: IconButton(
       icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
@@ -58,70 +58,86 @@ class SignUpController {
     return null;
   }
 
+  Future<UserCredential> createUser(String email, String password) async {
+    return await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  Future<void> sendEmailVerification(User user) async {
+    if (!user.emailVerified) {
+      await user.sendEmailVerification();
+    }
+  }
+
+  Future<void> saveUserData({
+    required String uid,
+    required Map<String, dynamic> userData,
+  }) async {
+    await FirebaseFirestore.instance.collection('users').doc(uid).set(userData);
+  }
+
   Future<String?> registerUser(
-    BuildContext context,
-    String email,
-    String password,
-    String address,
-    String phone,
-  ) async {
+      BuildContext context,
+      String email,
+      String password,
+      ) async {
     try {
-      final credential = await _repository.createUser(email, password);
-      await _repository.sendEmailVerification(credential.user!);
-      final isVerified = await EmailVerificationDialog.show(
-        context,
-        credential.user!,
+      final credential = await createUser(email, password);
+      return credential.user!.uid;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('فشل التسجيل: ${e.toString()}')),
       );
+      return null;
+    }
+  }
 
-      if (isVerified) {
-        final username = email.split('@')[0];
+  Future<void> saveAdditionalUserInfo(
+      BuildContext context,
+      String userId,
+      String address,
+      String phone,
+      ) async {
+    final user = FirebaseAuth.instance.currentUser;
 
-        await _repository.saveUserData(
-          uid: credential.user!.uid,
-          userData: {
-            'username': username,
-            'email': email,
-            'phone': phone,
-            'address': address,
-            'avatar': '',
-          },
-        );
+    if (user != null && !user.emailVerified) {
+      await sendEmailVerification(user);
+      final isVerified = await EmailVerificationDialog.show(context, user);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم إنشاء الحساب وتفعيله بنجاح!')),
-        );
-
-        return credential.user!.uid;
-      } else {
-        await credential.user!.delete();
+      if (!isVerified) {
+        await user.delete();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('لم يتم تأكيد البريد الإلكتروني. الحساب لم يُسجَّل.'),
           ),
         );
-        return null;
+        throw Exception('لم يتم تأكيد البريد الإلكتروني. الحساب لم يُسجَّل.');
       }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('فشل التسجيل: ${e.toString()}')));
-      return null;
     }
+
+    final username = user?.email?.split('@')[0] ?? '';
+
+    await saveUserData(
+      uid: userId,
+      userData: {
+        'username': username,
+        'email': user?.email ?? '',
+        'phone': phone,
+        'address': address,
+        'avatar': '',
+        'createdAt': FieldValue.serverTimestamp(),
+      },
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('تم حفظ بيانات الحساب بنجاح!')),
+    );
   }
 
   Future<String?> getCurrentUserId() async {
     final user = FirebaseAuth.instance.currentUser;
     return user?.uid;
-  }
-
-  Future<void> saveAdditionalUserInfo(
-    String userId,
-    String address,
-    String phone,
-  ) async {
-    await FirebaseFirestore.instance.collection('users').doc(userId).set({
-      'address': address,
-      'phone': phone,
-    }, SetOptions(merge: true));
   }
 }

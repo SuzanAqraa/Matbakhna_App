@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../controller/sign_up_controller.dart';
 import '../../../core/utils/brand_colors.dart';
-import '../../screens/signup_second_screen.dart';
 import 'custom_input_field.dart';
 import 'custom_submit_button.dart';
 
@@ -41,27 +40,24 @@ class _SignUpFormState extends State<SignUpForm> {
             const SizedBox(height: 16),
             CustomInputField(
               label: 'كلمة السر *',
-              hintText :"******",
+              hintText: "******",
               controller: _passwordController,
               obscureText: _obscurePassword,
               decoration: _controller.passwordFieldDecoration(
                 _obscurePassword,
-                () => setState(() => _obscurePassword = !_obscurePassword),
+                    () => setState(() => _obscurePassword = !_obscurePassword),
               ),
               validator: _controller.validatePassword,
             ),
             const SizedBox(height: 16),
             CustomInputField(
               label: 'تأكيد كلمة السر *',
-              hintText :"******",
+              hintText: "******",
               controller: _confirmPasswordController,
               obscureText: _obscurePassword,
               decoration: _controller.confirmPasswordFieldDecoration,
-              validator:
-                  (value) => _controller.validateConfirmPassword(
-                    value,
-                    _passwordController.text,
-                  ),
+              validator: (value) =>
+                  _controller.validateConfirmPassword(value, _passwordController.text),
             ),
             const SizedBox(height: 28),
             CustomSubmitButton(
@@ -71,18 +67,10 @@ class _SignUpFormState extends State<SignUpForm> {
                     context,
                     _emailController.text.trim(),
                     _passwordController.text.trim(),
-                    '',
-                    '',
                   );
 
                   if (userId != null) {
                     widget.onRegistered(userId);
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => SignUpStepTwoPage(userId: userId),
-                      ),
-                    );
                   }
                 }
               },
@@ -94,8 +82,11 @@ class _SignUpFormState extends State<SignUpForm> {
               },
               child: Text(
                 'هل لديك حساب؟ سجل الدخول',
-                style: TextStyle(color: BrandColors.secondaryColor,
-                  fontSize: 18,
+                style: TextStyle(
+                  color: BrandColors.secondaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  decoration: TextDecoration.underline,
                 ),
               ),
             ),

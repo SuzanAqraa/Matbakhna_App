@@ -37,7 +37,8 @@ class _SignUpAdditionalInfoFormState extends State<SignUpAdditionalInfoForm> {
       final phone = _phoneController.text.trim();
 
       try {
-        await _controller.saveAdditionalUserInfo(widget.userId, address, phone);
+        await _controller.saveAdditionalUserInfo(context, widget.userId, address, phone);
+
         widget.onRegistered();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

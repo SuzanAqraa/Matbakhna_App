@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/utils/brand_colors.dart';
 import '../widgets/signup/singup_add_info.dart';
 import 'home_screen.dart';
+import 'signup_screen.dart';
 
 class SignUpStepTwoPage extends StatefulWidget {
   final String userId;
@@ -47,7 +48,7 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
             child: Column(
               children: [
                 Align(
-                  alignment: Alignment.topRight,
+                  alignment: Alignment.topLeft,
                   child: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
@@ -55,10 +56,17 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
                     ),
                     child: IconButton(
                       icon: const Icon(
-                        Icons.arrow_back_ios,
+                        Icons.arrow_back,
+                        textDirection: TextDirection.ltr,
                         color: Colors.white,
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const  SignUpScreen()),
+                        );
+                      },
                     ),
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // تأكد من إضافة هذا الاستيراد
 import '../../controller/login_controller.dart';
 import '../../core/utils/brand_colors.dart';
 import '../../core/utils/textfeild_styles.dart';
@@ -53,6 +54,64 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
     }
+  }
+
+  void _showResetPasswordDialog() {
+    final _emailResetController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('إعادة تعيين كلمة السر'),
+          content: TextField(
+            controller: _emailResetController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              labelText: 'أدخل بريدك الإلكتروني',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                final email = _emailResetController.text.trim();
+
+                if (email.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('الرجاء إدخال البريد الإلكتروني')),
+                  );
+                  return;
+                }
+
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('تم إرسال رابط إعادة تعيين كلمة السر إلى بريدك')),
+                  );
+                } on FirebaseAuthException catch (e) {
+                  Navigator.of(context).pop();
+                  String message = 'حدث خطأ ما. حاول مرة أخرى.';
+                  if (e.code == 'user-not-found') {
+                    message = 'لم يتم العثور على مستخدم بهذا البريد الإلكتروني.';
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(message)),
+                  );
+                }
+              },
+              child: const Text('إرسال'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('إلغاء'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -116,6 +175,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         validator: _controller.validatePassword,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(
+                          onPressed: _showResetPasswordDialog,
+                          child: Text(
+                            'هل نسيت كلمة السر؟',
+                            style: TextStyle(
+                              color: BrandColors.secondaryColor,
+                              fontSize: 14,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 28),
                       CustomSubmitButton(
