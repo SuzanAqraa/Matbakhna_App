@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 },
                 child: const Text(
-                  'الذهاب للصفحة الرئيسية بدون إنشاء حساب',
+                  'الذهاب للصفحة الرئيسية بدون تسجيل دخول',
                   style: TextStyle(
                     color: BrandColors.secondaryColor,
                     fontWeight: FontWeight.bold,
