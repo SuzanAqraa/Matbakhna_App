@@ -1,9 +1,9 @@
-// login_screen.dart
 import 'package:flutter/material.dart';
 import '../../controller/login_controller.dart';
 import '../../core/utils/brand_colors.dart';
 import '../../core/utils/textfeild_styles.dart';
-
+import '../widgets/signup/custom_submit_button.dart';
+import '../widgets/signup/custom_input_field.dart'; // تأكد من استيراد الـ widget هنا
 import 'home_screen.dart';
 import 'signup_screen.dart';
 import '../widgets/signup/logo_with_appname.dart';
@@ -59,116 +59,118 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BrandColors.backgroundColor,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            const LogoWithName(),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: BrandColors.backgroundColor,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.black, width: 2),
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text('البريد الإلكتروني', style: _labelStyle),
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        hintText: 'example@email.com',
-                        border: _border(),
-                        enabledBorder: _border(),
-                        focusedBorder: _border(),
-                        errorText: _emailError,
-                      ),
-                      validator: _controller.validateEmail,
-                    ),
-                    const SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text('كلمة السر', style: _labelStyle),
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        hintText: '********',
-                        border: _border(),
-                        enabledBorder: _border(),
-                        focusedBorder: _border(),
-                        errorText: _passwordError,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Colors.grey[700],
-                          ),
-                          onPressed: () =>
-                              setState(() => _obscurePassword = !_obscurePassword),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              const LogoWithName(),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: BrandColors.backgroundColor,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      CustomInputField(
+                        label: 'البريد الإلكتروني',
+                        controller: _emailController,
+                        obscureText: false,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: 'example@email.com',
+                          border: _border(),
+                          enabledBorder: _border(),
+                          focusedBorder: _border(),
+                          errorText: _emailError,
                         ),
+                        validator: _controller.validateEmail,
                       ),
-                      validator: _controller.validatePassword,
-                    ),
-                    const SizedBox(height: 28),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
+                      const SizedBox(height: 16),
+                      CustomInputField(
+                        label: 'كلمة السر',
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        decoration: InputDecoration(
+                          hintText: '********',
+                          border: _border(),
+                          enabledBorder: _border(),
+                          focusedBorder: _border(),
+                          errorText: _passwordError,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.grey[700],
+                            ),
+                            onPressed: () =>
+                                setState(() => _obscurePassword = !_obscurePassword),
+                          ),
+                        ),
+                        validator: _controller.validatePassword,
+                      ),
+                      const SizedBox(height: 28),
+                      CustomSubmitButton(
                         onPressed: _login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: BrandColors.primaryColor,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          'تسجيل الدخول',
-                          style: ThemeTextStyle.ButtonTextFieldStyle,
-                        ),
+                        label: 'تسجيل الدخول',
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('ليس لديك حساب؟'),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SignUpScreen(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('ليس لديك حساب؟'),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SignUpScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'سجل الآن',
+                              style: TextStyle(
+                                color: BrandColors.secondaryColor,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
                               ),
-                            );
-                          },
-                          child: const Text(
-                            'سجل الآن',
-                            style: TextStyle(
-                              color: Color(0xFFE56B50),
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'الذهاب للصفحة الرئيسية بدون إنشاء حساب',
+                  style: TextStyle(
+                    color: BrandColors.secondaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

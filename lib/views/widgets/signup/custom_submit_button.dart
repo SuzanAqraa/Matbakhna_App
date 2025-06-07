@@ -4,8 +4,13 @@ import '../../../core/utils/textfeild_styles.dart';
 
 class CustomSubmitButton extends StatelessWidget {
   final VoidCallback onPressed;
+  final String label;
 
-  const CustomSubmitButton({super.key, required this.onPressed});
+  const CustomSubmitButton({
+    super.key,
+    required this.onPressed,
+    this.label = 'التالي',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,7 @@ class CustomSubmitButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        child: Text('التالي', style: ThemeTextStyle.ButtonTextFieldStyle),
+        child: Text(label, style: ThemeTextStyle.ButtonTextFieldStyle),
       ),
     );
   }

@@ -5,8 +5,8 @@ import '../widgets/signup/singup_add_info.dart';
 import 'home_screen.dart';
 
 class SignUpStepTwoPage extends StatefulWidget {
-  final String? userId;
-  const SignUpStepTwoPage({super.key, this.userId});
+  final String userId;
+  const SignUpStepTwoPage({super.key, required this.userId});
 
   @override
   State<SignUpStepTwoPage> createState() => _SignUpStepTwoPageState();
@@ -29,7 +29,6 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
         MaterialPageRoute(builder: (_) => const HomePage()),
       );
     } catch (e) {
-      // ممكن تضيف Snackbar أو Dialog للخطأ بدلاً من setState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('حدث خطأ أثناء الحفظ. حاول مرة أخرى.')),
       );
@@ -55,7 +54,10 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
                       color: BrandColors.secondaryColor,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
@@ -82,7 +84,13 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: SignUpAdditionalInfoForm(
-                        onSubmit: _updateUserInfo,
+                        userId: widget.userId,
+                        onRegistered: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const HomePage()),
+                          );
+                        },
                       ),
                     ),
                   ),

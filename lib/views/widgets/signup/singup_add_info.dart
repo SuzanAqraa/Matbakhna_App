@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-
-import '../../../core/utils/brand_colors.dart';
+import '../../../controller/sign_up_controller.dart';
 import '../../../core/utils/textfeild_styles.dart';
+import 'custom_submit_button.dart';
 
 class SignUpAdditionalInfoForm extends StatefulWidget {
-  final Function(String address, String phone) onSubmit;
+  final String userId;
+  final VoidCallback onRegistered;
 
-  const SignUpAdditionalInfoForm({super.key, required this.onSubmit});
+  const SignUpAdditionalInfoForm({
+    super.key,
+    required this.userId,
+    required this.onRegistered,
+  });
 
   @override
   State<SignUpAdditionalInfoForm> createState() =>
@@ -17,9 +22,7 @@ class _SignUpAdditionalInfoFormState extends State<SignUpAdditionalInfoForm> {
   final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
-
-  String? _addressError;
-  String? _phoneError;
+  final _controller = SignUpController();
 
   InputBorder _border() => OutlineInputBorder(
     borderRadius: BorderRadius.circular(18),
@@ -28,17 +31,19 @@ class _SignUpAdditionalInfoFormState extends State<SignUpAdditionalInfoForm> {
 
   TextStyle get _labelStyle => ThemeTextStyle.recipeNameTextFieldStyle;
 
-  void _submit() {
-    setState(() {
-      _addressError = null;
-      _phoneError = null;
-    });
-
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      widget.onSubmit(
-        _addressController.text.trim(),
-        _phoneController.text.trim(),
-      );
+      final address = _addressController.text.trim();
+      final phone = _phoneController.text.trim();
+
+      try {
+        await _controller.saveAdditionalUserInfo(widget.userId, address, phone);
+        widget.onRegistered();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('فشل حفظ البيانات، حاول مرة أخرى')),
+        );
+      }
     }
   }
 
@@ -46,63 +51,39 @@ class _SignUpAdditionalInfoFormState extends State<SignUpAdditionalInfoForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('العنوان (اختياري)', style: _labelStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _addressController,
-            decoration: InputDecoration(
-              hintText: 'أدخل عنوانك هنا',
-              border: _border(),
-              enabledBorder: _border(),
-              focusedBorder: _border(),
-              errorText: _addressError,
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text('رقم الهاتف (اختياري)', style: _labelStyle),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-              hintText: 'أدخل رقم هاتفك',
-              border: _border(),
-              enabledBorder: _border(),
-              focusedBorder: _border(),
-              errorText: _phoneError,
-            ),
-          ),
-          const SizedBox(height: 28),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: BrandColors.primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                'حفظ ومتابعة',
-                style: ThemeTextStyle.ButtonTextFieldStyle,
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('العنوان (اختياري)', style: _labelStyle),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _addressController,
+              decoration: InputDecoration(
+                hintText: 'أدخل عنوانك هنا',
+                border: _border(),
+                enabledBorder: _border(),
+                focusedBorder: _border(),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text('رقم الهاتف (اختياري)', style: _labelStyle),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                hintText: 'أدخل رقم هاتفك',
+                border: _border(),
+                enabledBorder: _border(),
+                focusedBorder: _border(),
+              ),
+            ),
+            const SizedBox(height: 28),
+            CustomSubmitButton(onPressed: _submit, label: 'حفظ ومتابعة'),
+          ],
+        ),
       ),
     );
   }

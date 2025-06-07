@@ -14,7 +14,7 @@ class LoginController {
     if (value == null || value.isEmpty) {
       return 'الرجاء إدخال البريد الإلكتروني';
     }
-    // يمكنك إضافة تحقق من شكل البريد الإلكتروني هنا إن أردت
+
     return null;
   }
 

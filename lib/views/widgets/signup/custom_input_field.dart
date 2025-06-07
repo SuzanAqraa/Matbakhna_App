@@ -7,6 +7,8 @@ class CustomInputField extends StatelessWidget {
   final InputDecoration decoration;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
+  final String? hintText;
+
   const CustomInputField({
     super.key,
     required this.label,
@@ -15,10 +17,27 @@ class CustomInputField extends StatelessWidget {
     required this.decoration,
     required this.validator,
     this.keyboardType,
+    this.hintText,
   });
 
   @override
   Widget build(BuildContext context) {
+    final inputDecoration = decoration.copyWith(
+      hintText: hintText,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.black87, width: 2),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.black87, width: 2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.black, width: 3),
+      ),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -27,7 +46,7 @@ class CustomInputField extends StatelessWidget {
         TextFormField(
           controller: controller,
           obscureText: obscureText,
-          decoration: decoration,
+          decoration: inputDecoration,
           validator: validator,
           keyboardType: keyboardType,
         ),

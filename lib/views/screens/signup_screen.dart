@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/widgets/signup/logo_with_appname.dart';
 import '../../core/utils/brand_colors.dart';
 import 'signup_second_screen.dart';
+import 'home_screen.dart'; // تأكدي من استيراد الصفحة الرئيسية
 import '../widgets/signup/sign_up_form.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -17,6 +18,7 @@ class SignUpScreen extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const LogoWithName(),
                 Container(
@@ -32,10 +34,31 @@ class SignUpScreen extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SignUpStepTwoPage(userId: userId),
+                          builder: (context) =>
+                              SignUpStepTwoPage(userId: userId),
                         ),
                       );
                     },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'الذهاب للصفحة الرئيسية بدون إنشاء حساب',
+                    style: TextStyle(
+                      color: BrandColors.secondaryColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ],
