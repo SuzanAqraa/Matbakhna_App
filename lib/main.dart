@@ -37,13 +37,16 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const HomePage());
 
           case '/profile':
-            return MaterialPageRoute(builder: (_) => const ProfileScreen());
+            return MaterialPageRoute(builder: (_) =>  ProfileScreen());
 
           case '/favorites':
             return MaterialPageRoute(builder: (_) => const FavoritesScreen());
 
           case '/listing':
-            return MaterialPageRoute(builder: (_) => const ListingScreenWrapper());
+            final String query = settings.arguments as String;
+            return MaterialPageRoute(
+              builder: (_) => ListingScreenWrapper(searchQuery: query),
+            );
 
           case '/post':
             final recipeId = settings.arguments as String;
