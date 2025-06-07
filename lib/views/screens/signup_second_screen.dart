@@ -1,12 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/utils/brand_colors.dart';
+import '../widgets/signup/logo_with_appname.dart';
 import '../widgets/signup/singup_add_info.dart';
+
 import 'home_screen.dart';
 
 class SignUpStepTwoPage extends StatefulWidget {
-  final String? userId;
-  const SignUpStepTwoPage({super.key, this.userId});
+  final String userId;
+  final String email;
+  final String password;
+
+  const SignUpStepTwoPage({
+    super.key,
+    required this.userId,
+    required this.email,
+    required this.password,
+  });
 
   @override
   State<SignUpStepTwoPage> createState() => _SignUpStepTwoPageState();
@@ -29,7 +39,6 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
         MaterialPageRoute(builder: (_) => const HomePage()),
       );
     } catch (e) {
-      // ممكن تضيف Snackbar أو Dialog للخطأ بدلاً من setState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('حدث خطأ أثناء الحفظ. حاول مرة أخرى.')),
       );
@@ -43,51 +52,59 @@ class _SignUpStepTwoPageState extends State<SignUpStepTwoPage> {
       body: Directionality(
         textDirection: TextDirection.rtl,
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: BrandColors.secondaryColor,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'مطبخنا',
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: BrandColors.secondaryColor,
-                    fontFamily: 'Cairo',
-                  ),
-                ),
-                const SizedBox(height: 28),
-                Expanded(
-                  child: SingleChildScrollView(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
                     child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: BrandColors.backgroundColor,
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.circular(20),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: BrandColors.secondaryColor,
                       ),
-                      child: SignUpAdditionalInfoForm(
-                        onSubmit: _updateUserInfo,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          textDirection: TextDirection.ltr,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context, 'back_to_signup');
+                        },
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  const LogoWithName(),
+                  const SizedBox(height: 28),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: BrandColors.backgroundColor,
+                          border: Border.all(color: Colors.black, width: 2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: SignUpAdditionalInfoForm(
+                          userId: widget.userId,
+                          email: widget.email,
+                          password: widget.password,
+                          onRegistered: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (_) => const HomePage()),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
