@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controller/sign_up_controller.dart';
 import '../../../core/utils/brand_colors.dart';
 import 'custom_input_field.dart';
 import 'custom_submit_button.dart';
 
 class SignUpForm extends StatefulWidget {
-  final Function(String userId) onRegistered;
+  // غيرت هنا لتقبل 3 باراميترات بدل واحد
+  final Function(String userId, String email, String password) onRegistered;
 
   const SignUpForm({super.key, required this.onRegistered});
 
@@ -21,6 +23,33 @@ class _SignUpFormState extends State<SignUpForm> {
   final _controller = SignUpController();
   bool _obscurePassword = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('temp_email');
+    final savedPassword = prefs.getString('temp_password');
+
+    if (savedEmail != null) {
+      _emailController.text = savedEmail;
+    }
+    if (savedPassword != null) {
+      _passwordController.text = savedPassword;
+      _confirmPasswordController.text = savedPassword;
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -70,7 +99,12 @@ class _SignUpFormState extends State<SignUpForm> {
                   );
 
                   if (userId != null) {
-                    widget.onRegistered(userId);
+                    // هنا بتمرر الثلاث باراميترات المطلوبة
+                    widget.onRegistered(
+                      userId,
+                      _emailController.text.trim(),
+                      _passwordController.text.trim(),
+                    );
                   }
                 }
               },

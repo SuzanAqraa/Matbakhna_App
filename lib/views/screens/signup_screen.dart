@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/widgets/signup/logo_with_appname.dart';
 import '../../core/utils/brand_colors.dart';
 import 'signup_second_screen.dart';
-import 'home_screen.dart'; // تأكدي من استيراد الصفحة الرئيسية
+import 'home_screen.dart';
 import '../widgets/signup/sign_up_form.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,14 +35,21 @@ class SignUpScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: SignUpForm(
-                    onRegistered: (userId) {
-                      Navigator.pushReplacement(
+                    onRegistered: (String userId, String email, String password) async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              SignUpStepTwoPage(userId: userId),
+                          builder: (context) => SignUpStepTwoPage(
+                            userId: userId,
+                            email: email,
+                            password: password,
+                          ),
                         ),
                       );
+
+                      if (result == 'back_to_signup') {
+                        setState(() {});
+                      }
                     },
                   ),
                 ),

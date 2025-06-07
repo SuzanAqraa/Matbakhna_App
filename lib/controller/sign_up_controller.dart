@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../repositories/sign_up_repository.dart';
 import '../views/widgets/signup/email_verification_dialog.dart';
 
@@ -12,16 +13,15 @@ class SignUpController {
     hintText: 'example@mail.com',
   );
 
-  InputDecoration passwordFieldDecoration(
-      bool obscureText,
-      VoidCallback toggle,
-      ) => InputDecoration(
-    border: const OutlineInputBorder(),
-    suffixIcon: IconButton(
-      icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
-      onPressed: toggle,
-    ),
-  );
+  InputDecoration passwordFieldDecoration(bool obscureText,
+      VoidCallback toggle,) =>
+      InputDecoration(
+        border: const OutlineInputBorder(),
+        suffixIcon: IconButton(
+          icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+          onPressed: toggle,
+        ),
+      );
 
   final confirmPasswordFieldDecoration = const InputDecoration(
     border: OutlineInputBorder(),
@@ -78,11 +78,9 @@ class SignUpController {
     await FirebaseFirestore.instance.collection('users').doc(uid).set(userData);
   }
 
-  Future<String?> registerUser(
-      BuildContext context,
+  Future<String?> registerUser(BuildContext context,
       String email,
-      String password,
-      ) async {
+      String password,) async {
     try {
       final credential = await createUser(email, password);
       return credential.user!.uid;
@@ -94,50 +92,61 @@ class SignUpController {
     }
   }
 
-  Future<void> saveAdditionalUserInfo(
-      BuildContext context,
+  Future<void> saveAdditionalUserInfo(BuildContext context,
       String userId,
       String address,
       String phone,
-      ) async {
+      String email,
+      String password) async { // أضفت email, password هنا
+
     final user = FirebaseAuth.instance.currentUser;
 
-    if (user != null && !user.emailVerified) {
-      await sendEmailVerification(user);
-      final isVerified = await EmailVerificationDialog.show(context, user);
+    if (user != null) {
+      if (!user.emailVerified) {
+        await sendEmailVerification(user);
 
-      if (!isVerified) {
-        await user.delete();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('لم يتم تأكيد البريد الإلكتروني. الحساب لم يُسجَّل.'),
-          ),
-        );
-        throw Exception('لم يتم تأكيد البريد الإلكتروني. الحساب لم يُسجَّل.');
+        await user.reload();
+
+        final updatedUser = FirebaseAuth.instance.currentUser;
+
+        final isVerified = await EmailVerificationDialog.show(context, updatedUser!);
+
+        if (!isVerified || !updatedUser.emailVerified) {
+
+
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('saved_email', email);
+          await prefs.setString('saved_password', password);
+
+          await updatedUser.delete();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('لم يتم تأكيد البريد الإلكتروني. الحساب لم يُسجَّل.'),
+            ),
+          );
+          throw Exception('لم يتم تأكيد البريد الإلكتروني. الحساب لم يُسجَّل.');
+        }
       }
+
+      final username = user.email?.split('@')[0] ?? '';
+
+      await saveUserData(
+        uid: userId,
+        userData: {
+          'username': username,
+          'email': user.email ?? '',
+          'phone': phone,
+          'address': address,
+          'avatar': '',
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم حفظ بيانات الحساب بنجاح!')),
+      );
     }
-
-    final username = user?.email?.split('@')[0] ?? '';
-
-    await saveUserData(
-      uid: userId,
-      userData: {
-        'username': username,
-        'email': user?.email ?? '',
-        'phone': phone,
-        'address': address,
-        'avatar': '',
-        'createdAt': FieldValue.serverTimestamp(),
-      },
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('تم حفظ بيانات الحساب بنجاح!')),
-    );
   }
 
-  Future<String?> getCurrentUserId() async {
-    final user = FirebaseAuth.instance.currentUser;
-    return user?.uid;
-  }
 }
