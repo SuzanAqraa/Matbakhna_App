@@ -6,7 +6,7 @@ import 'package:matbakhna_mobile/Views/widgets/post/post_header.dart';
 import '../../controller/comment_controller.dart';
 import '../../controller/post_controller.dart';
 import '../../repositories/user_repository.dart';
-import '../widgets/post/send_comment_widget.dart'; 
+import '../widgets/post/post_comment_input.dart';
 class PostPage extends StatefulWidget {
   final String recipeId;
 
