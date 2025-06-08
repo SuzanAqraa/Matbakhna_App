@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/core/widgets/appbar/simple_appbar.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
-import 'package:matbakhna_mobile/Views/widgets/post/comments_list.dart';
-import 'package:matbakhna_mobile/Views/widgets/post/post_header.dart';
+
 import 'package:matbakhna_mobile/core/utils/spaces.dart';
+import 'package:matbakhna_mobile/views/widgets/post/comments_list.dart';
+import 'package:matbakhna_mobile/views/widgets/post/post_header.dart';
+import 'package:matbakhna_mobile/views/widgets/recipe/share_button.dart';
 
 import '../../controller/post_controller.dart';
 
 class PostPage extends StatefulWidget {
   final String recipeId;
 
-  const PostPage({Key? key, required this.recipeId}) : super(key: key);
+  const PostPage({super.key, required this.recipeId});
 
   @override
   State<PostPage> createState() => _PostPageState();
@@ -99,16 +101,8 @@ class _PostPageState extends State<PostPage> {
                             ),
                             label: const Text('أعجبني'),
                           ),
-                          TextButton.icon(
-                            onPressed: null,
-                            icon: const Icon(Icons.comment_outlined, color: Colors.black),
-                            label: const Text('تعليق'),
-                          ),
-                          TextButton.icon(
-                            onPressed: null,
-                            icon: const Icon(Icons.share_outlined, color: Colors.black),
-                            label: const Text('مشاركة'),
-                          ),
+                         
+                          ShareButton(recipeTitle: recipe.title),
                         ],
                       ),
                     ),
