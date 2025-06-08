@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import '../../controller/home_controller.dart';
 
@@ -71,8 +69,10 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color(0xFFFDF5EC),
       body: Directionality(
         textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          child: Column(
+        child: RefreshIndicator(
+          onRefresh: _loadData,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
               HomeAppBar(
                 title: 'شو بدك تطبخ اليوم؟',
@@ -81,7 +81,10 @@ class _HomePageState extends State<HomePage> {
               ),
               Spaces.verticalSpacing(20),
               if (isLoading || tryTodayRecipe == null)
-                const Center(child: CircularProgressIndicator())
+                const Center(child: Padding(
+                  padding: EdgeInsets.only(top: 100),
+                  child: CircularProgressIndicator(),
+                ))
               else ...[
                 TryTodaySection(recipe: tryTodayRecipe!),
                 Spaces.verticalSpacing(10),
@@ -96,4 +99,5 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 1),
     );
   }
+
 }

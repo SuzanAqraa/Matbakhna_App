@@ -13,6 +13,12 @@ class MostPopularSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final cardWidth = screenWidth * 0.50;
+    final cardHeight = screenHeight * 0.35;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -28,7 +34,7 @@ class MostPopularSection extends StatelessWidget {
         ),
         Spaces.verticalSpacing(12),
         SizedBox(
-          height: 260,
+          height: cardHeight,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -36,9 +42,10 @@ class MostPopularSection extends StatelessWidget {
             separatorBuilder: (context, index) => Spaces.horizontalSpacing(12),
             itemBuilder: (context, index) {
               final recipeModel = recipes[index];
-              return SizedBox(
-                width: 200,
-                child: RecipeCard(recipe: recipeModel),
+              return RecipeCard(
+                recipe: recipeModel,
+                width: cardWidth,
+                height: cardHeight,
               );
             },
           ),

@@ -5,6 +5,10 @@ import '../repositories/home_repository.dart';
 class HomeController {
   final HomeRepository _repository = HomeRepository();
 
+  static const int popularRecipesCount = 5;
+  static const int yearMultiplier = 10000;
+  static const int monthMultiplier = 100;
+
   Future<List<RecipeModel>> getSortedRecipes() async {
     final recipes = await _repository.fetchRecipes();
 
@@ -13,7 +17,6 @@ class HomeController {
       return {'model': r, 'totalInteractions': total};
     }).toList();
 
-    withInteractions.shuffle();
 
     withInteractions.sort((a, b) {
       final totalA = a['totalInteractions'] as int;
@@ -36,13 +39,13 @@ class HomeController {
 
   RecipeModel pickRandomRecipe(List<RecipeModel> recipes) {
     DateTime now = DateTime.now();
-    int seed = now.year * 10000 + now.month * 100 + now.day;
+    int seed = now.year * yearMultiplier + now.month * monthMultiplier + now.day;
     return recipes[Random(seed).nextInt(recipes.length)];
   }
 
   List<RecipeModel> getPopularRecipes(List<RecipeModel> sorted) {
     bool hasInteractions = sorted.any((r) => r.numLikes + r.numComments > 0);
-    if (hasInteractions) return sorted.take(5).toList();
+    if (hasInteractions) return sorted.take(popularRecipesCount).toList();
     return List<RecipeModel>.from(sorted)..shuffle();
   }
 

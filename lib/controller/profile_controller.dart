@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../core/utils/constants.dart';
 import '../models/user_model.dart';
 import '../repositories/profile_repository.dart';
 
@@ -35,7 +36,6 @@ class ProfileController extends ChangeNotifier {
     usernameController = TextEditingController();
     phoneController = TextEditingController();
     addressController = TextEditingController();
-
     loadUserProfile();
   }
 
@@ -66,7 +66,7 @@ class ProfileController extends ChangeNotifier {
     createdAt = user.createdAt.toString();
     userImageUrl = user.avatar.isNotEmpty
         ? user.avatar
-        : 'https://img.freepik.com/premium-vector/avatar-profile-icon-flat-style-female-user-profile-vector-illustration-isolated-background-women-profile-sign-business-concept_157943-38866.jpg?semt=ais_hybrid&w=740';
+        : Constants.defaultAvatarUrl;
 
     originalEmail = user.email;
     isEmailVerified = firebaseUser?.emailVerified ?? false;
@@ -87,10 +87,9 @@ class ProfileController extends ChangeNotifier {
 
   Future<String?> _uploadImageToCloudinary(File imageFile) async {
     try {
-      final uploadUrl =
-      Uri.parse('https://api.cloudinary.com/v1_1/dflfjyux4/image/upload');
+      final uploadUrl = Uri.parse(Constants.cloudinaryUploadUrl);
       final request = http.MultipartRequest('POST', uploadUrl)
-        ..fields['upload_preset'] = 'flutter_unsigned'
+        ..fields['upload_preset'] = Constants.cloudinaryUploadPreset
         ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
       final response = await request.send();
@@ -101,38 +100,36 @@ class ProfileController extends ChangeNotifier {
       } else {
         return null;
       }
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }
 
   Future<String?> updateEmail(String newEmail) async {
     if (newEmail == originalEmail) {
-      return "البريد الإلكتروني جديد، يرجى تغييره.";
+      return Constants.errorEmailSame;
     }
 
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return "المستخدم غير مسجل الدخول";
+    if (user == null) return Constants.errorNotLoggedIn;
 
     try {
       await user.verifyBeforeUpdateEmail(newEmail);
-
       await _userRepository.updateUserEmailInFirestore(newEmail);
-
       await FirebaseAuth.instance.signOut();
 
-      return "تم إرسال رابط التحقق إلى بريدك الجديد، يرجى تسجيل الخروج والدخول مجددا بعد التحقق من البريد الالكتروني.";
+      return Constants.successEmailVerificationSent;
     } catch (e) {
-      return "حدث خطأ أثناء محاولة تغيير البريد الإلكتروني: $e";
+      return '${Constants.errorEmailChange}$e';
     }
   }
 
   Future<String> saveProfile() async {
     if (emailController.text.trim().isEmpty || !emailController.text.contains('@')) {
-      return 'يرجى إدخال بريد إلكتروني صحيح';
+      return Constants.errorInvalidEmail;
     }
     if (usernameController.text.trim().isEmpty) {
-      return 'يرجى إدخال اسم المستخدم';
+      return Constants.errorEmptyUsername;
     }
 
     isLoading = true;
@@ -143,7 +140,7 @@ class ProfileController extends ChangeNotifier {
       if (data == null) {
         isLoading = false;
         notifyListeners();
-        return 'حدث خطأ، لم يتم تحميل البيانات.';
+        return Constants.errorProfileNotLoaded;
       }
 
       final oldUser = UserModel.fromJson(data);
@@ -154,7 +151,7 @@ class ProfileController extends ChangeNotifier {
         if (imageUrl == null) {
           isLoading = false;
           notifyListeners();
-          return 'فشل في رفع الصورة';
+          return Constants.errorImageUpload;
         }
       }
 
@@ -167,7 +164,7 @@ class ProfileController extends ChangeNotifier {
       if (!isChanged) {
         isLoading = false;
         notifyListeners();
-        return 'لا يوجد أي تعديل جديد';
+        return Constants.errorNoChanges;
       }
 
       await _userRepository.updateUserProfile(
@@ -182,7 +179,7 @@ class ProfileController extends ChangeNotifier {
 
       isLoading = false;
       notifyListeners();
-      return 'تم حفظ البيانات بنجاح';
+      return Constants.successProfileSaved;
     } catch (e) {
       isLoading = false;
       notifyListeners();
@@ -190,15 +187,12 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
-
-
-
   Future<String?> logout() async {
     try {
       await FirebaseAuth.instance.signOut();
-      return "تم تسجيل الخروج بنجاح";
+      return Constants.successLogout;
     } catch (e) {
-      return "فشل في تسجيل الخروج: $e";
+      return '${Constants.errorLogout}$e';
     }
   }
 

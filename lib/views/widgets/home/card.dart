@@ -3,17 +3,20 @@ import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
-
 import '../../../core/utils/spaces.dart';
 
 class RecipeCard extends StatelessWidget {
   final RecipeModel recipe;
   final bool isFavorite;
+  final double width;
+  final double height;
 
   const RecipeCard({
     super.key,
     required this.recipe,
     this.isFavorite = false,
+    required this.width,
+    required this.height,
   });
 
   void _goToPostPage(BuildContext context) {
@@ -34,9 +37,14 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return SizedBox(
-      width: 180,
-      height: 250,
+      width: width,
+    height: height,
+      child: Tooltip(
+        message: recipe.title,
+        waitDuration: Duration(milliseconds: 500),
+
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
@@ -67,7 +75,7 @@ class RecipeCard extends StatelessWidget {
                           child: Image.network(
                             recipe.imageUrl,
                             width: double.infinity,
-                            height: 110,
+                            height: height * 0.4,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -106,7 +114,7 @@ class RecipeCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: SizedBox(
-                        height: 65,
+                        height: height * 0.25,
                         child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           child: Text(
@@ -123,7 +131,7 @@ class RecipeCard extends StatelessWidget {
 
             // Bottom Bar
             Container(
-              height: 32,
+              height: height * 0.12,
               decoration: BoxDecoration(
                 color: BrandColors.secondaryBackgroundColor,
                 borderRadius: const BorderRadius.only(
@@ -160,7 +168,7 @@ class RecipeCard extends StatelessWidget {
                         ),
                         Spaces.horizontalSpacing(4),
                         Text(
-                          recipe.comments.length.toString() ,
+                          recipe.comments.length.toString(),
                           style: ThemeTextStyle.smallTextFieldStyle,
                         ),
                       ],
@@ -172,6 +180,7 @@ class RecipeCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }
