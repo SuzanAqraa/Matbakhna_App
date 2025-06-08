@@ -7,6 +7,7 @@ import '../../controller/comment_controller.dart';
 import '../../controller/post_controller.dart';
 import '../../repositories/user_repository.dart';
 import '../widgets/post/post_comment_input.dart';
+import 'package:matbakhna_mobile/core/widgets/login_required_dialog.dart';
 
 class PostPage extends StatefulWidget {
   final String recipeId;
@@ -38,6 +39,41 @@ class _PostPageState extends State<PostPage> {
     _loadRecipe();
     setState(() {});
     await _recipeFuture;
+  }
+
+  Future<void> _handleSendComment() async {
+    if (_userRepository.currentUser == null) {
+      LoginRequiredDialog.show(context, PostPage(recipeId: widget.recipeId));
+      return;
+    }
+
+    final userData = await _userRepository.getUserData(_userRepository.currentUser!.uid);
+
+    if (userData == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("فشل في تحميل بيانات المستخدم")),
+      );
+      return;
+    }
+
+    final username = userData.data()?['username'] ?? 'مستخدم';
+    final profilePic = userData.data()?['profilepic'];
+
+    try {
+      await _commentController.sendComment(
+        recipeId: widget.recipeId,
+        username: username,
+        profilePic: profilePic,
+      );
+
+      _loadRecipe();
+      setState(() {});
+      _commentController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("حدث خطأ أثناء إرسال التعليق")),
+      );
+    }
   }
 
   @override
@@ -81,6 +117,7 @@ class _PostPageState extends State<PostPage> {
                                   Text('${_controller.likes} اعجاب'),
                                 ],
                               ),
+
                             ),
                             const Divider(thickness: 1.2),
                             Padding(
@@ -90,6 +127,10 @@ class _PostPageState extends State<PostPage> {
                                 children: [
                                   TextButton.icon(
                                     onPressed: () async {
+                                      if (_userRepository.currentUser == null) {
+                                        LoginRequiredDialog.show(context, PostPage(recipeId: widget.recipeId));
+                                        return;
+                                      }
                                       await _controller.toggleLike(recipe.id);
                                       _loadRecipe();
                                       setState(() {});
@@ -114,7 +155,7 @@ class _PostPageState extends State<PostPage> {
                               ),
                             ),
                             const Divider(thickness: 1.2),
-                            CommentsList(comments: recipe.comments),
+              CommentsList(comments: recipe.comments),
                           ],
                         ),
                       ),
@@ -130,39 +171,13 @@ class _PostPageState extends State<PostPage> {
                           offset: const Offset(0, -2),
                         ),
                       ],
+
                     ),
                     child: SendCommentWidget(
                       controller: _commentController,
-                      onSend: () async {
-                        final userData = await _userRepository.getUserData(_userRepository.currentUser!.uid);
-
-                        if (userData == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("فشل في تحميل بيانات المستخدم")),
-                          );
-                          return;
-                        }
-
-                        final username = userData.data()?['username'] ?? 'مستخدم';
-                        final profilePic = userData.data()?['profilepic'];
-
-                        try {
-                          await _commentController.sendComment(
-                            recipeId: recipe.id,
-                            username: username,
-                            profilePic: profilePic,
-                          );
-
-                          _loadRecipe();
-                          setState(() {});
-                          _commentController.clear();
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("حدث خطأ أثناء إرسال التعليق")),
-                          );
-                        }
-                      },
+                      onSend: _handleSendComment,
                     ),
+
                   ),
                 ],
               ),
