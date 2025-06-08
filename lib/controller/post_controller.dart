@@ -1,5 +1,5 @@
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
-import 'package:matbakhna_mobile/Repositories/post_repository.dart';
+import 'package:matbakhna_mobile/repositories/post_repository.dart';
 
 class PostController {
   final PostRepository _repository = PostRepository();

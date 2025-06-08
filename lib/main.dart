@@ -1,7 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/screens/filter_screen.dart';
-import 'package:matbakhna_mobile/views/screens/login_screen.dart';
+
+import 'package:matbakhna_mobile/views/screens/questions_screen.dart';
+import 'package:matbakhna_mobile/views/screens/signup_second_screen.dart';
+
 import 'core/services/auth_service.dart';
 import 'firebase_options.dart';
 import 'views/screens/favorites_screen.dart';
@@ -31,20 +34,22 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return Directionality(textDirection: TextDirection.rtl, child: child!);
       },
-      initialRoute: '/',
+      initialRoute: '/', 
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/':
+            return MaterialPageRoute(builder: (_) => const ListQuestion()); 
+
+          case '/home':
             return MaterialPageRoute(builder: (_) => const HomePage());
 
           case '/profile':
-            return MaterialPageRoute(builder: (_) =>  ProfileScreen());
+            return MaterialPageRoute(builder: (_) => ProfileScreen());
 
           case '/favorites':
             return MaterialPageRoute(builder: (_) => const FavoritesScreen());
 
           case '/listing':
-
             final String query = settings.arguments as String;
             return MaterialPageRoute(
               builder: (_) => ListingScreenWrapper(searchQuery: query),
@@ -64,7 +69,6 @@ class MyApp extends StatelessWidget {
 
           case '/filter':
             return MaterialPageRoute(builder: (_) => FilterScreen());
-
 
 
           case '/login_screen':
