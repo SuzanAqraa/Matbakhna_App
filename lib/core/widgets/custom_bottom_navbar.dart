@@ -5,6 +5,7 @@ import 'package:matbakhna_mobile/views/screens/profile_screen.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
 
+import '../../views/screens/favorites_screen.dart';
 import 'login_required_dialog.dart';
 
 class CustomBottomNavbar extends StatelessWidget {
@@ -37,7 +38,11 @@ class CustomBottomNavbar extends StatelessWidget {
             Navigator.pushNamed(context, '/');
             break;
           case 2:
-            Navigator.pushNamed(context, '/favorites');
+            if (user == null) {
+              LoginRequiredDialog.show(context,  FavoritesScreen());
+            } else {
+              Navigator.pushNamed(context, '/favorites');
+            }
             break;
           case 3:
             Navigator.pushNamed(context, '/listing', arguments: '');
