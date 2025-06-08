@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
 
+import '../../../core/utils/network_helpers/recipe_image_with_placeholder.dart';
+
 class PostHeader extends StatelessWidget {
   final RecipeModel recipe;
 
@@ -14,7 +16,12 @@ class PostHeader extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.network(recipe.imageUrl, fit: BoxFit.cover),
+          NetworkImageWithPlaceholder(
+            imageUrl: recipe.imageUrl,
+            width: double.infinity,
+            height: double.maxFinite,
+            fit: BoxFit.cover,
+          ),
           Container(
             alignment: Alignment.bottomRight,
             padding: const EdgeInsets.all(20),

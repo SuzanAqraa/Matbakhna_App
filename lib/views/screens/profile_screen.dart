@@ -1,19 +1,22 @@
+import 'dart:async';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../controller/profile_controller.dart';
 import '../../core/utils/brand_colors.dart';
+import '../../core/utils/network_helpers/network_utils.dart';
 import '../../core/utils/spaces.dart';
 import '../../core/validators/profile_field_validators.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
 import '../../core/widgets/custom_bottom_navbar.dart';
-
 import '../../repositories/profile_repository.dart';
 import '../widgets/profile/avatar_section.dart';
 import '../widgets/profile/change_password_dialog.dart';
 import '../widgets/profile/profile_form_field.dart';
 import '../widgets/profile/action_button.dart';
 import '../widgets/profile/logout_button.dart';
-
 import 'home_screen.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -37,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       originalEmail = _controller.emailController.text;
+      refreshProfile();
     });
   }
 
@@ -48,7 +52,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> refreshProfile() async {
-    await _controller.loadUserProfile();
+    await handleWithRetry<void>(
+      request: () => _controller.loadUserProfile(),
+      maxRetries: 3,
+      fallbackValue: null,
+      retryDelay: const Duration(seconds: 2),
+    );
   }
 
   void _showEmailVerificationDialog() {
@@ -68,19 +77,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
                 return;
               }
-              final result = await _controller.updateEmail(newEmail);
+
+              final result = await handleWithRetry<String?>(
+                request: () => _controller.updateEmail(newEmail),
+                maxRetries: 3,
+                fallbackValue: null,
+                retryDelay: const Duration(seconds: 2),
+              );
+
               Navigator.pop(context);
 
               if (result == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('لم يتم التحقق من البريد الإلكتروني')),
                 );
-              } else if (result.contains('إرسال')) {
-                originalEmail = newEmail;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(result)),
-                );
               } else {
+                originalEmail = newEmail;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(result)),
                 );
@@ -148,9 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     validator: ProfileFieldValidators.validateEmail,
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      _showEmailVerificationDialog();
-                    },
+                    onPressed: _showEmailVerificationDialog,
                     child: const Text('تغيير البريد الإلكتروني'),
                   ),
                   ProfileFormField(
@@ -173,15 +183,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () async {
                       if (!_formKey.currentState!.validate()) return;
 
-                      final result = await _controller.saveProfile();
 
-                      if (result != null) {
+
+
+                      setState(() => _controller.isLoading = true);
+
+                      final result = await handleWithRetry<String?>(
+                        request: () => _controller.saveProfile(),
+                        maxRetries: 3,
+                        fallbackValue: null,
+                        retryDelay: const Duration(seconds: 2),
+                      );
+
+                      setState(() => _controller.isLoading = false);
+
+                      if (result == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'فشل الاتصال بالخادم. تأكد من وجود إنترنت وحاول مرة أخرى.',
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(result)),
                         );
                       }
                     },
                   ),
+
                   TextButton(
                     onPressed: () {
                       showDialog(
@@ -200,7 +232,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Spaces.verticalSpacing(9),
                   LogoutButton(
                     onTap: () async {
-                      final message = await _controller.logout();
+                      final message = await handleWithRetry<String?>(
+                        request: () => _controller.logout(),
+                        maxRetries: 3,
+                        fallbackValue: null,
+                        retryDelay: const Duration(seconds: 2),
+                      );
                       if (message != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
