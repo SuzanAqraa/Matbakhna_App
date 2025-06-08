@@ -1,8 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../controller/home_controller.dart';
 
-import '../../core/widgets/appbar/primary_appbar.dart';
+import '../../controller/home_controller.dart';
+import '../../core/utils/network_helpers/network_utils.dart';
+
+import '../../../core/widgets/appbar/primary_appbar.dart';
 import '../../../core/widgets/custom_bottom_navbar.dart';
 import '../../../core/utils/spaces.dart';
 import '../../../Models/recipe_model.dart';
@@ -34,11 +35,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadData() async {
+    setState(() => isLoading = true);
     try {
-      final sorted = await _controller.getSortedRecipes();
+      final sorted = await handleWithRetry<List<RecipeModel>>(
+        request: () => _controller.getSortedRecipes(),
+        fallbackValue: [],
+      );
+
       final popular = _controller.getPopularRecipes(sorted);
+
       final random = _controller.pickRandomRecipe(sorted);
-      final tips = await _controller.getTips();
+
+      final tips = await handleWithRetry<List<String>>(
+        request: () => _controller.getTips(),
+        fallbackValue: [],
+      );
 
       setState(() {
         recipes = sorted;
@@ -46,9 +57,10 @@ class _HomePageState extends State<HomePage> {
         tryTodayRecipe = random;
         cookingTips = tips;
         isLoading = false;
+
       });
     } catch (e) {
-      print('Error loading data: $e');
+      debugPrint('Error loading data: $e');
       setState(() => isLoading = false);
     }
   }
@@ -81,10 +93,12 @@ class _HomePageState extends State<HomePage> {
               ),
               Spaces.verticalSpacing(20),
               if (isLoading || tryTodayRecipe == null)
-                const Center(child: Padding(
-                  padding: EdgeInsets.only(top: 100),
-                  child: CircularProgressIndicator(),
-                ))
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 100),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
               else ...[
                 TryTodaySection(recipe: tryTodayRecipe!),
                 Spaces.verticalSpacing(10),
@@ -99,5 +113,4 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 1),
     );
   }
-
 }

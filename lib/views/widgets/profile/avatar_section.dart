@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../../../core/utils/network_helpers/profile_image_with_placeholder.dart';
+
 class AvatarSection extends StatefulWidget {
   final bool hasImage;
   final String? imageUrl;
@@ -98,13 +100,15 @@ class _AvatarSectionState extends State<AvatarSection> {
               _showImageDialog(context, imageProvider);
             }
           },
-          child: CircleAvatar(
+          child: ProfileImageWithPlaceholder(
+            imageUrl: widget.imageUrl,
+            imageFile: widget.imageFile,
             radius: 50,
-            backgroundColor: Colors.grey[300],
-            backgroundImage: imageProvider,
-            child: imageProvider is AssetImage
-                ? const Icon(Icons.person, size: 60, color: Colors.white)
-                : null,
+            onTap: () {
+              if (widget.imageFile != null || (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)) {
+                _showImageDialog(context, imageProvider);
+              }
+            },
           ),
         ),
         TextButton.icon(
