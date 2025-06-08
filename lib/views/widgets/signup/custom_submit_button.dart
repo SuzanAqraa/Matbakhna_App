@@ -9,7 +9,7 @@ class CustomSubmitButton extends StatelessWidget {
   const CustomSubmitButton({
     super.key,
     required this.onPressed,
-    this.label = 'التالي',
+    this.label = 'انشاء الحساب',
   });
 
   @override
