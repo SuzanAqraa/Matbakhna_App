@@ -3,6 +3,7 @@ import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
 import 'package:matbakhna_mobile/core/utils/icon_styles.dart';
 import 'package:matbakhna_mobile/core/utils/textfeild_styles.dart';
+import '../../../core/utils/network_helpers/recipe_image_with_placeholder.dart';
 import '../../../core/utils/spaces.dart';
 
 class RecipeCard extends StatelessWidget {
@@ -72,12 +73,13 @@ class RecipeCard extends StatelessWidget {
                             topLeft: Radius.circular(16),
                             topRight: Radius.circular(16),
                           ),
-                          child: Image.network(
-                            recipe.imageUrl,
+                          child: NetworkImageWithPlaceholder(
+                            imageUrl: recipe.imageUrl,
                             width: double.infinity,
                             height: height * 0.4,
                             fit: BoxFit.cover,
                           ),
+
                         ),
                         Positioned(
                           top: 8,
