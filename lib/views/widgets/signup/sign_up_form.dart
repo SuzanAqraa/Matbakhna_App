@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controller/sign_up_controller.dart';
 import '../../../core/utils/brand_colors.dart';
+import '../../../core/validators/password_validators.dart';
 import 'custom_input_field.dart';
 import 'custom_submit_button.dart';
 
 class SignUpForm extends StatefulWidget {
-  // غيرت هنا لتقبل 3 باراميترات بدل واحد
   final Function(String userId, String email, String password) onRegistered;
 
   const SignUpForm({super.key, required this.onRegistered});
@@ -50,6 +50,7 @@ class _SignUpFormState extends State<SignUpForm> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -76,7 +77,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 _obscurePassword,
                     () => setState(() => _obscurePassword = !_obscurePassword),
               ),
-              validator: _controller.validatePassword,
+              validator: PasswordValidators.validateNewPassword,
             ),
             const SizedBox(height: 16),
             CustomInputField(
@@ -86,22 +87,24 @@ class _SignUpFormState extends State<SignUpForm> {
               obscureText: _obscurePassword,
               decoration: _controller.confirmPasswordFieldDecoration,
               validator: (value) =>
-                  _controller.validateConfirmPassword(value, _passwordController.text),
+                  PasswordValidators.validateConfirmPassword(
+                    value,
+                    _passwordController.text,
+                  ),
             ),
             const SizedBox(height: 28),
             CustomSubmitButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  final userId = await _controller.registerUser(
+                  final result = await _controller.registerAndVerifyUser(
                     context,
                     _emailController.text.trim(),
                     _passwordController.text.trim(),
                   );
 
-                  if (userId != null) {
-                    // هنا بتمرر الثلاث باراميترات المطلوبة
+                  if (result != null) {
                     widget.onRegistered(
-                      userId,
+                      result['userId']!,
                       _emailController.text.trim(),
                       _passwordController.text.trim(),
                     );

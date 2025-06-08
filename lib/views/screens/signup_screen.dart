@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/widgets/signup/logo_with_appname.dart';
 import '../../core/utils/brand_colors.dart';
-import 'signup_second_screen.dart';
+
 import 'home_screen.dart';
 import '../widgets/signup/sign_up_form.dart';
 
@@ -10,6 +10,16 @@ class SignUpScreen extends StatefulWidget {
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
+}
+String? validateEmail(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'الرجاء إدخال البريد الإلكتروني';
+  }
+  final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+  if (!emailRegex.hasMatch(value)) {
+    return 'الرجاء إدخال بريد إلكتروني صالح';
+  }
+  return null;
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
@@ -39,10 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SignUpStepTwoPage(
-                            userId: userId,
-                            email: email,
-                            password: password,
+                          builder: (context) => HomePage(
                           ),
                         ),
                       );
