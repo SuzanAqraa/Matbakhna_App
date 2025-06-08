@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import '../core/utils/error_msg.dart';
+import '../core/utils/constants.dart';
 
 class ChangePasswordController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
