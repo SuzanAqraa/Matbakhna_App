@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-
 import '../../controller/profile_controller.dart';
 import '../../core/utils/brand_colors.dart';
+import '../../core/utils/network_helpers/network_utils.dart';
 import '../../core/utils/spaces.dart';
 import '../../core/validators/profile_field_validators.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
@@ -18,38 +17,6 @@ import '../widgets/profile/action_button.dart';
 import '../widgets/profile/logout_button.dart';
 import 'home_screen.dart';
 
-Future<T> handleWithRetry<T>({
-  required Future<T> Function() request,
-  required T fallbackValue,
-  int maxRetries = 2,
-  Duration retryDelay = const Duration(milliseconds: 300),
-}) async {
-  int attempts = 0;
-
-  while (attempts < maxRetries) {
-    debugPrint('Attempt: ${attempts + 1}');
-    try {
-      final result = await request();
-      debugPrint('Request succeeded on attempt: ${attempts + 1}');
-      return result;
-    } on SocketException catch (_) {
-      debugPrint('SocketException on attempt ${attempts + 1}');
-    } on TimeoutException catch (_) {
-      debugPrint('TimeoutException on attempt ${attempts + 1}');
-    } on FirebaseException catch (_) {
-      debugPrint('FirebaseException on attempt ${attempts + 1}');
-    } catch (e) {
-      debugPrint('Unknown exception on attempt ${attempts + 1}: $e');
-    }
-    attempts++;
-    if (attempts < maxRetries) {
-      await Future.delayed(retryDelay);
-    }
-  }
-
-  debugPrint('All $maxRetries attempts failed. Returning fallback value.');
-  return fallbackValue;
-}
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -73,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       originalEmail = _controller.emailController.text;
-      refreshProfile(); // load with retry
+      refreshProfile();
     });
   }
 
@@ -87,7 +54,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> refreshProfile() async {
     await handleWithRetry<void>(
       request: () => _controller.loadUserProfile(),
+      maxRetries: 3,
       fallbackValue: null,
+      retryDelay: const Duration(seconds: 2),
     );
   }
 
@@ -111,7 +80,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               final result = await handleWithRetry<String?>(
                 request: () => _controller.updateEmail(newEmail),
-                fallbackValue: 'حدث خطأ أثناء تحديث البريد الإلكتروني',
+                maxRetries: 3,
+                fallbackValue: null,
+                retryDelay: const Duration(seconds: 2),
               );
 
               Navigator.pop(context);
@@ -212,19 +183,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () async {
                       if (!_formKey.currentState!.validate()) return;
 
-                      setState(() => _controller.isLoading = true); // بدء التحميل
+
+
+
+                      setState(() => _controller.isLoading = true);
 
                       final result = await handleWithRetry<String?>(
                         request: () => _controller.saveProfile(),
+                        maxRetries: 3,
                         fallbackValue: null,
+                        retryDelay: const Duration(seconds: 2),
                       );
 
-                      setState(() => _controller.isLoading = false); // إيقاف التحميل
+                      setState(() => _controller.isLoading = false);
 
                       if (result == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('فشل الاتصال بالخادم. تأكد من وجود إنترنت وحاول مرة أخرى.'),
+                            content: Text(
+                              'فشل الاتصال بالخادم. تأكد من وجود إنترنت وحاول مرة أخرى.',
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -256,7 +234,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onTap: () async {
                       final message = await handleWithRetry<String?>(
                         request: () => _controller.logout(),
-                        fallbackValue: 'فشل في تسجيل الخروج',
+                        maxRetries: 3,
+                        fallbackValue: null,
+                        retryDelay: const Duration(seconds: 2),
                       );
                       if (message != null) {
                         ScaffoldMessenger.of(context).showSnackBar(

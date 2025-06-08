@@ -40,15 +40,26 @@ class _HomePageState extends State<HomePage> {
       final sorted = await handleWithRetry<List<RecipeModel>>(
         request: () => _controller.getSortedRecipes(),
         fallbackValue: [],
+        maxRetries: 3,
+        retryDelay: const Duration(seconds: 2),
+        onFail: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("فشل الاتصال بالإنترنت. حاول مرة أخرى.")),
+          );
+        },
       );
 
       final popular = _controller.getPopularRecipes(sorted);
-
       final random = _controller.pickRandomRecipe(sorted);
 
       final tips = await handleWithRetry<List<String>>(
         request: () => _controller.getTips(),
         fallbackValue: [],
+        onFail: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("تعذر تحميل نصائح الطبخ. تحقق من الاتصال.")),
+          );
+        },
       );
 
       setState(() {
@@ -57,11 +68,14 @@ class _HomePageState extends State<HomePage> {
         tryTodayRecipe = random;
         cookingTips = tips;
         isLoading = false;
-
       });
     } catch (e) {
       debugPrint('Error loading data: $e');
       setState(() => isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("حدث خطأ غير متوقع. حاول لاحقاً.")),
+      );
     }
   }
 
