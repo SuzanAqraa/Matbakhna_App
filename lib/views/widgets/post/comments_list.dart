@@ -9,8 +9,17 @@ class CommentsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (comments.isEmpty) {
+      return const Center(
+        child: Text(
+          'لا توجد تعليقات بعد.',
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: comments.length,
       itemBuilder: (context, index) {
         return CommentBubble(comment: comments[index]);

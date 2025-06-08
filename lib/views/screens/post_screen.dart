@@ -3,10 +3,10 @@ import 'package:matbakhna_mobile/core/widgets/appbar/simple_appbar.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import 'package:matbakhna_mobile/Views/widgets/post/comments_list.dart';
 import 'package:matbakhna_mobile/Views/widgets/post/post_header.dart';
-import 'package:matbakhna_mobile/core/utils/spaces.dart';
-
+import '../../controller/comment_controller.dart';
 import '../../controller/post_controller.dart';
-
+import '../../repositories/user_repository.dart';
+import '../widgets/post/send_comment_widget.dart'; 
 class PostPage extends StatefulWidget {
   final String recipeId;
 
@@ -18,10 +18,10 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
   final PostController _controller = PostController();
+  final CommentController _commentController = CommentController();
+  final UserRepository _userRepository = UserRepository();
 
   late Future<RecipeModel?> _recipeFuture;
-
-  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
@@ -37,12 +37,6 @@ class _PostPageState extends State<PostPage> {
     _loadRecipe();
     setState(() {});
     await _recipeFuture;
-  }
-
-  @override
-  void dispose() {
-    _commentController.dispose();
-    super.dispose();
   }
 
   @override
@@ -91,6 +85,7 @@ class _PostPageState extends State<PostPage> {
                           TextButton.icon(
                             onPressed: () async {
                               await _controller.toggleLike(recipe.id);
+                              _loadRecipe();
                               setState(() {});
                             },
                             icon: Icon(
@@ -118,31 +113,37 @@ class _PostPageState extends State<PostPage> {
                         children: [
                           Expanded(child: CommentsList(comments: recipe.comments)),
                           const Divider(thickness: 1.2),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _commentController,
-                                    decoration: InputDecoration(
-                                      hintText: 'اكتب تعليقك...',
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Spaces.horizontalSpacing(8),
-                                IconButton(
-                                  onPressed: () async {},
-                                  icon: const Icon(Icons.send, color: Color(0xFFE56B50)),
-                                ),
-                              ],
-                            ),
+                          SendCommentWidget(
+                            controller: _commentController,
+                            onSend: () async {
+                              final userData = await _userRepository.getUserData(_userRepository.currentUser!.uid);
+
+                              if (userData == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("فشل في تحميل بيانات المستخدم")),
+                                );
+                                return;
+                              }
+
+                              final username = userData.data()?['username'] ?? 'مستخدم';
+                              final profilePic = userData.data()?['profilepic'];
+
+                              try {
+                                await _commentController.sendComment(
+                                  recipeId: recipe.id,
+                                  username: username,
+                                  profilePic: profilePic,
+                                );
+
+                                _loadRecipe();
+                                setState(() {});
+                                _commentController.clear();
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("حدث خطأ أثناء إرسال التعليق")),
+                                );
+                              }
+                            },
                           ),
                         ],
                       ),
