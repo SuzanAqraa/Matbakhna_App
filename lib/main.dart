@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/screens/filter_screen.dart';
 import 'package:matbakhna_mobile/views/screens/login_screen.dart';
-import 'package:matbakhna_mobile/views/screens/signup_second_screen.dart';
 import 'core/services/auth_service.dart';
 import 'views/screens/favorites_screen.dart';
 import 'views/screens/listing_screen_wrapper.dart';
@@ -63,8 +62,7 @@ class MyApp extends StatelessWidget {
           case '/filter':
             return MaterialPageRoute(builder: (_) => FilterScreen());
 
-          case '/signup_second_screen':
-            return MaterialPageRoute(builder: (_) => const SignUpStepTwoPage());
+
 
           case '/login_screen':
             return MaterialPageRoute(builder: (_) => const LoginScreen());
