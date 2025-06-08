@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../Models/recipe_model.dart';
 import '../../../core/utils/brand_colors.dart';
+import '../../../core/utils/network_helpers/recipe_image_with_placeholder.dart';
 import '../../../core/utils/spaces.dart';
 import '../../../core/utils/textfeild_styles.dart';
 import '../../screens/recipe_detail_screen.dart';
@@ -9,6 +10,7 @@ class TryTodaySection extends StatelessWidget {
   final RecipeModel recipe;
 
   const TryTodaySection({super.key, required this.recipe});
+
   void _goToRecipeDetailPage(BuildContext context) {
     Navigator.push(
       context,
@@ -21,7 +23,7 @@ class TryTodaySection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GestureDetector(
-        onTap:() => _goToRecipeDetailPage(context),
+        onTap: () => _goToRecipeDetailPage(context),
         child: Container(
           margin: const EdgeInsets.only(bottom: 20),
           padding: const EdgeInsets.all(16),
@@ -40,8 +42,8 @@ class TryTodaySection extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  recipe.imageUrl,
+                child: NetworkImageWithPlaceholder(
+                  imageUrl: recipe.imageUrl,
                   width: 130,
                   height: 130,
                   fit: BoxFit.cover,
