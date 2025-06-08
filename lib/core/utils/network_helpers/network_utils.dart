@@ -1,8 +1,19 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+class MultipleErrorsException implements Exception {
+  final List<Object> errors;
+
+  MultipleErrorsException(this.errors);
+
+  @override
+  String toString() {
+    return 'MultipleErrorsException: ${errors.length} errors:\n' +
+        errors.map((e) => e.toString()).join('\n');
+  }
+}
 
 Future<T> handleWithRetry<T>({
   required Future<T> Function() request,
@@ -12,7 +23,7 @@ Future<T> handleWithRetry<T>({
   VoidCallback? onFail,
 }) async {
   int attempts = 0;
-  Object? lastError;
+  List<Object> allErrors = [];
 
   while (attempts < maxRetries) {
     debugPrint('Attempt: ${attempts + 1}');
@@ -23,16 +34,20 @@ Future<T> handleWithRetry<T>({
       return result;
     } on SocketException catch (e) {
       debugPrint('SocketException on attempt ${attempts + 1}');
-      lastError = e;
+      allErrors.add(e);
+      if (onFail != null) onFail();
     } on TimeoutException catch (e) {
       debugPrint('TimeoutException on attempt ${attempts + 1}');
-      lastError = e;
+      allErrors.add(e);
+      if (onFail != null) onFail();
     } on FirebaseException catch (e) {
       debugPrint('FirebaseException on attempt ${attempts + 1}');
-      lastError = e;
+      allErrors.add(e);
+      if (onFail != null) onFail();
     } catch (e) {
       debugPrint('Unknown exception on attempt ${attempts + 1}: $e');
-      lastError = e;
+      allErrors.add(e);
+      if (onFail != null) onFail();
     }
 
     attempts++;
@@ -42,7 +57,10 @@ Future<T> handleWithRetry<T>({
   }
 
   debugPrint('All $maxRetries attempts failed.');
-  if (onFail != null) onFail();
 
-  throw lastError ?? Exception('Request failed after $maxRetries attempts.');
+  if (allErrors.isEmpty) {
+    throw Exception('Request failed after $maxRetries attempts without specific error.');
+  }
+
+  throw MultipleErrorsException(allErrors);
 }
