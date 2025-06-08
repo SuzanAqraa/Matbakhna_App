@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controller/sign_up_controller.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/validators/password_validators.dart';
 import 'custom_input_field.dart';
 import 'custom_submit_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(String userId, String email, String password) onRegistered;

@@ -17,32 +17,45 @@ class NetworkImageWithPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget _buildPlaceholder() {
+      return Container(
+        width: width,
+        height: height,
+        color: Colors.grey.shade200,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.restaurant,
+                size: width * 0.3,
+                color: Colors.grey.shade400,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'صورة الوصفة',
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return CachedNetworkImage(
         imageUrl: imageUrl!,
         width: width,
         height: height,
         fit: fit,
-        placeholder: (context, url) => Container(
-          width: width,
-          height: height,
-          color: Colors.grey.shade200,
-          child: const Center(child: CircularProgressIndicator()),
-        ),
-        errorWidget: (context, url, error) => Image.asset(
-          'assets/images/default-featured-image.png.jpg',
-          width: width,
-          height: height,
-          fit: fit,
-        ),
+        placeholder: (context, url) => _buildPlaceholder(),
+        errorWidget: (context, url, error) => _buildPlaceholder(),
       );
     } else {
-      return Image.asset(
-        'assets/images/default-featured-image.png.jpg',
-        width: width,
-        height: height,
-        fit: fit,
-      );
+      return _buildPlaceholder();
     }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/views/screens/filter_screen.dart';
@@ -7,6 +6,7 @@ import 'package:matbakhna_mobile/views/screens/questions_screen.dart';
 import 'package:matbakhna_mobile/views/screens/signup_second_screen.dart';
 
 import 'core/services/auth_service.dart';
+import 'firebase_options.dart';
 import 'views/screens/favorites_screen.dart';
 import 'views/screens/listing_screen_wrapper.dart';
 import 'views/screens/profile_screen.dart';
@@ -16,10 +16,9 @@ import 'views/screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   setupCurrentUserListener();
 
   runApp(const MyApp());
@@ -72,21 +71,17 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => FilterScreen());
 
 
-          case '/signup_second_screen':
-            return MaterialPageRoute(
-                builder: (_) => const SignUpStepTwoPage(userId: '', email: '', password: ''));
-
-
           case '/login_screen':
             return MaterialPageRoute(builder: (_) => const LoginScreen());
 
           default:
             return MaterialPageRoute(
-              builder: (_) => Scaffold(
-                body: Center(
-                  child: Text('لا يوجد صفحة لهذا الراوت: ${settings.name}'),
-                ),
-              ),
+              builder:
+                  (_) => Scaffold(
+                    body: Center(
+                      child: Text('لا يوجد صفحة لهذا الراوت: ${settings.name}'),
+                    ),
+                  ),
             );
         }
       },

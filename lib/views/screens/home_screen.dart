@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../../controller/home_controller.dart';
 import '../../core/utils/network_helpers/network_utils.dart';
@@ -97,34 +98,39 @@ class _HomePageState extends State<HomePage> {
         textDirection: TextDirection.rtl,
         child: RefreshIndicator(
           onRefresh: _loadData,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              HomeAppBar(
-                title: 'شو بدك تطبخ اليوم؟',
-                controller: _searchController,
-                onSubmitted: _onSearchSubmitted,
-              ),
-              Spaces.verticalSpacing(20),
-              if (isLoading || tryTodayRecipe == null)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 100),
-                    child: CircularProgressIndicator(),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  HomeAppBar(
+                    title: 'شو بدك تطبخ اليوم؟',
+                    controller: _searchController,
+                    onSubmitted: _onSearchSubmitted,
                   ),
-                )
-              else ...[
-                TryTodaySection(recipe: tryTodayRecipe!),
-                Spaces.verticalSpacing(10),
-                CookingTipCard(cookingTips: cookingTips),
-                Spaces.verticalSpacing(10),
-                MostPopularSection(recipes: mostPopularRecipes),
-              ],
-            ],
+                  Spaces.verticalSpacing(20),
+                  if (isLoading || tryTodayRecipe == null)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 100),
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else ...[
+                    TryTodaySection(recipe: tryTodayRecipe!),
+                    Spaces.verticalSpacing(10),
+                    CookingTipCard(cookingTips: cookingTips),
+                    Spaces.verticalSpacing(10),
+                    MostPopularSection(recipes: mostPopularRecipes),
+                  ],
+                ],
+              ),
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavbar(currentIndex: 1),
+      bottomNavigationBar: kIsWeb ? null : const CustomBottomNavbar(currentIndex: 1),
     );
   }
 

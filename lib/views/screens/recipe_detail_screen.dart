@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import 'package:matbakhna_mobile/controller/recipe_controller.dart';
 
@@ -54,6 +55,9 @@ class _RecipePageState extends State<RecipePage> {
   @override
   Widget build(BuildContext context) {
     final recipe = _controller.recipe;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+    final horizontalPadding = isSmallScreen ? 16.0 : 32.0;
 
     return Scaffold(
       backgroundColor: BrandColors.backgroundColor,
@@ -64,38 +68,43 @@ class _RecipePageState extends State<RecipePage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : recipe == null
-          ? const Center(child: Text("الوصفة غير موجودة"))
-          : Directionality(
-        textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (_controller.playerController != null)
-                RecipeVideoWidget(controller: _controller.playerController!),
-              const SizedBox(height: 24),
-              RecipeInfoWidget(
-                serving: recipe.serving,
-                difficulty: '${recipe.difficulty}/10',
-                duration: recipe.duration,
-              ),
-              const SizedBox(height: 24),
-              IngredientsListWidget(
-                ingredients: recipe.ingredients,
-                checked: checked,
-                onChanged: (index, value) {
-                  setState(() => checked[index] = value ?? false);
-                },
-              ),
-              const SizedBox(height: 24),
-              StepsListWidget(
-                steps: recipe.steps.map((e) => e.description).toList(),
-              ),
-            ],
-          ),
-        ),
-      ),
+              ? const Center(child: Text("الوصفة غير موجودة"))
+              : Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1200),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (_controller.playerController != null)
+                              RecipeVideoWidget(controller: _controller.playerController!),
+                            SizedBox(height: isSmallScreen ? 24 : 32),
+                            RecipeInfoWidget(
+                              serving: recipe.serving,
+                              difficulty: '${recipe.difficulty}/10',
+                              duration: recipe.duration,
+                            ),
+                            SizedBox(height: isSmallScreen ? 24 : 32),
+                            IngredientsListWidget(
+                              ingredients: recipe.ingredients,
+                              checked: checked,
+                              onChanged: (index, value) {
+                                setState(() => checked[index] = value ?? false);
+                              },
+                            ),
+                            SizedBox(height: isSmallScreen ? 24 : 32),
+                            StepsListWidget(
+                              steps: recipe.steps.map((e) => e.description).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
     );
   }
 }

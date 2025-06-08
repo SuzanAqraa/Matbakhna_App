@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../../Models/recipe_model.dart';
 import '../../../core/utils/brand_colors.dart';
 import '../../../core/utils/network_helpers/recipe_image_with_placeholder.dart';
@@ -20,13 +21,18 @@ class TryTodaySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+    final imageSize = isSmallScreen ? 130.0 : 200.0;
+    final horizontalPadding = isSmallScreen ? 16.0 : 32.0;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: GestureDetector(
         onTap: () => _goToRecipeDetailPage(context),
         child: Container(
           margin: const EdgeInsets.only(bottom: 20),
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
           decoration: BoxDecoration(
             color: BrandColors.secondaryBackgroundColor,
             borderRadius: BorderRadius.circular(20),
@@ -44,12 +50,12 @@ class TryTodaySection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 child: NetworkImageWithPlaceholder(
                   imageUrl: recipe.imageUrl,
-                  width: 130,
-                  height: 130,
+                  width: imageSize,
+                  height: imageSize,
                   fit: BoxFit.cover,
                 ),
               ),
-              Spaces.horizontalSpacing(16),
+              Spaces.horizontalSpacing(isSmallScreen ? 16 : 24),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +64,7 @@ class TryTodaySection extends StatelessWidget {
                       'جرب اليوم',
                       style: ThemeTextStyle.interActionTextFieldStyle.copyWith(
                         color: BrandColors.secondaryColor,
-                        fontSize: 20,
+                        fontSize: isSmallScreen ? 20 : 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -66,15 +72,17 @@ class TryTodaySection extends StatelessWidget {
                     Text(
                       recipe.title,
                       style: ThemeTextStyle.titleTextFieldStyle.copyWith(
-                        fontSize: 24,
+                        fontSize: isSmallScreen ? 24 : 28,
                       ),
                     ),
                     Spaces.verticalSpacing(6),
                     Text(
                       recipe.description,
-                      maxLines: 2,
+                      maxLines: isSmallScreen ? 2 : 3,
                       overflow: TextOverflow.ellipsis,
-                      style: ThemeTextStyle.bodySmallTextFieldStyle,
+                      style: ThemeTextStyle.bodySmallTextFieldStyle.copyWith(
+                        fontSize: isSmallScreen ? null : 16,
+                      ),
                     ),
                   ],
                 ),

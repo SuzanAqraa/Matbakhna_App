@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../controller/profile_controller.dart';
@@ -17,7 +18,6 @@ import '../widgets/profile/action_button.dart';
 import '../widgets/profile/logout_button.dart';
 import 'home_screen.dart';
 
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
@@ -26,38 +26,62 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late ProfileController _controller;
+  late final ProfileController _controller;
   final _formKey = GlobalKey<FormState>();
-  late String originalEmail;
+
+  late String _originalEmail;
+  late String _originalUsername;
+  late String _originalAddress;
+  late String _originalPhone;
+
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _controller = ProfileController(UserRepository());
-    _controller.addListener(() {
-      if (mounted) setState(() {});
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      originalEmail = _controller.emailController.text;
-      refreshProfile();
-    });
+    _controller.addListener(_refresh);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initialize());
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_refresh);
     _controller.disposeControllers();
     _controller.dispose();
     super.dispose();
   }
 
-  Future<void> refreshProfile() async {
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _initialize() async {
+    await _loadProfile();
+
+    _originalEmail = _controller.emailController.text.trim();
+    _originalUsername = _controller.usernameController.text.trim();
+    _originalAddress = _controller.addressController.text.trim();
+    _originalPhone = _controller.phoneController.text.trim();
+
+    _isInitialized = true;
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _loadProfile() async {
     await handleWithRetry<void>(
-      request: () => _controller.loadUserProfile(),
+      request: _controller.loadUserProfile,
       maxRetries: 3,
       fallbackValue: null,
       retryDelay: const Duration(seconds: 2),
     );
+  }
+
+  bool _hasChanges() {
+    return _controller.emailController.text.trim() != _originalEmail ||
+        _controller.usernameController.text.trim() != _originalUsername ||
+        _controller.addressController.text.trim() != _originalAddress ||
+        _controller.phoneController.text.trim() != _originalPhone;
   }
 
   void _showEmailVerificationDialog() {
@@ -70,11 +94,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () async {
               final newEmail = _controller.emailController.text.trim();
+              Navigator.pop(context);
+
               if (newEmail.isEmpty) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("يرجى إدخال بريد إلكتروني صحيح")),
-                );
+                _showSnackBar("يرجى إدخال بريد إلكتروني صحيح");
                 return;
               }
 
@@ -85,17 +108,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 retryDelay: const Duration(seconds: 2),
               );
 
-              Navigator.pop(context);
-
-              if (result == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('لم يتم التحقق من البريد الإلكتروني')),
-                );
+              if (result != null) {
+                _originalEmail = newEmail;
+                _showSnackBar(result);
               } else {
-                originalEmail = newEmail;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(result)),
-                );
+                _showSnackBar('لم يتم التحقق من البريد الإلكتروني');
               }
             },
             child: const Text("تغيير الإيميل"),
@@ -109,20 +126,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showSnackBar(String message, {Color? backgroundColor}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: backgroundColor),
+    );
+  }
+
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (!_hasChanges()) {
+      _showSnackBar("لم تقم بتعديل أي بيانات للحفظ.");
+      return;
+    }
+
+    setState(() => _controller.isLoading = true);
+
+    try {
+      final result = await handleWithRetry<String?>(
+        request: _controller.saveProfile,
+        maxRetries: 2,
+        fallbackValue: null,
+        retryDelay: const Duration(seconds: 2),
+        onFail: () {
+          _showSnackBar(
+            "تعذر حفظ البيانات. سيتم حفظها عند عودة الاتصال.",
+          );
+
+        },
+      );
+
+      if (result != null) {
+        _originalEmail = _controller.emailController.text.trim();
+        _originalUsername = _controller.usernameController.text.trim();
+        _originalAddress = _controller.addressController.text.trim();
+        _originalPhone = _controller.phoneController.text.trim();
+
+        _showSnackBar(result);
+      } else {
+        _showSnackBar(
+          'فشل الاتصال بالخادم. تأكد من وجود إنترنت وحاول مرة أخرى.',
+          backgroundColor: Colors.red,
+        );
+      }
+    } on SocketException {
+      _showSnackBar(
+        'فشل الاتصال بالإنترنت. سيتم حفظ التعديلات عند عودة الاتصال.',
+        backgroundColor: Colors.red,
+      );
+    } on FirebaseException catch (e) {
+      _showSnackBar(
+        e.code == 'network-request-failed'
+            ? 'فشل الاتصال بخدمات Firebase. تحقق من اتصالك بالإنترنت.'
+            : 'حدث خطأ في Firebase: ${e.message}',
+        backgroundColor: Colors.red,
+      );
+    } catch (e) {
+      _showSnackBar('حدث خطأ غير متوقع: $e', backgroundColor: Colors.red);
+    } finally {
+      if (mounted) setState(() => _controller.isLoading = false);
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    final message = await handleWithRetry<String?>(
+      request: _controller.logout,
+      maxRetries: 3,
+      fallbackValue: null,
+      retryDelay: const Duration(seconds: 2),
+    );
+
+    if (message != null) {
+      _showSnackBar(
+        message,
+        backgroundColor: message.contains('فشل') ? Colors.red : Colors.green,
+      );
+      if (message == 'تم تسجيل الخروج بنجاح') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: BrandColors.backgroundColor,
-        appBar: const CustomAppBar(
-          title: 'الملف الشخصي',
-          showBackButton: false,
-        ),
-        body: _controller.isLoading
+        appBar: const CustomAppBar(title: 'الملف الشخصي', showBackButton: false),
+        body: _controller.isLoading && !_isInitialized
             ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
-          onRefresh: refreshProfile,
+          onRefresh: _loadProfile,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
@@ -133,17 +231,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Spaces.verticalSpacing(9),
                   AvatarSection(
                     hasImage: _controller.userImageFile != null ||
-                        (_controller.userImageUrl != null &&
-                            _controller.userImageUrl!.isNotEmpty),
+                        (_controller.userImageUrl?.isNotEmpty ?? false),
                     imageUrl: _controller.userImageFile == null
                         ? _controller.userImageUrl
                         : null,
                     imageFile: _controller.userImageFile,
-                    onImageChanged: (newUrl) {
-                      setState(() {
-                        _controller.userImageUrl = newUrl;
-                      });
-                    },
+                    onImageChanged: (url) =>
+                        setState(() => _controller.userImageUrl = url),
                   ),
                   Spaces.verticalSpacing(9),
                   ProfileFormField(
@@ -180,40 +274,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ActionButton(
                     text: 'حفظ',
                     color: BrandColors.primaryColor,
-                    onPressed: () async {
-                      if (!_formKey.currentState!.validate()) return;
-
-
-
-
-                      setState(() => _controller.isLoading = true);
-
-                      final result = await handleWithRetry<String?>(
-                        request: () => _controller.saveProfile(),
-                        maxRetries: 3,
-                        fallbackValue: null,
-                        retryDelay: const Duration(seconds: 2),
-                      );
-
-                      setState(() => _controller.isLoading = false);
-
-                      if (result == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'فشل الاتصال بالخادم. تأكد من وجود إنترنت وحاول مرة أخرى.',
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(result)),
-                        );
-                      }
-                    },
+                    onPressed: _saveProfile,
                   ),
-
                   TextButton(
                     onPressed: () {
                       showDialog(
@@ -230,31 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   Spaces.verticalSpacing(9),
-                  LogoutButton(
-                    onTap: () async {
-                      final message = await handleWithRetry<String?>(
-                        request: () => _controller.logout(),
-                        maxRetries: 3,
-                        fallbackValue: null,
-                        retryDelay: const Duration(seconds: 2),
-                      );
-                      if (message != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(message),
-                            backgroundColor:
-                            message.contains('فشل') ? Colors.red : Colors.green,
-                          ),
-                        );
-                        if (message == 'تم تسجيل الخروج بنجاح') {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const HomePage()),
-                          );
-                        }
-                      }
-                    },
-                  ),
+                  LogoutButton(onTap: _handleLogout),
                   Spaces.verticalSpacing(9),
                 ],
               ),

@@ -46,11 +46,13 @@ class _CookingTipCardState extends State<CookingTipCard> {
   @override
   Widget build(BuildContext context) {
     final tips = widget.cookingTips;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: isSmallScreen ? 16 : 32),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(isSmallScreen ? 16 : 24),
         decoration: BoxDecoration(
           color: BrandColors.primaryColor,
           borderRadius: BorderRadius.circular(20),
@@ -65,24 +67,28 @@ class _CookingTipCardState extends State<CookingTipCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
+            Icon(
               Icons.lightbulb_outline,
               color: Colors.white,
-              size: IconStyle.defaultIconSize,
+              size: isSmallScreen ? IconStyle.defaultIconSize : 32,
             ),
-            Spaces.horizontalSpacing(12),
+            Spaces.horizontalSpacing(isSmallScreen ? 12 : 20),
             Expanded(
               child: tips.isEmpty
-                  ? const Text(
-                "لا توجد نصائح متاحة حالياً.",
-                style: TextStyle(color: Colors.white),
-              )
+                  ? Text(
+                      "لا توجد نصائح متاحة حالياً.",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: isSmallScreen ? null : 18,
+                      ),
+                    )
                   : Text(
-                tips[currentTipIndex],
-                style: ThemeTextStyle.bodySmallTextFieldStyle.copyWith(
-                  color: Colors.white,
-                ),
-              ),
+                      tips[currentTipIndex],
+                      style: ThemeTextStyle.bodySmallTextFieldStyle.copyWith(
+                        color: Colors.white,
+                        fontSize: isSmallScreen ? null : 18,
+                      ),
+                    ),
             ),
           ],
         ),

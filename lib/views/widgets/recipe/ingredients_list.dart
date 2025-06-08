@@ -15,28 +15,49 @@ class IngredientsListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'المكونات',
-          style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-          textDirection: TextDirection.rtl,
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            'المكونات',
+            style: TextStyle(
+              fontSize: isSmallScreen ? 36 : 48,
+              fontWeight: FontWeight.bold,
+            ),
+            textDirection: TextDirection.rtl,
+          ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: isSmallScreen ? 12 : 20),
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(isSmallScreen ? 12 : 24),
           decoration: BoxDecoration(
             border: Border.all(color: BrandColors.secondaryColor),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(16),
             color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Column(
             children: ingredients.asMap().entries.map((entry) {
               final index = entry.key;
               final item = entry.value;
               return CheckboxListTile(
-                title: Text(item, style: const TextStyle(fontSize: 18)),
+                title: Text(
+                  item,
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 18 : 20,
+                  ),
+                ),
                 value: checked[index],
                 onChanged: (value) => onChanged(index, value),
                 controlAffinity: ListTileControlAffinity.leading,
