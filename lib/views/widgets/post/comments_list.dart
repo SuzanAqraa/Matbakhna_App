@@ -18,12 +18,8 @@ class CommentsList extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      itemCount: comments.length,
-      itemBuilder: (context, index) {
-        return CommentBubble(comment: comments[index]);
-      },
+    return Column(
+      children: comments.map((comment) => CommentBubble(comment: comment)).toList(),
     );
   }
 }
