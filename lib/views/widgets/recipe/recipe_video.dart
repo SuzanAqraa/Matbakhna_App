@@ -10,22 +10,35 @@ class RecipeVideoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (controller.initialVideoId.isEmpty) {
-      return SizedBox();
+      return const SizedBox();
     }
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'فيديو التحضير',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            'فيديو التحضير',
+            style: TextStyle(
+              fontSize: isSmallScreen ? 24 : 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: isSmallScreen ? 12 : 20),
         ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: YoutubePlayer(
-            controller: controller,
-            showVideoProgressIndicator: true,
-            progressIndicatorColor: BrandColors.secondaryColor,
+          child: AspectRatio(
+            aspectRatio: isSmallScreen ? 16 / 9 : 21 / 9,
+            child: YoutubePlayer(
+              controller: controller,
+              showVideoProgressIndicator: true,
+              progressIndicatorColor: BrandColors.secondaryColor,
+            ),
           ),
         ),
       ],

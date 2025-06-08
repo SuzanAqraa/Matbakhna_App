@@ -36,12 +36,23 @@ class CustomInputField extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: Colors.black, width: 3),
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      alignLabelWithHint: true,
+      floatingLabelAlignment: FloatingLabelAlignment.start,
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: Theme.of(context).textTheme.bodyLarge),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
@@ -49,6 +60,8 @@ class CustomInputField extends StatelessWidget {
           decoration: inputDecoration,
           validator: validator,
           keyboardType: keyboardType,
+          textAlign: TextAlign.right,
+          textDirection: TextDirection.rtl,
         ),
       ],
     );
