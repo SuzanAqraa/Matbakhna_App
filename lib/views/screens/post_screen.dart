@@ -7,6 +7,7 @@ import '../../controller/comment_controller.dart';
 import '../../controller/post_controller.dart';
 import '../../repositories/user_repository.dart';
 import '../widgets/post/post_comment_input.dart';
+import 'package:matbakhna_mobile/core/widgets/login_required_dialog.dart';
 
 class PostPage extends StatefulWidget {
   final String recipeId;
@@ -40,6 +41,41 @@ class _PostPageState extends State<PostPage> {
     await _recipeFuture;
   }
 
+  Future<void> _handleSendComment() async {
+    if (_userRepository.currentUser == null) {
+      LoginRequiredDialog.show(context, PostPage(recipeId: widget.recipeId));
+      return;
+    }
+
+    final userData = await _userRepository.getUserData(_userRepository.currentUser!.uid);
+
+    if (userData == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("فشل في تحميل بيانات المستخدم")),
+      );
+      return;
+    }
+
+    final username = userData.data()?['username'] ?? 'مستخدم';
+    final profilePic = userData.data()?['profilepic'];
+
+    try {
+      await _commentController.sendComment(
+        recipeId: widget.recipeId,
+        username: username,
+        profilePic: profilePic,
+      );
+
+      _loadRecipe();
+      setState(() {});
+      _commentController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("حدث خطأ أثناء إرسال التعليق")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -62,95 +98,85 @@ class _PostPageState extends State<PostPage> {
             return Scaffold(
               backgroundColor: const Color(0xFFFDF5EC),
               appBar: CustomAppBar(title: recipe.title, showBackButton: true),
-              body: RefreshIndicator(
-                onRefresh: _refresh,
-                child: Column(
-                  children: [
-                    PostHeader(recipe: recipe),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      child: Row(
-                        children: [
-                          Text('${recipe.comments.length} تعليق'),
-                          const Spacer(),
-                          Text('${_controller.likes} اعجاب'),
-                        ],
-                      ),
-                    ),
-                    const Divider(thickness: 1.2),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () async {
-                              await _controller.toggleLike(recipe.id);
-                              _loadRecipe();
-                              setState(() {});
-                            },
-                            icon: Icon(
-                              _controller.isLiked ? Icons.favorite : Icons.favorite_border,
-                              color: _controller.isLiked ? Colors.red : Colors.black,
+              body: Column(
+                children: [
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: _refresh,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          children: [
+                            PostHeader(recipe: recipe),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                              child: Row(
+                                children: [
+                                  Text('${recipe.comments.length} تعليق'),
+                                  const Spacer(),
+                                  Text('${_controller.likes} اعجاب'),
+                                ],
+                              ),
                             ),
-                            label: const Text('أعجبني'),
-                          ),
-                          TextButton.icon(
-                            onPressed: null,
-                            icon: const Icon(Icons.comment_outlined, color: Colors.black),
-                            label: const Text('تعليق'),
-                          ),
-                          TextButton.icon(
-                            onPressed: null,
-                            icon: const Icon(Icons.share_outlined, color: Colors.black),
-                            label: const Text('مشاركة'),
-                          ),
-                        ],
+                            const Divider(thickness: 1.2),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      if (_userRepository.currentUser == null) {
+                                        LoginRequiredDialog.show(context, PostPage(recipeId: widget.recipeId));
+                                        return;
+                                      }
+                                      await _controller.toggleLike(recipe.id);
+                                      _loadRecipe();
+                                      setState(() {});
+                                    },
+                                    icon: Icon(
+                                      _controller.isLiked ? Icons.favorite : Icons.favorite_border,
+                                      color: _controller.isLiked ? Colors.red : Colors.black,
+                                    ),
+                                    label: const Text('أعجبني'),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: null,
+                                    icon: const Icon(Icons.comment_outlined, color: Colors.black),
+                                    label: const Text('تعليق'),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: null,
+                                    icon: const Icon(Icons.share_outlined, color: Colors.black),
+                                    label: const Text('مشاركة'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Divider(thickness: 1.2),
+                            CommentsList(comments: recipe.comments),
+                          ],
+                        ),
                       ),
                     ),
-                    const Divider(thickness: 1.2),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Expanded(child: CommentsList(comments: recipe.comments)),
-                          const Divider(thickness: 1.2),
-                          SendCommentWidget(
-                            controller: _commentController,
-                            onSend: () async {
-                              final userData = await _userRepository.getUserData(_userRepository.currentUser!.uid);
-
-                              if (userData == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("فشل في تحميل بيانات المستخدم")),
-                                );
-                                return;
-                              }
-
-                              final username = userData.data()?['username'] ?? 'مستخدم';
-                              final profilePic = userData.data()?['profilepic'];
-
-                              try {
-                                await _commentController.sendComment(
-                                  recipeId: recipe.id,
-                                  username: username,
-                                  profilePic: profilePic,
-                                );
-
-                                _loadRecipe();
-                                setState(() {});
-                                _commentController.clear();
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("حدث خطأ أثناء إرسال التعليق")),
-                                );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFDF5EC),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                    child: SendCommentWidget(
+                      controller: _commentController,
+                      onSend: _handleSendComment,
+                    ),
+                  ),
+                ],
               ),
             );
           },
