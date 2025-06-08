@@ -1,15 +1,12 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/core/widgets/appbar/simple_appbar.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import 'package:matbakhna_mobile/Views/widgets/post/comments_list.dart';
 import 'package:matbakhna_mobile/Views/widgets/post/post_header.dart';
-import 'package:matbakhna_mobile/Views/widgets/post/post_comment_input.dart';
-import 'package:matbakhna_mobile/controller/comment_controller.dart';
-import 'package:matbakhna_mobile/controller/post_controller.dart';
-import 'package:matbakhna_mobile/repositories/user_repository.dart';
-
-import '../../core/utils/network_helpers/network_utils.dart';
+import '../../controller/comment_controller.dart';
+import '../../controller/post_controller.dart';
+import '../../repositories/user_repository.dart';
+import '../widgets/post/post_comment_input.dart';
 
 class PostPage extends StatefulWidget {
   final String recipeId;
@@ -34,12 +31,7 @@ class _PostPageState extends State<PostPage> {
   }
 
   void _loadRecipe() {
-    _recipeFuture = handleWithRetry<RecipeModel?>(
-      request: () => _controller.fetchRecipe(widget.recipeId),
-      maxRetries: 3,
-      fallbackValue: null,
-      retryDelay: const Duration(seconds: 2),
-    );
+    _recipeFuture = _controller.fetchRecipe(widget.recipeId);
   }
 
   Future<void> _refresh() async {
@@ -62,7 +54,7 @@ class _PostPageState extends State<PostPage> {
             }
 
             if (!snapshot.hasData || snapshot.data == null) {
-              return const Center(child: Text("حدثت مشكلة في الاتصال بالإنترنت"));
+              return const Center(child: Text("الوصفة غير موجودة"));
             }
 
             final recipe = snapshot.data!;

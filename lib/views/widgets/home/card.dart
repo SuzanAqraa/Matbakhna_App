@@ -38,151 +38,155 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return SizedBox(
       width: width,
-    height: height,
+      height: height,
       child: Tooltip(
         message: recipe.title,
-        waitDuration: Duration(milliseconds: 500),
-
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
-        clipBehavior: Clip.hardEdge,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: () => _goToRecipeDetailPage(context),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: BrandColors.backgroundColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+        waitDuration: const Duration(milliseconds: 500),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.hardEdge,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () => _goToRecipeDetailPage(context),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: BrandColors.backgroundColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          ),
-                          child: NetworkImageWithPlaceholder(
-                            imageUrl: recipe.imageUrl,
-                            width: double.infinity,
-                            height: height * 0.4,
-                            fit: BoxFit.cover,
-                          ),
-
-                        ),
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: BrandColors.secondaryColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              recipe.duration,
-                              style: ThemeTextStyle.interActionTextFieldStyle
-                                  .copyWith(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Spaces.verticalSpacing(8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        recipe.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: ThemeTextStyle.recipeNameTextFieldStyle,
-                      ),
-                    ),
-                    Spaces.verticalSpacing(2),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: SizedBox(
-                        height: height * 0.25,
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Text(
-                            recipe.description,
-                            style: ThemeTextStyle.bodySmallTextFieldStyle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Bottom Bar
-            Container(
-              height: height * 0.12,
-              decoration: BoxDecoration(
-                color: BrandColors.secondaryBackgroundColor,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.favorite_border,
-                        size: IconStyle.smallIconSize,
-                        color: IconStyle.smallIconColor,
+                      Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            ),
+                            child: NetworkImageWithPlaceholder(
+                              imageUrl: recipe.imageUrl,
+                              width: double.infinity,
+                              height: height * 0.4,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: BrandColors.secondaryColor,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                recipe.duration,
+                                style: ThemeTextStyle.interActionTextFieldStyle
+                                    .copyWith(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      Spaces.horizontalSpacing(4),
-                      Text(
-                        recipe.numLikes.toString(),
-                        style: ThemeTextStyle.smallTextFieldStyle,
+                      Spaces.verticalSpacing(8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          recipe.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: ThemeTextStyle.recipeNameTextFieldStyle,
+                        ),
+                      ),
+                      Spaces.verticalSpacing(2),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: SizedBox(
+                          height: height * 0.25,
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            child: Text(
+                              recipe.description,
+                              style: ThemeTextStyle.bodySmallTextFieldStyle,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () => _goToPostPage(context),
-                    child: Row(
+                ),
+              ),
+              Container(
+                height: height * 0.12,
+                decoration: BoxDecoration(
+                  color: BrandColors.secondaryBackgroundColor,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(16),
+                    bottomRight: Radius.circular(16),
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
                         Icon(
-                          Icons.comment_outlined,
+                          Icons.favorite_border,
                           size: IconStyle.smallIconSize,
                           color: IconStyle.smallIconColor,
                         ),
                         Spaces.horizontalSpacing(4),
                         Text(
-                          recipe.comments.length.toString(),
+                          recipe.numLikes.toString(),
                           style: ThemeTextStyle.smallTextFieldStyle,
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    GestureDetector(
+                      onTap: () => _goToPostPage(context),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.comment_outlined,
+                            size: IconStyle.smallIconSize,
+                            color: IconStyle.smallIconColor,
+                          ),
+                          Spaces.horizontalSpacing(4),
+                          Text(
+                            recipe.comments.length.toString(),
+                            style: ThemeTextStyle.smallTextFieldStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
