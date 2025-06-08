@@ -82,7 +82,7 @@ class RecipeCard extends StatelessWidget {
                             ),
                             child: NetworkImageWithPlaceholder(
                               imageUrl: recipe.imageUrl,
-                              width: double.infinity,
+                              width: width,
                               height: height * 0.4,
                               fit: BoxFit.cover,
                             ),

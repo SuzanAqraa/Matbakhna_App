@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
-import 'package:matbakhna_mobile/Repositories/recipe_repository.dart';
-import 'package:matbakhna_mobile/Controller/recipe_controller.dart';
+import 'package:matbakhna_mobile/controller/recipe_controller.dart';
+
 
 import '../../core/utils/brand_colors.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';

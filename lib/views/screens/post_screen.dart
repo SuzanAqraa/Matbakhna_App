@@ -117,6 +117,7 @@ class _PostPageState extends State<PostPage> {
                                   Text('${_controller.likes} اعجاب'),
                                 ],
                               ),
+
                             ),
                             const Divider(thickness: 1.2),
                             Padding(
@@ -154,7 +155,7 @@ class _PostPageState extends State<PostPage> {
                               ),
                             ),
                             const Divider(thickness: 1.2),
-                            CommentsList(comments: recipe.comments),
+              CommentsList(comments: recipe.comments),
                           ],
                         ),
                       ),
@@ -170,11 +171,13 @@ class _PostPageState extends State<PostPage> {
                           offset: const Offset(0, -2),
                         ),
                       ],
+
                     ),
                     child: SendCommentWidget(
                       controller: _commentController,
                       onSend: _handleSendComment,
                     ),
+
                   ),
                 ],
               ),

@@ -133,4 +133,6 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: kIsWeb ? null : const CustomBottomNavbar(currentIndex: 1),
     );
   }
+
 }
+
