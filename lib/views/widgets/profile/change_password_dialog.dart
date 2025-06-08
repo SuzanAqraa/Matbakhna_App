@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../../core/utils/spaces.dart';
+import '../../../repositories/change_password_controller.dart';
+import '../../../core/validators/password_validators.dart';
 
 class ChangePasswordDialog extends StatefulWidget {
   const ChangePasswordDialog({super.key});
@@ -11,14 +11,19 @@ class ChangePasswordDialog extends StatefulWidget {
 }
 
 class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
-  final TextEditingController oldPasswordController = TextEditingController();
-  final TextEditingController newPasswordController = TextEditingController();
+  final oldPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  final ChangePasswordController _controller = ChangePasswordController();
+
   bool isLoading = false;
   String? errorMessage;
 
-  final user = FirebaseAuth.instance.currentUser;
+  bool _obscureOld = true;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
 
   Future<void> _changePassword() async {
     if (!_formKey.currentState!.validate()) return;
@@ -28,55 +33,24 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       errorMessage = null;
     });
 
-    final oldPassword = oldPasswordController.text.trim();
-    final newPassword = newPasswordController.text.trim();
+    final error = await _controller.changePassword(
+      oldPassword: oldPasswordController.text.trim(),
+      newPassword: newPasswordController.text.trim(),
+    );
 
-    try {
-      final cred = EmailAuthProvider.credential(
-        email: user!.email!,
-        password: oldPassword,
-      );
-      await user!.reauthenticateWithCredential(cred);
-
-      if (oldPassword == newPassword) {
-        setState(() {
-          errorMessage = 'كلمة المرور الجديدة يجب أن تختلف عن القديمة';
-          isLoading = false;
-        });
-        return;
-      }
-
-      await user!.updatePassword(newPassword);
-
+    if (error == null) {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تم تغيير كلمة المرور بنجاح')),
         );
       }
-    } on FirebaseAuthException catch (e) {
-      String message = 'حدث خطأ أثناء التحقق';
-      if (e.code == 'wrong-password') {
-        message = 'كلمة السر القديمة غير صحيحة';
-      } else if (e.code == 'invalid-credential') {
-        message = 'بيانات التحقق غير صحيحة. تأكد من كلمة المرور القديمة.';
-      } else {
-        message = e.message ?? message;
-      }
+    } else {
       setState(() {
-        errorMessage = message;
+        errorMessage = error;
         isLoading = false;
       });
     }
-  }
-
-  String? _validateNewPassword(String? value) {
-    if (value == null || value.isEmpty) return 'يرجى إدخال كلمة المرور الجديدة';
-    if (value.length < 8) return 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
-    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'يجب أن تحتوي على حرف كبير';
-    if (!RegExp(r'[!@#\$&*~%^]').hasMatch(value))
-      return 'يجب أن تحتوي على رمز مثل @ أو #';
-    return null;
   }
 
   @override
@@ -85,41 +59,58 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       title: const Text('تغيير كلمة المرور'),
       content: Form(
         key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: oldPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'كلمة المرور القديمة',
-              ),
-              validator:
-                  (value) =>
-                      value == null || value.isEmpty
-                          ? 'يرجى إدخال كلمة المرور القديمة'
-                          : null,
-            ),
-            Spaces.verticalSpacing(10),
-            TextFormField(
-              controller: newPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'كلمة المرور الجديدة',
-              ),
-              validator: _validateNewPassword,
-            ),
-            if (errorMessage != null) ...[
-              Spaces.verticalSpacing(12),
-              Text(
-                errorMessage!,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: oldPasswordController,
+                obscureText: _obscureOld,
+                decoration: InputDecoration(
+                  labelText: 'كلمة المرور القديمة',
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureOld ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _obscureOld = !_obscureOld),
+                  ),
                 ),
+                validator: PasswordValidators.validateOldPassword,
               ),
+              Spaces.verticalSpacing(10),
+              TextFormField(
+                controller: newPasswordController,
+                obscureText: _obscureNew,
+                decoration: InputDecoration(
+                  labelText: 'كلمة المرور الجديدة',
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureNew ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _obscureNew = !_obscureNew),
+                  ),
+                ),
+                validator: PasswordValidators.validateNewPassword,
+              ),
+              Spaces.verticalSpacing(10),
+              TextFormField(
+                controller: confirmPasswordController,
+                obscureText: _obscureConfirm,
+                decoration: InputDecoration(
+                  labelText: 'تأكيد كلمة المرور',
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                  ),
+                ),
+                validator: (value) =>
+                    PasswordValidators.validateConfirmPassword(value, newPasswordController.text),
+              ),
+              if (errorMessage != null) ...[
+                Spaces.verticalSpacing(12),
+                Text(
+                  errorMessage!,
+                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
       actions: [
@@ -129,14 +120,13 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         ),
         ElevatedButton(
           onPressed: isLoading ? null : _changePassword,
-          child:
-              isLoading
-                  ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                  : const Text('تأكيد'),
+          child: isLoading
+              ? const SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+              : const Text('تأكيد'),
         ),
       ],
     );

@@ -8,7 +8,7 @@ class ProfileFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool readOnly;
   final bool isRequired;
-
+  final FormFieldValidator<String>? validator;
   const ProfileFormField({
     Key? key,
     required this.controller,
@@ -17,6 +17,7 @@ class ProfileFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
     this.isRequired = true,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -37,9 +38,8 @@ class ProfileFormField extends StatelessWidget {
           border: const UnderlineInputBorder(),
         ),
         validator: (value) {
-          if (isRequired && !readOnly && (value == null || value.isEmpty)) {
-            return 'هذا الحقل مطلوب';
-          }
+          if (validator != null) return validator!(value);
+
           return null;
         },
       ),
