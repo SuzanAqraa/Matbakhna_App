@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 typedef ShowLoginDialog = void Function();
 
 class LikeButton extends StatefulWidget {
+    final String recipeId;
   final String recipeTitle;
   final int initialLikeCount;
   final ShowLoginDialog onNeedLogin;
 
   const LikeButton({
     super.key,
+    required this.recipeId,
     required this.recipeTitle,
     required this.initialLikeCount,
     required this.onNeedLogin,

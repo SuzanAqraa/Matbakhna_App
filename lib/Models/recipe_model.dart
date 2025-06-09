@@ -12,11 +12,14 @@ class RecipeModel {
   final int difficulty;
   final String mealType;
   final String nationality;
-  final int numLikes;
+  //final int numLikes;
   final int numComments;
   final List<CommentModel> comments;
   final List<StepModel> steps;
   final List<String> ingredients;
+
+   final List<String> likedBy;
+
 
   RecipeModel({
     required this.id,
@@ -29,11 +32,12 @@ class RecipeModel {
     required this.difficulty,
     required this.mealType,
     required this.nationality,
-    required this.numLikes,
+    //required this.numLikes,
     required this.numComments,
     required this.comments,
     required this.steps,
     required this.ingredients,
+     required this.likedBy,
   });
 
   factory RecipeModel.fromJson(String id, Map<String, dynamic> json) {
@@ -48,7 +52,7 @@ class RecipeModel {
       difficulty: json['difficulty'] ?? 5,
       mealType: json['mealType'] ?? '',
       nationality: json['nationality'] ?? '',
-      numLikes: json['Num_Likes'] is int ? json['Num_Likes'] : 0,
+     // numLikes: json['Num_Likes'] is int ? json['Num_Likes'] : 0,
       numComments: json['Num_Comments'] is int ? json['Num_Comments'] : 0,
       comments: (json['comments'] as List<dynamic>?)
           ?.map((e) => CommentModel.fromJson(e))
@@ -62,6 +66,7 @@ class RecipeModel {
           ?.map((e) => e.toString())
           .toList() ??
           [],
+      likedBy: List<String>.from(json['likes'] ?? []),
     );
   }
 
@@ -81,6 +86,8 @@ class RecipeModel {
       'comments': comments.map((e) => e.toJson()).toList(),
       'steps': steps.map((e) => e.toJson()).toList(),
       'ingredients': ingredients,
+      'likes': likedBy, 
     };
   }
+  int get numLikes => likedBy.length;
 }

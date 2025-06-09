@@ -106,15 +106,14 @@ class _ListingScreenState extends State<ListingScreen> {
                       final description = data['Description'] ?? 'لا يوجد وصف';
                       final duration = data['duration']?.toString() ?? 'غير محدد';
                       final numLikes = data['Num_Likes'] ?? 0;
-                      final numComments = data['Num_Comments'] ?? 0;
 
                       return RecipeCard(
+                        
                         imageUrl: imageUrl,
                         title: title,
                         description: description,
                         time: duration,
                         numLikes: numLikes,
-                        numComments: numComments,
                         recipeId: doc.id,
                       );
                     },

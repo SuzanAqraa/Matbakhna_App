@@ -10,7 +10,6 @@ class BookmarkButton extends StatefulWidget {
   final String description;
   final String duration;
   final int numLikes;
-  final int numComments;
   final ShowLoginDialog onNeedLogin;
 
   const BookmarkButton({
@@ -20,7 +19,6 @@ class BookmarkButton extends StatefulWidget {
     required this.description,
     required this.duration,
     required this.numLikes,
-    required this.numComments,
     required this.onNeedLogin,
   });
 
@@ -81,7 +79,6 @@ class _BookmarkButtonState extends State<BookmarkButton> {
         'description': widget.description,
         'duration': widget.duration,
         'numLikes': widget.numLikes,
-        'numComments': widget.numComments,
         'timestamp': FieldValue.serverTimestamp(),
       });
     } else {

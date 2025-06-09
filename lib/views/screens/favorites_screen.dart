@@ -91,7 +91,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         description: description,
                         time: time,
                         numLikes: numLikes,
-                        numComments: numComments,
                         recipeId: filteredDocs[index].id,
                       );
                     },

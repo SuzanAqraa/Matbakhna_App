@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import 'package:matbakhna_mobile/controller/recipe_controller.dart';
-
 
 import '../../core/utils/brand_colors.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
@@ -25,6 +23,7 @@ class _RecipePageState extends State<RecipePage> {
 
   List<bool> checked = [];
   bool isLoading = true;
+  String? sharedImageUrl; 
 
   @override
   void initState() {
@@ -38,6 +37,7 @@ class _RecipePageState extends State<RecipePage> {
       setState(() {
         checked = List<bool>.filled(recipe.ingredients.length, false);
         isLoading = false;
+        sharedImageUrl = recipe.imageUrl; 
       });
     } else {
       setState(() {
@@ -97,7 +97,9 @@ class _RecipePageState extends State<RecipePage> {
                             ),
                             SizedBox(height: isSmallScreen ? 24 : 32),
                             StepsListWidget(
-                              steps: recipe.steps.map((e) => e.description).toList(),
+                              recipeId: recipe.id,
+                              steps: recipe.steps.map((e) => {'description': e.description}).toList(),
+                              sharedImageUrl: sharedImageUrl, 
                             ),
                           ],
                         ),
