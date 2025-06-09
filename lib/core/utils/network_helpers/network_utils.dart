@@ -17,7 +17,7 @@ class MultipleErrorsException implements Exception {
 
 Future<T> handleWithRetry<T>({
   required Future<T> Function() request,
-  required T fallbackValue,
+  T? fallbackValue,
   int maxRetries = 2,
   Duration retryDelay = const Duration(milliseconds: 300),
   VoidCallback? onFail,
@@ -35,19 +35,19 @@ Future<T> handleWithRetry<T>({
     } on SocketException catch (e) {
       debugPrint('SocketException on attempt ${attempts + 1}');
       allErrors.add(e);
-      if (onFail != null) onFail();
+      onFail?.call();
     } on TimeoutException catch (e) {
       debugPrint('TimeoutException on attempt ${attempts + 1}');
       allErrors.add(e);
-      if (onFail != null) onFail();
+      onFail?.call();
     } on FirebaseException catch (e) {
       debugPrint('FirebaseException on attempt ${attempts + 1}');
       allErrors.add(e);
-      if (onFail != null) onFail();
+      onFail?.call();
     } catch (e) {
       debugPrint('Unknown exception on attempt ${attempts + 1}: $e');
       allErrors.add(e);
-      if (onFail != null) onFail();
+      onFail?.call();
     }
 
     attempts++;
@@ -57,6 +57,11 @@ Future<T> handleWithRetry<T>({
   }
 
   debugPrint('All $maxRetries attempts failed.');
+
+  if (fallbackValue != null) {
+    debugPrint('Returning fallbackValue after $maxRetries attempts.');
+    return fallbackValue;
+  }
 
   if (allErrors.isEmpty) {
     throw Exception('Request failed after $maxRetries attempts without specific error.');

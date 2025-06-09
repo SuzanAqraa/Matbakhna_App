@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../../../core/utils/spaces.dart';
 import '../../../repositories/change_password_controller.dart';
 import '../../../core/validators/password_validators.dart';
@@ -28,30 +29,64 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   Future<void> _changePassword() async {
     if (!_formKey.currentState!.validate()) return;
 
+    bool hasInternet = await InternetConnectionChecker().hasConnection;
+
+    if (!hasInternet) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة."),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() {
       isLoading = true;
       errorMessage = null;
     });
 
-    final error = await _controller.changePassword(
-      oldPassword: oldPasswordController.text.trim(),
-      newPassword: newPasswordController.text.trim(),
-    );
+    try {
+      final error = await _controller.changePassword(
+        oldPassword: oldPasswordController.text.trim(),
+        newPassword: newPasswordController.text.trim(),
+      );
 
-    if (error == null) {
-      if (mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم تغيير كلمة المرور بنجاح')),
-        );
+      if (error == null) {
+        if (mounted) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تم تغيير كلمة المرور بنجاح'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          errorMessage = error;
+          isLoading = false;
+        });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        errorMessage = error;
+        errorMessage = "حدث خطأ غير متوقع. حاول مرة أخرى.";
         isLoading = false;
       });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

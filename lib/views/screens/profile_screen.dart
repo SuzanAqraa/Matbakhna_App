@@ -1,11 +1,13 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../controller/profile_controller.dart';
 import '../../core/utils/brand_colors.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+
 import '../../core/utils/network_helpers/network_utils.dart';
+import '../../core/utils/network_helpers/save_with_offline_support.dart';
 import '../../core/utils/spaces.dart';
 import '../../core/validators/profile_field_validators.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
@@ -101,6 +103,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return;
               }
 
+              bool hasInternet = await InternetConnectionChecker().hasConnection;
+
+              if (!hasInternet) {
+                _showSnackBar(
+                  "لا يوجد اتصال بالإنترنت. لا يمكن تغيير البريد حالياً.",
+                  backgroundColor: Colors.orange,
+                );
+                return;
+              }
+
               final result = await handleWithRetry<String?>(
                 request: () => _controller.updateEmail(newEmail),
                 maxRetries: 3,
@@ -110,9 +122,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               if (result != null) {
                 _originalEmail = newEmail;
-                _showSnackBar(result);
+                _showSnackBar(result, backgroundColor: Colors.green);
               } else {
-                _showSnackBar('لم يتم التحقق من البريد الإلكتروني');
+                _showSnackBar('لم يتم التحقق من البريد الإلكتروني', backgroundColor: Colors.red);
               }
             },
             child: const Text("تغيير الإيميل"),
@@ -125,6 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
 
   void _showSnackBar(String message, {Color? backgroundColor}) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -140,53 +153,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    setState(() => _controller.isLoading = true);
-
-    try {
-      final result = await handleWithRetry<String?>(
-        request: _controller.saveProfile,
-        maxRetries: 2,
-        fallbackValue: null,
-        retryDelay: const Duration(seconds: 2),
-        onFail: () {
-          _showSnackBar(
-            "تعذر حفظ البيانات. سيتم حفظها عند عودة الاتصال.",
-          );
-
-        },
-      );
-
-      if (result != null) {
+    await saveWithOfflineSupport(
+      context: context,
+      onStart: () => setState(() => _controller.isLoading = true),
+      onEnd: () => setState(() => _controller.isLoading = false),
+      saveFunction: () => _controller.saveProfile(),
+      onSuccess: () {
         _originalEmail = _controller.emailController.text.trim();
         _originalUsername = _controller.usernameController.text.trim();
         _originalAddress = _controller.addressController.text.trim();
         _originalPhone = _controller.phoneController.text.trim();
-
-        _showSnackBar(result);
-      } else {
-        _showSnackBar(
-          'فشل الاتصال بالخادم. تأكد من وجود إنترنت وحاول مرة أخرى.',
-          backgroundColor: Colors.red,
-        );
-      }
-    } on SocketException {
-      _showSnackBar(
-        'فشل الاتصال بالإنترنت. سيتم حفظ التعديلات عند عودة الاتصال.',
-        backgroundColor: Colors.red,
-      );
-    } on FirebaseException catch (e) {
-      _showSnackBar(
-        e.code == 'network-request-failed'
-            ? 'فشل الاتصال بخدمات Firebase. تحقق من اتصالك بالإنترنت.'
-            : 'حدث خطأ في Firebase: ${e.message}',
-        backgroundColor: Colors.red,
-      );
-    } catch (e) {
-      _showSnackBar('حدث خطأ غير متوقع: $e', backgroundColor: Colors.red);
-    } finally {
-      if (mounted) setState(() => _controller.isLoading = false);
-    }
+      },
+    );
   }
+
 
   Future<void> _handleLogout() async {
     final message = await handleWithRetry<String?>(
