@@ -190,7 +190,7 @@ class ProfileController extends ChangeNotifier {
 
   Future<String?> logout() async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await _userRepository.logout();
       return Constants.successLogout;
     } catch (e) {
       return '${Constants.errorLogout}$e';
