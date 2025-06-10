@@ -38,8 +38,8 @@ class StepsListWidget extends StatelessWidget {
             final index = entry.key + 1;
 
             final Map<String, dynamic>? stepData = entry.value as Map<String, dynamic>?;
-            final String description = stepData?['description'] ?? 'لا يوجد وصف';
-            final String stepText = 'الخطوة $index'; 
+            final String description = stepData?['Description'] ?? 'لا يوجد وصف';
+            final String stepText = 'الخطوة $description'; 
 
             return GestureDetector(
               onTap: () {
