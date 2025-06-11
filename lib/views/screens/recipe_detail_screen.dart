@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
 import 'package:matbakhna_mobile/controller/recipe_controller.dart';
-
 
 import '../../core/utils/brand_colors.dart';
 import '../../core/widgets/appbar/simple_appbar.dart';
@@ -14,7 +12,7 @@ import '../widgets/recipe/steps_list.dart';
 class RecipePage extends StatefulWidget {
   final String recipeId;
 
-  const RecipePage({super.key, required this.recipeId});
+  const RecipePage({Key? key, required this.recipeId}) : super(key: key);
 
   @override
   State<RecipePage> createState() => _RecipePageState();
@@ -22,9 +20,9 @@ class RecipePage extends StatefulWidget {
 
 class _RecipePageState extends State<RecipePage> {
   final RecipeController _controller = RecipeController();
-
   List<bool> checked = [];
   bool isLoading = true;
+  String? sharedImageUrl; // لمشاركة الصورة مع خطوات الوصفة.
 
   @override
   void initState() {
@@ -38,6 +36,7 @@ class _RecipePageState extends State<RecipePage> {
       setState(() {
         checked = List<bool>.filled(recipe.ingredients.length, false);
         isLoading = false;
+        sharedImageUrl = recipe.imageUrl;
       });
     } else {
       setState(() {
@@ -97,7 +96,11 @@ class _RecipePageState extends State<RecipePage> {
                             ),
                             SizedBox(height: isSmallScreen ? 24 : 32),
                             StepsListWidget(
-                              steps: recipe.steps.map((e) => e.description).toList(),
+                              steps: recipe.steps
+                                  .map((step) => {'description': step.description})
+                                  .toList(),
+                              recipeId: widget.recipeId,
+                              sharedImageUrl: sharedImageUrl, // مشاركة الصورة.
                             ),
                           ],
                         ),

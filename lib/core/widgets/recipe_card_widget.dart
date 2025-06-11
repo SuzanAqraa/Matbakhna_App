@@ -7,16 +7,13 @@ import 'package:matbakhna_mobile/views/widgets/recipe/bookmark_button.dart';
 import 'package:matbakhna_mobile/views/widgets/recipe/like_button.dart';
 import 'package:matbakhna_mobile/views/widgets/recipe/share_button.dart';
 
-
-
 class RecipeCard extends StatefulWidget {
   final String imageUrl;
   final String title;
   final String description;
   final String time;
   final int numLikes;
-  final int numComments;
-    final String recipeId;
+  final String recipeId;
 
   const RecipeCard({
     super.key,
@@ -25,7 +22,6 @@ class RecipeCard extends StatefulWidget {
     required this.description,
     required this.time,
     required this.numLikes,
-    required this.numComments,
     required this.recipeId,
   });
 
@@ -34,40 +30,83 @@ class RecipeCard extends StatefulWidget {
 }
 
 class _RecipeCardState extends State<RecipeCard> {
-  final bool _isLiked = false;
+  int _numComments = 0; // Store dynamic comment count
+  bool _isLoading = true; // To show loading state
+
+  // Fetch comment count from Firestore
+  Future<void> _fetchCommentCount() async {
+    try {
+      DocumentSnapshot recipeDoc = await FirebaseFirestore.instance
+          .collection('recipes')
+          .doc(widget.recipeId)
+          .get();
+
+      if (recipeDoc.exists) {
+        List<dynamic>? comments = recipeDoc.get('comments') as List<dynamic>?;
+        setState(() {
+          _numComments = comments?.length ?? 0;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _numComments = 0;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching comment count: $e");
+      setState(() {
+        _numComments = 0;
+        _isLoading = false;
+      });
+    }
+  }
 
   void _showLoginDialog() {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('تنبيه'),
-            content: const Text(
-              'يجب تسجيل الدخول لتتمكن من التفاعل مع هذا الزر.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('إلغاء'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
-                },
-                child: const Text('تسجيل الدخول'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('تنبيه'),
+        content: const Text(
+          'يجب تسجيل الدخول لتتمكن من التفاعل مع هذا الزر.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('إلغاء'),
           ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            },
+            child: const Text('تسجيل الدخول'),
+          ),
+        ],
+      ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCommentCount(); // Fetch comment count when widget initializes
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PostPage(recipeId: widget.recipeId),
+          ),
+        );
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
@@ -131,7 +170,7 @@ class _RecipeCardState extends State<RecipeCard> {
                     description: widget.description,
                     duration: widget.time,
                     numLikes: widget.numLikes,
-                    numComments: widget.numComments,
+                 
                   ),
                 ),
               ],
@@ -166,6 +205,7 @@ class _RecipeCardState extends State<RecipeCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       LikeButton(
+                        recipeId: widget.recipeId,
                         onNeedLogin: _showLoginDialog,
                         recipeTitle: widget.title,
                         initialLikeCount: widget.numLikes,
@@ -183,15 +223,16 @@ class _RecipeCardState extends State<RecipeCard> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => PostPage(recipeId: widget.recipeId,
-                                  ),
+                                  builder: (_) => PostPage(recipeId: widget.recipeId),
                                 ),
                               );
                             },
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${widget.numComments} تعليق',
+                            _isLoading
+                                ? 'جاري التحميل...'
+                                : '$_numComments تعليق',
                             style: const TextStyle(
                               fontSize: 14,
                               color: Color(0xFF3D3D3D),

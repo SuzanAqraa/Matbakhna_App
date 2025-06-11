@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matbakhna_mobile/core/widgets/appbar/simple_appbar.dart';
 import 'package:matbakhna_mobile/Models/recipe_model.dart';
-import 'package:matbakhna_mobile/Views/widgets/post/comments_list.dart';
-import 'package:matbakhna_mobile/Views/widgets/post/post_header.dart';
+import 'package:matbakhna_mobile/views/widgets/post/comments_list.dart';
+import 'package:matbakhna_mobile/views/widgets/post/post_header.dart';
 import '../../controller/comment_controller.dart';
 import '../../controller/post_controller.dart';
 import '../../repositories/user_repository.dart';

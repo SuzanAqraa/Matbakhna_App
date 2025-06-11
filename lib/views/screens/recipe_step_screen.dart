@@ -1,40 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:matbakhna_mobile/core/utils/brand_colors.dart';
 
 class RecipeStepPage extends StatefulWidget {
-  const RecipeStepPage({super.key});
+  final String recipeId;
+  final int stepNumber;
+  final String? sharedImageUrl; 
+
+  const RecipeStepPage({
+    super.key,
+    required this.recipeId,
+    required this.stepNumber,
+    this.sharedImageUrl,
+  });
 
   @override
   State<RecipeStepPage> createState() => _RecipeStepPageState();
 }
 
 class _RecipeStepPageState extends State<RecipeStepPage> {
-  List<int> selectedSteps = [];
+  late Future<Map<String, dynamic>> stepDetailsFuture;
 
-  void toggleStep(int step) {
-    setState(() {
-      if (selectedSteps.contains(step)) {
-        selectedSteps.remove(step);
+  @override
+  void initState() {
+    super.initState();
+    stepDetailsFuture = fetchStepDetails(widget.recipeId, widget.stepNumber);
+  }
+
+  Future<Map<String, dynamic>> fetchStepDetails(
+    String recipeId,
+    int stepNumber,
+  ) async {
+    try {
+      final DocumentSnapshot snapshot =
+          await FirebaseFirestore.instance
+              .collection('recipes')
+              .doc(recipeId)
+              .get();
+
+      if (snapshot.exists) {
+        final data = snapshot.data() as Map<String, dynamic>;
+        final List<dynamic> steps = data['steps'];
+        final stepIndex =
+            stepNumber - 1; 
+
+        if (stepIndex >= 0 && stepIndex < steps.length) {
+          return steps[stepIndex] as Map<String, dynamic>;
+        } else {
+          throw Exception("Step $stepNumber not found");
+        }
       } else {
-        selectedSteps.add(step);
+        throw Exception("Recipe not found");
       }
-    });
+    } catch (e) {
+      throw Exception("Failed to load step details: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF6A908C),
+        backgroundColor: BrandColors.primaryColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            // Action for back button
-          },
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'الخطوة الثانية',
+        title: Text(
+          'الخطوة ${widget.stepNumber}',
           textDirection: TextDirection.rtl,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -42,134 +77,144 @@ class _RecipeStepPageState extends State<RecipeStepPage> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Image.asset(
-              "assets/images/cake.jpg",
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: 200,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    height: 400,
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: stepDetailsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('خطأ: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text('لا توجد بيانات متاحة.'));
+          }
+
+          final step = snapshot.data!;
+          final description = step['description'] ?? '';
+          final imageUrl =
+              widget.sharedImageUrl ?? ''; 
+          final ingredients = step['ingredients'] ?? [];
+          final tools = step['tools'] ?? [];
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child:
+                      imageUrl.isNotEmpty
+                          ? Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (_, __, ___) => const Icon(Icons.error),
+                            loadingBuilder: (_, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                          )
+                          : const Center(child: Text('لا يوجد صورة')),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.green.shade100,
+                      color: BrandColors.primaryColor,
                       borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'لوازم الخطوة',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: const [
-                            Column(
-                              children: [
-                                Icon(Icons.soup_kitchen, size: 40),
-                                Text('طبق تقديم'),
-                              ],
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'وصف الخطوة',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            Column(
-                              children: [
-                                Icon(Icons.no_meals_ouline, size: 40),
-                                Text('جوز هند مبشور'),
-                              ],
+                            const SizedBox(height: 16),
+                            Text(
+                              description,
+                              textAlign: TextAlign.justify,
+                              style: const TextStyle(fontSize: 20, height: 1.5),
                             ),
+                            const SizedBox(height: 20),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.only(top: 30),
-                          margin: const EdgeInsets.all(20),
-                          child: const Text(
-                            'شكل العجينة كرات صغيرة ثم دحرجها في جوز الهند المبشور حتى تغطي بالكامل. ضعها في الثلاجة قليلاً لتتماسك أكثر، ثم قدمها!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20,
-                              height: 1.5,
-                              fontWeight: FontWeight.bold,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'المكونات',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 16),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: ingredients.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: const Icon(Icons.local_dining),
+                                  title: Text(ingredients[index]),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'أدوات الطهي',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: tools.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: const Icon(Icons.local_dining),
+                                  title: Text(tools[index]),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-
-                  /// أزرار الخطوات (بدون GoogleFonts)
-                  Center(
-                    child: Wrap(
-                      spacing: 10,
-                      children: List.generate(4, (index) {
-                        int step = index + 1;
-                        bool isSelected = selectedSteps.contains(step);
-
-                        return GestureDetector(
-                          onTap: () => toggleStep(step),
-                          child: Container(
-                            width: 70,
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: isSelected
-                                  ? const Color(0xFF6A908C)
-                                  : const Color(0xFF99AFAD),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 12),
-                            child: Text(
-                              '$step',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 25,
-                                color: Color(0xFF000000),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
-  }
-}
-
-class StepIndicator extends StatelessWidget {
-  final int number;
-  final bool isActive;
-
-  const StepIndicator({super.key, required this.number, this.isActive = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return CircleAvatar(
-      radius: 25,
-      backgroundColor: isActive ? Colors.teal : Colors.grey.shade300,
-      child: Text(
-        '$number',
-        style: TextStyle(
-          fontSize: 20,
-          color: isActive ? Colors.white : Colors.black,
-        ),
-      ),
-    );
-  }
-}
