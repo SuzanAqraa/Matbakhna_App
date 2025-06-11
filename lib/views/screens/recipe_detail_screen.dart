@@ -12,7 +12,7 @@ import '../widgets/recipe/steps_list.dart';
 class RecipePage extends StatefulWidget {
   final String recipeId;
 
-  const RecipePage({super.key, required this.recipeId});
+  const RecipePage({Key? key, required this.recipeId}) : super(key: key);
 
   @override
   State<RecipePage> createState() => _RecipePageState();
@@ -20,10 +20,9 @@ class RecipePage extends StatefulWidget {
 
 class _RecipePageState extends State<RecipePage> {
   final RecipeController _controller = RecipeController();
-
   List<bool> checked = [];
   bool isLoading = true;
-  String? sharedImageUrl; 
+  String? sharedImageUrl; // لمشاركة الصورة مع خطوات الوصفة.
 
   @override
   void initState() {
@@ -37,7 +36,7 @@ class _RecipePageState extends State<RecipePage> {
       setState(() {
         checked = List<bool>.filled(recipe.ingredients.length, false);
         isLoading = false;
-        sharedImageUrl = recipe.imageUrl; 
+        sharedImageUrl = recipe.imageUrl;
       });
     } else {
       setState(() {
@@ -97,9 +96,11 @@ class _RecipePageState extends State<RecipePage> {
                             ),
                             SizedBox(height: isSmallScreen ? 24 : 32),
                             StepsListWidget(
-                              recipeId: recipe.id,
-                              steps: recipe.steps.map((e) => {'description': e.description}).toList(),
-                              sharedImageUrl: sharedImageUrl, 
+                              steps: recipe.steps
+                                  .map((step) => {'description': step.description})
+                                  .toList(),
+                              recipeId: widget.recipeId,
+                              sharedImageUrl: sharedImageUrl, // مشاركة الصورة.
                             ),
                           ],
                         ),

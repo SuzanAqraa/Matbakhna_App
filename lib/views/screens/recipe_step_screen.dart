@@ -218,5 +218,3 @@ class _RecipeStepPageState extends State<RecipeStepPage> {
         },
       ),
     );
-  }
-}

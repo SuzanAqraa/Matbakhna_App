@@ -20,16 +20,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  final prefs = await SharedPreferences.getInstance();
-  final bool hasSeenIntro = prefs.getBool('has_seen_intro') ?? false;
-  final User? currentUser = FirebaseAuth.instance.currentUser;
+
+  
 
   setupCurrentUserListener();
 
   runApp(MaterialApp(
-    home: !hasSeenIntro && currentUser == null
-        ? const ImagesWidget()
-        : const HomePage(),
+   
     title: 'Smart Recipe App',
     builder: (context, child) {
       return Directionality(

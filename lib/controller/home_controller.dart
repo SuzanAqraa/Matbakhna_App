@@ -1,5 +1,6 @@
 import 'dart:math';
-import '../../../Models/recipe_model.dart';
+import 'package:matbakhna_mobile/Models/recipe_model.dart';
+
 import '../repositories/home_repository.dart';
 
 class HomeController {
